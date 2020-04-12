@@ -288,7 +288,6 @@ void main() {
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(key_pressed2) key_pressed2 = 0;
-					// else if(!eep_loithesim) {
 					else{
 						if(bat_phone_phu){
 							baocaosms(CHINH,"\rchinh gio bang tay");
