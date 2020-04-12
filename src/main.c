@@ -164,7 +164,7 @@ void main() {
 		IAP_docxoasector1();
 		eeprom_buf[NORRESET_EEPROM] = 0xff;
 		IAP_ghisector1();
-		// baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
+		baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
 		if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
 	}
 	

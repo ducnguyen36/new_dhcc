@@ -17,8 +17,8 @@ u8 __data  mp3_doi_start;
 
 //GSM
 #define PHONE_LENGTH 10
-// u8  __code  phone_chinh[] = "0949847098";
-u8  __code  phone_chinh[] = "0988888901";
+u8  __code  phone_chinh[] = "0949847098";
+// u8  __code  phone_chinh[] = "0988888901";
 u8  __xdata lenh_sms[161]; 
 __bit da_gui_bao_cao;
 __bit da_gui_bao_cao_thang;
