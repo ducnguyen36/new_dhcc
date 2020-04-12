@@ -180,10 +180,10 @@ void main() {
 			IAP_ghibyte(GIO_EEPROM,gio);
 		}
 
-		if(!mode_wait) {
+		if(!mode_wait || !mode) {
 			mode=0;
-			step_run = motor_run_check_step();
-			motorA1 = motor_run_check();
+			if(!step_run) step_run = motor_run_check_step();
+			if(!motorA1) motorA1 = motor_run_check();
 		}
 
 		if(giay_out){
@@ -218,13 +218,13 @@ void main() {
 			if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		}
 
-		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && !step_run && !motorA1 && (!eep_mp3 || !mp3_playing)){
+		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && eep_gio == gio && eep_phut == phut && (!eep_mp3 || !mp3_playing)){
+			EA=0;
 			IAP_docxoasector1();
 			eeprom_buf[NORRESET_EEPROM] = 0;
 			IAP_ghisector1();
 			RingRelay = 1;
 			delay_ms(2000);
-			EA=0;
 			while(1);
 		}
 
