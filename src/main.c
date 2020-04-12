@@ -242,10 +242,6 @@ void main() {
 
 
 		if(!da_gui_bao_cao && minute<5 ) {
-				if(eep_gpson){
-					gsm_laygio_gps();
-					hour12=hour%12;
-				}
 			if(!GPS_time && eep_gpson) gsm_laygio_gps();
 			else rtc_gettime(&hour,&minute,&second);
 			hour12 = (hour>11)?hour-12:hour;
