@@ -547,32 +547,5 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 
 	ADC_CONTR = 0x8b;
 }
-/*
-	eeprom tao 8 byte gio phut mo tat den
 
-*/
-/*
-		TODO
-	* SDCARD
-		serial
-		play
-		eeprom
-		sms
-		error
 
-	* SMS-BC
-		chung
-		mp3
-		tk
-		loi
-	* MODE
-		test mode
-	* CHARGE
-		on/off
-		init +3 +1
-	* RING
-		time match ring
-	* LAMP
-		time match 
-
-*/

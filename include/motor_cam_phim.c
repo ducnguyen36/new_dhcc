@@ -39,7 +39,6 @@ void xunggiay(){
 				}
 				if(++hour12>11) hour12 = 0;
 			}
-			// phut_sac_xa_acqui_con_lai--;
 			
 		}
 }
@@ -68,16 +67,11 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 			if(step_index>8) step_index=7;
 			else if(step_index==8) step_index=0;
 		}
-		
-
-		
-		
-
 	}
 
 }
 
-void motor_step_interupt() __interrupt 1 __using 2 {
+void cam_phim() __interrupt 1 __using 2 {
 	if(key_down1 && key_in1) key_wait1 = 2;
 	key_hold1 = key_down1 && !key_in1;
 	key_down1 = !key_last1 && !key_in1;
