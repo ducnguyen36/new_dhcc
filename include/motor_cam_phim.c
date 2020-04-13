@@ -90,7 +90,10 @@ void cam_phim() __interrupt 1 __using 2 {
 	key_pressed3 = key_pressed3 || (!key_hold3 && key_down3);
 	key_last3 = key_in3;
 	
-	if(step_run && cam_out_step && cam_sign_step){
+	cam_out_step = cam_cover_step && cam_sign_step;
+	cam_cover_step = cam_in_step && !cam_sign_step;
+	cam_in_step = !cam_sign_step;	
+	if(step_run && cam_out_step){
 		thoi_gian_doi_doc_cam_step=10;
 		motorA1 = thoi_gian_doi_doc_cam = 0;
 		if(canhkim) canhkim--;
@@ -105,11 +108,12 @@ void cam_phim() __interrupt 1 __using 2 {
 		if(!motor_run_check_step()) step_run = 0 ;	
 	}
 
-	cam_out_step = cam_cover_step && cam_sign_step;
-	cam_cover_step = cam_in_step && !cam_sign_step;
-	cam_in_step = !cam_sign_step;	
+	//Co tin hieu cam la bi che (khong co 555)
 	
-	if(motorA1 && cam_out && !cam_sign){
+	cam_out = cam_cover && !cam_sign;
+	cam_cover = cam_in && cam_sign;
+	cam_in = cam_sign;	
+	if(motorA1 && cam_out){
 		thoi_gian_doi_doc_cam=30;
 		step_run = thoi_gian_doi_doc_cam_step = 0;
 		if(canhkim) canhkim--;
@@ -119,10 +123,6 @@ void cam_phim() __interrupt 1 __using 2 {
 		}	
 		if(!motor_run_check()) motorA1 = 0;	
 	}
-	
-	cam_out = cam_cover && !cam_sign;
-	cam_cover = cam_in && cam_sign;
-	cam_in = cam_sign;	
 
 	if(!--cnt){
 		cnt=20;

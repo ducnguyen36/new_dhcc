@@ -126,8 +126,8 @@ void main() {
 	ngay_reset_con_lai = eep_ngayreset;
 	AUXR &=0x7F;	//Timer clock is 12T mode
 	TMOD = 0;		//Set timer work mode
-	TL0 = 0x58;		//Initial timer value
-	TH0 = 0x9E;		//Initial timer value
+	TL0 = 0x60;		//Initial timer value
+	TH0 = 0x73;		//Initial timer value
 	TF0 = 0;
 	TR0 = 1;
 	ET0 = 1;
