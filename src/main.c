@@ -158,17 +158,18 @@ void main() {
 	gsm_laygio_gps();
     hour12 = (hour>11)?hour-12:hour;
 	bat_phone_phu = eep_phonephu[11]&1;
-	mode_wait = 60;
 	ADC_CONTR = 0x8b;
 	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-		IAP_docxoasector1();
-		eeprom_buf[NORRESET_EEPROM] = 0xff;
-		IAP_ghisector1();
 		baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
 		if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
 	}
+	if(!eep_norreset){
+		mode_wait = 5;
+		IAP_docxoasector1();
+		eeprom_buf[NORRESET_EEPROM] = 0xff;
+		IAP_ghisector1();
+	}else mode_wait = 60;
 	
-	if(!eep_norreset) mode_wait = 5;
 	WDT_CONTR = EN_WDT | CLR_WDT | WDT_SCALE_64; // Enable watchdog, clear watchdog, pre scale = 64, watchdog idle mode = NO
 	
 	
@@ -220,9 +221,10 @@ void main() {
 
 		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && eep_gio == gio && eep_phut == phut && (!eep_mp3 || !mp3_playing)){
 			EA=0;
-			IAP_docxoasector1();
-			eeprom_buf[NORRESET_EEPROM] = 0;
-			IAP_ghisector1();
+			IAP_ghibyte(NORRESET_EEPROM,0);
+			// IAP_docxoasector1();
+			// eeprom_buf[NORRESET_EEPROM] = 0;
+			// IAP_ghisector1();
 			RingRelay = 1;
 			delay_ms(2000);
 			while(1);
