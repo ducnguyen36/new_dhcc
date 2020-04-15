@@ -68,6 +68,61 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0L = PCA_Timer0; //nap vao vi tri timer tiep theo
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 36000; //tang bien nap vao len 25ms
+		
+		
+		if(step_run){
+			if(cam_sign_step){
+				if(cam_cover_step){
+					thoi_gian_doi_doc_cam_step=10;
+					motorA1 = thoi_gian_doi_doc_cam = 0;
+					if(canhkim) canhkim--;
+					else if(motorDir && ++phut>59){
+						phut=0;
+						if(++gio>11) gio = 0;
+					}else if(!motorDir && --phut>60){
+						phut = 59;
+						if(--gio>12) gio = 11;
+					}	
+					if(!motor_run_check_step()) step_run = 0 ;
+					cam_cover_step = 0;
+					send_gsm_cmd("N1S");
+					u8 __xdata end[] = {gio/10+'0',gio%10+'0',phut/10+'0',phut%10+'0',hour/10+'0',hour%10+'0',minute/10+'0',minute%10+'0','R',0};
+					send_gsm_cmd(end);
+				} 
+				else send_gsm_cmd("1");
+				cam_in_step = 0;
+			}else{
+				if(cam_in_step){
+					if(!cam_cover_step) send_gsm_cmd("C");
+					cam_cover_step = 1;
+				}else send_gsm_cmd("V");
+				send_gsm_cmd("0");
+				cam_in_step = 1;
+			} 			
+		}
+
+		//Co tin hieu cam la bi che (khong co 555)
+		if(motorA1){
+			if(!cam_sign){
+				if(cam_cover){
+					thoi_gian_doi_doc_cam=30;
+					step_run = thoi_gian_doi_doc_cam_step = 0;
+					if(canhkim) canhkim--;
+					else if(++phut>59){
+						phut = 0;
+						if(++gio>11) gio = 0;
+					}	
+					if(!motor_run_check()) motorA1 = 0;
+					cam_cover = 0;
+				}
+				cam_in = 0;
+			}else{
+				if(cam_in)cam_cover = 1;
+				cam_in = 1;
+			}
+		}
+
+		
 		if(key_down1 && key_in1) key_wait1 = 2;
 		key_hold1 = key_down1 && !key_in1;
 		key_down1 = !key_last1 && !key_in1;
@@ -86,59 +141,22 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		key_pressed3 = key_pressed3 || (!key_hold3 && key_down3);
 		key_last3 = key_in3;
 		
-		cam_out_step = cam_cover_step && cam_sign_step;
-		cam_cover_step = cam_in_step && !cam_sign_step;
-		cam_in_step = !cam_sign_step;	
-		if(step_run && cam_out_step){
-			thoi_gian_doi_doc_cam_step=10;
-			motorA1 = thoi_gian_doi_doc_cam = 0;
-			if(canhkim) canhkim--;
-			else if(motorDir && ++phut>59){
-				phut=0;
-				if(++gio>11) gio = 0;
-			}else if(!motorDir && --phut>60){
-				phut = 59;
-				if(--gio>12) gio = 11;
-			}
-				
-			if(!motor_run_check_step()) step_run = 0 ;	
-		}
-
-		//Co tin hieu cam la bi che (khong co 555)
-		if(motorA1){
-			if(!cam_sign){
-				if(cam_cover){
-					cam_cover = 0;
-					thoi_gian_doi_doc_cam=30;
-					step_run = thoi_gian_doi_doc_cam_step = 0;
-					if(canhkim) canhkim--;
-					else if(++phut>59){
-						phut = 0;
-						if(++gio>11) gio = 0;
-					}	
-					if(!motor_run_check()) motorA1 = 0;
-				}
-				cam_in = 0;
-			}else{
-				if(cam_in)cam_cover = 1;
-				cam_in = 1;
-			}
-		}
 
 
-		cam_out = cam_cover && !cam_sign;
-		cam_cover = cam_in && cam_sign;
-		cam_in = cam_sign;	
-		if(motorA1 && cam_out){
-			thoi_gian_doi_doc_cam=30;
-			step_run = thoi_gian_doi_doc_cam_step = 0;
-			if(canhkim) canhkim--;
-			else if(++phut>59){
-				phut = 0;
-				if(++gio>11) gio = 0;
-			}	
-			if(!motor_run_check()) motorA1 = 0;	
-		}
+
+		// cam_out = cam_cover && !cam_sign;
+		// cam_cover = cam_in && cam_sign;
+		// cam_in = cam_sign;	
+		// if(motorA1 && cam_out){
+		// 	thoi_gian_doi_doc_cam=30;
+		// 	step_run = thoi_gian_doi_doc_cam_step = 0;
+		// 	if(canhkim) canhkim--;
+		// 	else if(++phut>59){
+		// 		phut = 0;
+		// 		if(++gio>11) gio = 0;
+		// 	}	
+		// 	if(!motor_run_check()) motorA1 = 0;	
+		// }
 
 		if(!--cnt){
 			cnt=14;
