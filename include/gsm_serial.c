@@ -4,7 +4,7 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
     connect_time_out = delay;
     gui_lenh_thanh_cong = 0;
     while(!gui_lenh_thanh_cong){ 
-            
+            WATCHDOG;
             LCD_guilenh(0x80);
             LCD_guichuoi(display);
             if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
@@ -158,7 +158,7 @@ void gsm_laygio_gps(){
                         if(gsm_sendandcheck("AT+CFUN=1\r", 15, 2,"  SENDING CFUN1  ")){
                             if(have_time == CFUN){
                                 u8 phay=0,i=0;
-                                while((date_str[i++]!=',' || ++phay<3) && i<11);
+                                while((date_str[i++]!=',' || ++phay<3) && i<11)WATCHDOG;
                                 if(phay>2){
                                     if(date_str[i+1]==',') hour = (date_str[i++]-'0');
                                     else hour = (date_str[i++]-'0')*10 + (date_str[i++]-'0');
@@ -197,6 +197,7 @@ __bit gsm_thietlapnhantin(){
 
 void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
 	if(gsm_RI){
+        WATCHDOG;
 	 	connect = connect_time_out;
         gsm_receive_buf[gsm_receive_pointer] = SBUF;
         

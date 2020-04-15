@@ -9,6 +9,7 @@ void IAP_cho()
     IAP_TRIG = 0; //Clear trigger register
     IAP_ADDRH = 0x80; //Data ptr point to non-EEPROM area
     IAP_ADDRL = 0; //Clear IAP address to prevent misuse
+    WATCHDOG;
 }
 
 u8 IAP_docbyte(u16 diachi){
@@ -52,6 +53,7 @@ void IAP_xoasector(u16 sector){
 void IAP_docxoasector1(){
     //4 mt 4 rs 2 charge 48 lon 48 lof 1 ll 48 mp3 48 song 1ml 1ismp3
     u8 __data i=SECTOR1_LENGTH;
+    WATCHDOG;
     while(i) eeprom_buf[--i] = 0xff;
     
     while(i<SECTOR1_LENGTH) eeprom_buf[i] = *(&eep_motor+i++);

@@ -410,6 +410,7 @@ void xu_ly_tin_nhan(){
         }
         //reset lenh_sms
         phutdelta = 0;
+        WATCHDOG;
         while(lenh_sms[phutdelta])lenh_sms[phutdelta++] = 0;
     }
 }

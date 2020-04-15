@@ -124,15 +124,12 @@ void main() {
 	
 	da_gui_bao_cao = 1;
 	ngay_reset_con_lai = eep_ngayreset;
-	AUXR &=0x7F;	//Timer clock is 12T mode
-	TMOD = 0;		//Set timer work mode
-	TL0 = 0x60;		//Initial timer value
-	TH0 = 0x73;		//Initial timer value
-	TF0 = 0;
-	TR0 = 1;
-	ET0 = 1;
-	/*PCA TIMER 0 INIT 50us*/
 	
+	/*PCA TIMER 0 INIT 50us*/
+	CCAP0L = CCAP0H = 0;
+	PCA_Timer0 = 36000;
+	CCAPM0 = 0x49;
+	CR=1;
 	/******** Initial watdog ****WDT**/	
 	
 	
@@ -515,7 +512,7 @@ void main() {
 }
 
 void mp3_serial_interupt() __interrupt 8 __using 1 {
-
+	WATCHDOG;
 	if(mp3_RI)
 		S2CON &= 0xFE;
 	
