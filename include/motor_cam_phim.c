@@ -105,7 +105,27 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		}
 
 		//Co tin hieu cam la bi che (khong co 555)
-		
+		if(motorA1){
+			if(!cam_sign){
+				if(cam_cover){
+					cam_cover = 0;
+					thoi_gian_doi_doc_cam=30;
+					step_run = thoi_gian_doi_doc_cam_step = 0;
+					if(canhkim) canhkim--;
+					else if(++phut>59){
+						phut = 0;
+						if(++gio>11) gio = 0;
+					}	
+					if(!motor_run_check()) motorA1 = 0;
+				}
+				cam_in = 0;
+			}else{
+				if(cam_in)cam_cover = 1;
+				cam_in = 1;
+			}
+		}
+
+
 		cam_out = cam_cover && !cam_sign;
 		cam_cover = cam_in && cam_sign;
 		cam_in = cam_sign;	
