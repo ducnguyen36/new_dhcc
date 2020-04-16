@@ -217,7 +217,7 @@ void main() {
 			if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		}
 
-		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && eep_gio == gio && eep_phut == phut && (!eep_mp3 || !mp3_playing)){
+		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && !step_run && !motorDC && (!eep_mp3 || !mp3_playing)){
 			EA=0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
 			// IAP_docxoasector1();
