@@ -120,7 +120,7 @@ void xu_ly_tin_nhan(){
                         //gui tin nhan lenh DH khong hop le
                 }else{
                     step_run = motor_run_check_step();
-                    motorA1 = motor_run_check();
+                    motorDC = motor_run_check();
                     if(phone_phu_so_sanh_that_bai)
                         baocaosms(CHINH,"\rchinh dong ho thanh cong");
                     else{

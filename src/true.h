@@ -16,7 +16,7 @@
 #define		key_in3		P34
 
 /************ CAMS ******************/
-#define		cam_sign	P36
+#define		cam_che	        P36
 #define		cam_sign_step	P37
 
 /*********** DALAS ***************/
@@ -35,9 +35,9 @@
 // Timer 0 = motor control
 
 #define		motorA0		P43
-#define		motorA1		P44
+#define		motorDC    P44
 
-#define		MotorDirection()	motorA0 = !motorDir; motorA1 = motorDir
+#define		MotorDirection()	motorA0 = !motorDir; motorDC = motorDir
 
 
 #define	cam_sign_out	cam_out1

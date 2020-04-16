@@ -1,7 +1,7 @@
 #include "true.h"
 #include "main.h"
 
-u8 __code ver[] = " ASIA GPS 3.3.0";
+u8 __code ver[] = " ASIA GPS 3.3.2";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -181,7 +181,7 @@ void main() {
 		if(!mode_wait || !mode) {
 			mode=0;
 			if(!step_run) step_run = motor_run_check_step();
-			if(!motorA1) motorA1 = motor_run_check();
+			if(!motorDC) motorDC = motor_run_check();
 		}
 
 		if(giay_out){
@@ -198,11 +198,12 @@ void main() {
 				canhkim = canhkimbuoc;
 				delay_ve_kim = 5;
 				step_run = motor_run_check_step();
-				motorA1 = motor_run_check();
+				motorDC = motor_run_check();
 			}
 			
-			if(motorA1 && thoi_gian_doi_doc_cam) thoi_gian_doi_doc_cam--;
-			if(step_run && thoi_gian_doi_doc_cam_step) thoi_gian_doi_doc_cam_step--;
+			if(motorDC && thoi_gian_doi_doc_cam) thoi_gian_doi_doc_cam--;
+			
+			if(step_run && thoi_gian_doi_doc_cam_step) thoi_gian_doi_doc_cam_step--;//if(!(--thoi_gian_doi_doc_cam_step)) motorDC
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
 			if(key_wait1 && key_hold1){
@@ -234,7 +235,7 @@ void main() {
 		}
 		if(!thoi_gian_doi_doc_cam && !thoi_gian_doi_doc_cam_step && !loi_cam_motor){
 			loi_cam_motor = 1;
-			step_run = motorA1 = 0;
+			step_run = motorDC = 0;
 			baocaosms(CHINH,"\rphat hien loi doc cam");
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
 		}
@@ -283,7 +284,7 @@ void main() {
 					delay_ve_kim = canhkim = canhkimbuoc = 0;
 					mode = 5;
 					sub_mode = 1;
-					step_run = motorA1 = 0;
+					step_run = motorDC = 0;
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(key_pressed2) key_pressed2 = 0;
@@ -316,7 +317,7 @@ void main() {
 					mode = sub_mode;
 					sub_mode = 0;
 					step_run = motor_run_check_step();
-					motorA1 = motor_run_check();
+					motorDC = motor_run_check();
 					if(mode){
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
@@ -534,7 +535,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 		}
 	}else if(dien_ap_nguon<92){
 		dien_ap_thap = 1;
-		motorA1 = step_run = 0;
+		motorDC = step_run = 0;
 		P2 &= 0x0F;
 		if(eep_phut!=phut || eep_gio!=gio){
 			IAP_xoasector(SECTOR2);

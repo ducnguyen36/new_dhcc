@@ -61,9 +61,9 @@ u8 __xdata thoi_gian_doi_doc_cam;
 u8 __xdata thoi_gian_doi_doc_cam_step;
 u8 __code motor_step[]={128,144,16,48,32,96,64,192};
 u8 __data step_index;
-__bit      cam_in, cam_in_step;
-__bit      cam_cover, cam_cover_step;
-__bit      cam_out, cam_out_step;
+__bit      cam_vao, cam_in_step;
+__bit      cam_vao_han, cam_cover_step;
+__bit      cam_ra, cam_out_step;
 
 __bit       GPS_time;
 __bit		giay_out;
