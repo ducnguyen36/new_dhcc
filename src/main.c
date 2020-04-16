@@ -220,9 +220,6 @@ void main() {
 		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && eep_gio == gio && eep_phut == phut && (!eep_mp3 || !mp3_playing)){
 			EA=0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
-			// IAP_docxoasector1();
-			// eeprom_buf[NORRESET_EEPROM] = 0;
-			// IAP_ghisector1();
 			RingRelay = 1;
 			delay_ms(2000);
 			while(1);
@@ -268,9 +265,7 @@ void main() {
 				if(sms_dang_xu_ly){
 					/*xu ly tin nhan*/
 					xu_ly_tin_nhan();
-					
 					send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
-					
 					sms_dang_xu_ly = 0;
 				}
 				else LCD_guigio(0x80,"  KIM  ",gio,phut,second,flip_pulse);
