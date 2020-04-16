@@ -149,6 +149,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				else cam_vao = 1;
 			else if(cam_ra){
 				thoi_gian_doi_doc_cam = 30;
+				step_run = thoi_gian_doi_doc_cam_step = 0;
 				if(canhkim) canhkim--;
 				else if(++phut>59){
 					phut = 0;
