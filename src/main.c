@@ -1,7 +1,7 @@
 #include "true.h"
 #include "main.h"
 
-u8 __code ver[] = " ASIA GPS 3.3.2";
+u8 __code ver[] = " ASIA GPS 3.3.31";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
