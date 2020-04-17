@@ -20,11 +20,17 @@ void xu_ly_tin_nhan(){
                             gio  = (giodelta - (minute+60<phutdelta))%12;
                             phutdelta = minute+120-phutdelta;
                             phut = phutdelta%60;
+                            IAP_xoasector(SECTOR2);
+                            IAP_ghibyte(PHUT_EEPROM,phut);
+                            IAP_ghibyte(GIO_EEPROM,gio);
                     }else if(lenh_sms[4]>47 && lenh_sms[4]<54 && lenh_sms[5]>47 && lenh_sms[5]<58){
                         phutdelta = (lenh_sms[4] - '0')*10 +lenh_sms[5]-'0';
                         giodelta = 12 + gio - (phut<phutdelta);
                         gio = giodelta%12;
                         phut = (60+phut-phutdelta)%60;
+                        IAP_xoasector(SECTOR2);
+                        IAP_ghibyte(PHUT_EEPROM,phut);
+                        IAP_ghibyte(GIO_EEPROM,gio);
                     }else lenh_khong_hop_le=1;
                 }else if(lenh_sms[3]=='-'){
                     if(lenh_sms[4]>47 && lenh_sms[4]<54 && lenh_sms[5]>47 && lenh_sms[5]<58){
@@ -33,23 +39,26 @@ void xu_ly_tin_nhan(){
                             gio++;
                             phut-=60;
                         }
+                        IAP_xoasector(SECTOR2);
+                        IAP_ghibyte(PHUT_EEPROM,phut);
+                        IAP_ghibyte(GIO_EEPROM,gio);
                     }else lenh_khong_hop_le=1;
                 }else if(lenh_sms[4]=='N' || lenh_sms[4]=='n'){
                     //eeprom dh on
-                        if(phone_chinh_so_sanh_that_bai)break;
-                        IAP_docxoasector1();
-                        eeprom_buf[MOTOR_EEPROM] = 1;
-                        IAP_ghisector1();
-                        mp3_status = mp3_IDLE;
-                        mp3_hour= 24;
-                        mp3_minute = 60;
+                    if(phone_chinh_so_sanh_that_bai)break;
+                    IAP_docxoasector1();
+                    eeprom_buf[MOTOR_EEPROM] = 1;
+                    IAP_ghisector1();
+                    mp3_status = mp3_IDLE;
+                    mp3_hour= 24;
+                    mp3_minute = 60;
                 }else if(lenh_sms[4]=='F' || lenh_sms[4]=='f'){
                     //eeprom dh off
-                        if(phone_chinh_so_sanh_that_bai)break;
-                        IAP_docxoasector1();
-                        eeprom_buf[MOTOR_EEPROM] = 0;
-                        IAP_ghisector1();
-                        AmplyRelay = 0;
+                    if(phone_chinh_so_sanh_that_bai)break;
+                    IAP_docxoasector1();
+                    eeprom_buf[MOTOR_EEPROM] = 0;
+                    IAP_ghisector1();
+                    AmplyRelay = 0;
                 }else {
                     //khong lay gio kim
                     if(lenh_sms[3]==','){
@@ -78,35 +87,40 @@ void xu_ly_tin_nhan(){
                     //lay gio kim
                     }else if(lenh_sms[3]>47 && lenh_sms[3]<51 && lenh_sms[4]>47 && lenh_sms[4]<58 &&
                         lenh_sms[5]>47 && lenh_sms[5]<54 && lenh_sms[6]>47 && lenh_sms[6]<58){
-                            gio  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
-                            phut = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
-                            if(lenh_sms[8]=='g' || lenh_sms[8]=='G' || lenh_sms[8]=='a' || lenh_sms[8]=='A'){
-                            //LAY gio tu dong CCLK
-                                if(eep_gpson){
-                                    GPS_time = gsm_laygioGPSCCLK();
-                                    if(eep_mp3){
-                                        AmplyRelay=0;
-                                        mp3_status = mp3_IDLE;
-                                        mp3_hour = 24;
-                                        mp3_minute = 60;
-                                    }
-                                }
-                            }else if(lenh_sms[8]>47 && lenh_sms[8]<51 && lenh_sms[9]>47 && lenh_sms[9]<58 &&
-                            lenh_sms[10]>47 && lenh_sms[10]<54 && lenh_sms[11]>47 && lenh_sms[11]<58){
-                                giodelta  = (lenh_sms[8]-'0')*10 + lenh_sms[9] - '0';
-                                if(giodelta<24){
+
+                        gio  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
+                        phut = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
+                        IAP_xoasector(SECTOR2);
+                        IAP_ghibyte(PHUT_EEPROM,phut);
+                        IAP_ghibyte(GIO_EEPROM,gio);
+
+                        //LAY gio tu dong CCLK
+                        if(lenh_sms[8]=='g' || lenh_sms[8]=='G' || lenh_sms[8]=='a' || lenh_sms[8]=='A'){
+                            if(eep_gpson){
+                                GPS_time = gsm_laygioGPSCCLK();
+                                if(eep_mp3){
                                     AmplyRelay=0;
                                     mp3_status = mp3_IDLE;
-                                    hour = giodelta;
-                                    minute = (lenh_sms[10]-'0')*10 + lenh_sms[11] - '0';
-                                    hour12=hour%12;
-                                    rtc_settime(hour,minute,second);
                                     mp3_hour = 24;
                                     mp3_minute = 60;
-                                    GPS_time = 0;
-                                }else lenh_khong_hop_le = 1;
-                            }   
-                        }else lenh_khong_hop_le = 1;
+                                }
+                            }
+                        }else if(lenh_sms[8]>47 && lenh_sms[8]<51 && lenh_sms[9]>47 && lenh_sms[9]<58 &&
+                        lenh_sms[10]>47 && lenh_sms[10]<54 && lenh_sms[11]>47 && lenh_sms[11]<58){
+                            giodelta  = (lenh_sms[8]-'0')*10 + lenh_sms[9] - '0';
+                            if(giodelta<24){
+                                AmplyRelay=0;
+                                mp3_status = mp3_IDLE;
+                                hour = giodelta;
+                                minute = (lenh_sms[10]-'0')*10 + lenh_sms[11] - '0';
+                                hour12=hour%12;
+                                rtc_settime(hour,minute,second);
+                                mp3_hour = 24;
+                                mp3_minute = 60;
+                                GPS_time = 0;
+                            }else lenh_khong_hop_le = 1;
+                        }   
+                    }else lenh_khong_hop_le = 1;
                 }
             
                 //gui thong bao: T=xx:xx K=xx:xx GPS=x DH=x
