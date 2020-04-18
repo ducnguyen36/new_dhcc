@@ -1,4 +1,5 @@
-__bit motor_run_check(){//thoi_gian_doi_doc_cam_step &&
+__bit motor_run_check(){
+	motorDir = 1;
 	if ((eep_motorST && thoi_gian_doi_doc_cam_step) || !thoi_gian_doi_doc_cam || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))) return 0;
 	return canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 45;
 }
@@ -59,6 +60,7 @@ void xunggiay(){
 }
 
 void clock_servide () __interrupt INT_DONG_HO __using MEM_DONG_HO {
+	WATCHDOG;
 	xung_giay_check=250;
 	mat_xung_giay=0;
 	xunggiay();
