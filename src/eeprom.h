@@ -3,7 +3,8 @@
 #define     MOVC_START_ADDRESS  0xF000
 
 #define     MOTOR_EEPROM        SECTOR1
-#define     BAOCAO_EEPROM       MOTOR_EEPROM+1
+#define     MOTORST_EEPROM      MOTOR_EEPROM+1
+#define     BAOCAO_EEPROM       MOTORST_EEPROM+1
 #define     GPSON_EEPROM        BAOCAO_EEPROM+1
 #define     NGAYRESET_EEPROM    GPSON_EEPROM+1
 #define     GIORESET_EEPROM     NGAYRESET_EEPROM+1
@@ -21,6 +22,7 @@
 
 
 #define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
+#define motorSTEEprom               MOTORST_EEPROM+MOVC_START_ADDRESS
 #define baocaoEEprom                BAOCAO_EEPROM+MOVC_START_ADDRESS
 #define gpsonEEprom                 GPSON_EEPROM+MOVC_START_ADDRESS
 #define ngayresetEEprom             NGAYRESET_EEPROM+MOVC_START_ADDRESS
@@ -37,6 +39,7 @@
 
 
 __code __at     motorEEprom         u8 eep_motor;
+__code __at     motorSTEEprom       u8 eep_motorST;
 __code __at     baocaoEEprom        u8 eep_baocao;
 __code __at     gpsonEEprom         u8 eep_gpson;
 __code __at     ngayresetEEprom     u8 eep_ngayreset;

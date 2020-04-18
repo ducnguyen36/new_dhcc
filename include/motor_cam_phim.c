@@ -1,14 +1,21 @@
 __bit motor_run_check(){//thoi_gian_doi_doc_cam_step &&
-	if (!thoi_gian_doi_doc_cam || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))) return 0;
+	if ((eep_motorST && thoi_gian_doi_doc_cam_step) || !thoi_gian_doi_doc_cam || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))) return 0;
 	return canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 45;
 }
 __bit motor_run_check_step(){
-	if (!thoi_gian_doi_doc_cam_step || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))){
+	if ((!eep_motorST && thoi_gian_doi_doc_cam) || !thoi_gian_doi_doc_cam_step || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))){
 		P2 &= 0x0F;
 		return 0;
 	} 
 	motorDir = canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 360;
 	return 1;
+}
+
+void PCA_Timer_init(){
+	CCAP0L = CCAP0H = 0;
+	PCA_Timer0 = 25000;
+	CCAPM0 = 0x49;
+	CR=1;
 }
 
 void motor_step_int_init(){
@@ -67,9 +74,9 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCF0=0;//tat co PCA timer 0
 		CCAP0L = PCA_Timer0; //nap vao vi tri timer tiep theo
 		CCAP0H = PCA_Timer0 >> 8;
-		PCA_Timer0 += 36000; //tang bien nap vao len 25ms
+		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
-		if(thoi_gian_doi_doc_cam_step) trang_thai_cam = !cam_che;
+		if(step_run) trang_thai_cam = !cam_che;
 		else trang_thai_cam = cam_che;
 
 		if(motorDC || step_run){
@@ -77,10 +84,19 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
 			else if(cam_ra){
-				if(motorDC) thoi_gian_doi_doc_cam = 30;
+				if(motorDC) {
+					thoi_gian_doi_doc_cam_step = 0;
+					thoi_gian_doi_doc_cam = 30;
+					if(eep_motorST) IAP_ghibyte(MOTORST_EEPROM,0);
+				}
 				else {
 					thoi_gian_doi_doc_cam = 0;
 					thoi_gian_doi_doc_cam_step = 5;
+					if(!eep_motorST){
+						IAP_docxoasector1();
+						eeprom_buf[MOTORST_EEPROM] = 0xff;
+						IAP_ghisector1();
+					}
 				}
 				if(canhkim) canhkim--;
 				else if(motorDir && ++phut>59){
@@ -238,7 +254,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		// 	}else if(cam_vao_han) cam_ra = 1;
 		// 	else if(cam_vao) cam_vao = 0;
 		// }
-
+		
 		if(key_down1 && key_in1) key_wait1 = 2;
 		key_hold1 = key_down1 && !key_in1;
 		key_down1 = !key_last1 && !key_in1;

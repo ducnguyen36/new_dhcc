@@ -1,7 +1,7 @@
 #include "true.h"
 #include "main.h"
 
-u8 __code ver[] = " ASIA GPS 3.3.31";
+u8 __code ver[] = " ASIA GPS 3.3.5";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -59,7 +59,8 @@ void main() {
 	
 	xung_giay_check=250;
 	thoi_gian_doi_doc_cam=30;
-	thoi_gian_doi_doc_cam_step=10;
+	thoi_gian_doi_doc_cam_step=5;
+
 	gsm_delay_reset=10;
 	key_wait1 = key_wait2 = key_wait3 = 2;
 	mode = 5; sub_mode = 1;
@@ -126,10 +127,11 @@ void main() {
 	ngay_reset_con_lai = eep_ngayreset;
 	
 	/*PCA TIMER 0 INIT 50us*/
-	CCAP0L = CCAP0H = 0;
-	PCA_Timer0 = 36000;
-	CCAPM0 = 0x49;
-	CR=1;
+	PCA_Timer_init();
+	// CCAP0L = CCAP0H = 0;
+	// PCA_Timer0 = 36000;
+	// CCAPM0 = 0x49;
+	// CR=1;
 	/******** Initial watdog ****WDT**/	
 	
 	
@@ -172,6 +174,10 @@ void main() {
 	
 	
 	while(1){
+		// if(!thoi_gian_doi_doc_cam && motorDC) 		motorDC = 0;
+		// if(!thoi_gian_doi_doc_cam_step && step_run) step_run = 0;
+		// if(thoi_gian_doi_doc_cam ^ thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = 0;
+		
 		if(eep_phut!=phut || eep_gio!=gio){
 			IAP_xoasector(SECTOR2);
 			IAP_ghibyte(PHUT_EEPROM,phut);
@@ -193,17 +199,16 @@ void main() {
 					gsm_reset=1;
 				}
 			}
-			if(delay_ve_kim && !canhkim) delay_ve_kim--;
-			if(!delay_ve_kim && canhkimbuoc){
+			if(delay_ve_kim && !canhkim && !--delay_ve_kim){
 				canhkim = canhkimbuoc;
 				delay_ve_kim = 5;
 				step_run = motor_run_check_step();
 				motorDC = motor_run_check();
 			}
 			
-			if(motorDC && thoi_gian_doi_doc_cam) thoi_gian_doi_doc_cam--;
+			if(motorDC && thoi_gian_doi_doc_cam && !--thoi_gian_doi_doc_cam) cam_vao = cam_vao_han = motorDC = 0;
 			
-			if(step_run && thoi_gian_doi_doc_cam_step) thoi_gian_doi_doc_cam_step--;//if(!(--thoi_gian_doi_doc_cam_step)) motorDC
+			if(step_run && thoi_gian_doi_doc_cam_step && !--thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = step_run = 0;//if(!(--thoi_gian_doi_doc_cam_step)) motorDC
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
 			if(key_wait1 && key_hold1){
@@ -231,8 +236,8 @@ void main() {
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi mat xung giay");
 		}
 		if(!thoi_gian_doi_doc_cam && !thoi_gian_doi_doc_cam_step && !loi_cam_motor){
-			loi_cam_motor = 1;
 			step_run = motorDC = 0;
+			loi_cam_motor = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam");
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
 		}
