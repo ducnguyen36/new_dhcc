@@ -1,7 +1,7 @@
 #include "true.h"
 #include "main.h"
 
-u8 __code ver[] = " ASIA GPS 3.3.5";
+u8 __code ver[] = " ASIA GPS 3.3.52";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -273,7 +273,7 @@ void main() {
 					send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
 					sms_dang_xu_ly = 0;
 				}
-				else LCD_guigio(0x80,"  KIM  ",gio,phut,second,flip_pulse);
+				else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio,phut,second,flip_pulse);
 				
 				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
 				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
@@ -322,7 +322,7 @@ void main() {
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
 						switch(mode){
-							case GIOKIM : LCD_guigio(0xc0,"  KIM  ",gio,phut,0,flip_pulse); break;
+							case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio,phut,0,flip_pulse); break;
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\3001 PHUT          ");LCD_blinkXY(DUOI,0);break;
@@ -358,7 +358,7 @@ void main() {
 							if(!(++phut%10)) phut-=10;
 						break;
 					}
-					LCD_guigio(0xc0,"  KIM  ",gio,phut,0,flip_pulse);
+					LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio,phut,0,flip_pulse);
 				}
 				if(key_pressed2){
 					key_pressed2 = 0;

@@ -1,6 +1,6 @@
 __bit motor_run_check(){
-	motorDir = 1;
 	if ((eep_motorST && thoi_gian_doi_doc_cam_step) || !thoi_gian_doi_doc_cam || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))) return 0;
+	motorDir = 1;
 	return canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 45;
 }
 __bit motor_run_check_step(){
@@ -39,6 +39,7 @@ void xunggiay(){
 	over_cur_led = flip_pulse;
 	giay_out=1;	
 	if(connect) connect--;
+	if(total_try_time_out) total_try_time_out--;
 	
 	if(mode!=2 && ++second>59){
 			second=0;

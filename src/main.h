@@ -123,6 +123,7 @@ __bit   new_message;
 
 u8 __data   connect;
 u8 __data   connect_time_out;
+u8 __data   total_try_time_out;
 u8 __data   gsm_serial_cmd;
 u8 __data   have_time;
 

@@ -2,8 +2,9 @@
 
 __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
     connect_time_out = delay;
+    total_try_time_out = retry*delay + 10;
     gui_lenh_thanh_cong = 0;
-    while(!gui_lenh_thanh_cong){ 
+    while(!gui_lenh_thanh_cong && total_try_time_out){ 
             WATCHDOG;
             LCD_guilenh(0x80);
             LCD_guichuoi(display);

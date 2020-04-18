@@ -18,6 +18,7 @@ void gsm_init(){
 }
 
 void send_gsm_cmd(u8 *cmd){
+	gsm_TI = 0;
     while(*cmd){
 		gsm_SBUF = *cmd;
 		while(!gsm_TI)WATCHDOG;
