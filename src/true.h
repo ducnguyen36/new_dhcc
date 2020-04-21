@@ -17,7 +17,7 @@
 
 /************ CAMS ******************/
 #define		cam_che	        P36
-#define		cam_sign_step	P37
+#define		cam_che2    	P37
 
 /*********** DALAS ***************/
 #define		clock_in	P32

@@ -58,6 +58,7 @@ void xunggiay(){
 			}
 			
 		}
+	// test_lay_gio = 1;
 }
 
 void clock_servide () __interrupt INT_DONG_HO __using MEM_DONG_HO {
@@ -79,7 +80,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
-		if(step_run) trang_thai_cam = !cam_che;
+		if(step_run) trang_thai_cam = !cam_che || !cam_che2;
 		else trang_thai_cam = cam_che;
 
 		if(motorDC || step_run){

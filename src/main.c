@@ -1,7 +1,9 @@
 #include "true.h"
 #include "main.h"
+// _IAP_CONTR = 0x60 //reset to ISP
 
-u8 __code ver[] = " ASIA GPS 3.3.52";
+
+u8 __code ver[] = " ASIA GPS 3.3.65";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -47,7 +49,7 @@ void main() {
 	P3 = 0xff;
 	P2 = 0;
 	/****************/
-	
+	IP = 0x81; //priority PCA
 	/*ADC INIT*/
 	P1ASF = 8;
 	CLK_DIV = 0;
@@ -174,16 +176,13 @@ void main() {
 	
 	
 	while(1){
-		// if(!thoi_gian_doi_doc_cam && motorDC) 		motorDC = 0;
-		// if(!thoi_gian_doi_doc_cam_step && step_run) step_run = 0;
-		// if(thoi_gian_doi_doc_cam ^ thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = 0;
 		
 		if(eep_phut!=phut || eep_gio!=gio){
 			IAP_xoasector(SECTOR2);
 			IAP_ghibyte(PHUT_EEPROM,phut);
 			IAP_ghibyte(GIO_EEPROM,gio);
 		}
-
+		
 		if(!mode_wait || !mode) {
 			mode=0;
 			if(!step_run) step_run = motor_run_check_step();
@@ -217,10 +216,10 @@ void main() {
 			giay_out=0;
 		}
 
-		if(eep_loithesim<24){
-			kiem_tra_den();
-			if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
-		}
+		
+		kiem_tra_den();
+		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
+		
 
 		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && !step_run && !motorDC && (!eep_mp3 || !mp3_playing)){
 			EA=0;
@@ -245,7 +244,7 @@ void main() {
 
 		if(!da_gui_bao_cao && minute<5 ) {
 			if(!GPS_time && eep_gpson) gsm_laygio_gps();
-			else rtc_gettime(&hour,&minute,&second);
+			// else rtc_gettime(&hour,&minute,&second);
 			hour12 = (hour>11)?hour-12:hour;
 			if(eep_baocao) {
 				baocaosms(CHINH,"\rbao cao dau gio");
@@ -278,7 +277,7 @@ void main() {
 				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
 				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
 				else LCD_guigio(0xc0," ASIA  ",hour,minute,second,flip_pulse);
-				if(!key_wait1){
+				if(!key_wait1 && !cam_vao){
 					key_pressed1=0;
 					mode_wait = TIME_MODE_WAIT;
 					delay_ve_kim = canhkim = canhkimbuoc = 0;
@@ -388,8 +387,8 @@ void main() {
 					mode = SELECT;
 					mp3_hour = 24;
 					mp3_minute = 60;
-					if(!GPS_time && eep_gpson) gsm_laygio_gps();
-					else rtc_gettime(&hour,&minute,&second);
+					if(eep_gpson) gsm_laygio_gps();
+					// else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
 				if(key_pressed3){
@@ -527,22 +526,24 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 	//82 = 9V
 	//91 = 10V	
 	dien_ap_nguon = ADC_RES;
-	if(dien_ap_thap){
-		if(dien_ap_nguon<82) ChargeRelay = 0;
-		else if(dien_ap_nguon>110) {
-			dien_ap_thap = 0;
-			baocaosms(CHINH,"\r*dien ap khoi phuc*");
+	if(!motorDC && !step_run){
+		if(dien_ap_thap){
+			if(dien_ap_nguon<82) ChargeRelay = 0;
+			else if(dien_ap_nguon>110) {
+				dien_ap_thap = 0;
+				baocaosms(CHINH,"\r*dien ap khoi phuc*");
+			}
+		}else if(dien_ap_nguon<92){
+			dien_ap_thap = 1;
+			motorDC = step_run = 0;
+			P2 &= 0x0F;
+			if(eep_phut!=phut || eep_gio!=gio){
+				IAP_xoasector(SECTOR2);
+				IAP_ghibyte(PHUT_EEPROM,phut);
+				IAP_ghibyte(GIO_EEPROM,gio);
+			}
+			baocaosms(CHINH,"\r*dien ap acqui thap*");
 		}
-	}else if(dien_ap_nguon<92){
-		dien_ap_thap = 1;
-		motorDC = step_run = 0;
-		P2 &= 0x0F;
-		if(eep_phut!=phut || eep_gio!=gio){
-			IAP_xoasector(SECTOR2);
-			IAP_ghibyte(PHUT_EEPROM,phut);
-			IAP_ghibyte(GIO_EEPROM,gio);
-		}
-		baocaosms(CHINH,"\r*dien ap acqui thap*");
 	}
 
 	ADC_CONTR = 0x8b;
