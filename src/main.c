@@ -61,6 +61,7 @@ void main() {
 	
 	xung_giay_check=250;
 	thoi_gian_doi_doc_cam[0]=30;
+	thoi_gian_doi_doc_cam[1]=30;
 
 	gsm_delay_reset=10;
 	key_wait1 = key_wait2 = key_wait3 = 2;
