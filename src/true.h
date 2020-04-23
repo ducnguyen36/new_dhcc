@@ -37,8 +37,6 @@
 #define		motorA0		P43
 #define		motorDC    P44
 
-#define		MotorDirection()	motorA0 = !motorDir; motorDC = motorDir
-
 
 #define	cam_sign_out	cam_out1
 #define	zero_sign_out	cam_out2

@@ -83,7 +83,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		trang_thai_cam = !cam_che || !cam_che2;
 		
 
-		if(motorDC || step_run){
+		if(motor_index || step_run){
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
@@ -97,7 +97,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 						if(--gio>12) gio = 11;
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
-				if(!motor_run_check()) motorDC = 0;
+				if(!motor_run_check()) motor_index = 0;
 				if(!motor_run_check_step()) step_run = 0;
 				IAP_xoasector(SECTOR2);
 				IAP_ghibyte(PHUT_EEPROM,phut);
@@ -145,12 +145,13 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 
 void cam_phim() __interrupt 1 __using 2 {
 	WATCHDOG;
-	if(motorDC){
+	if(motor_index){
+			motorDC = 1;
 			P2=(P2&0x0f)|motor_step[step_index];
 			step_index+= motorDir?1:-1; 
 			if(step_index>8) step_index=7;
 			else if(step_index==8) step_index=0;
-	}
+	} else {motorDC = 0; P2 &= 0x0f;}
 	
 
 }

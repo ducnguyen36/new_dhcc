@@ -186,7 +186,7 @@ void main() {
 		if(!mode_wait || !mode) {
 			mode=0;
 			if(!step_run) step_run = motor_run_check_step();
-			if(!motorDC) motorDC = motor_run_check();
+			if(!motor_index) motor_index = motor_run_check();
 		}
 
 		if(giay_out){
@@ -202,12 +202,12 @@ void main() {
 				canhkim = canhkimbuoc;
 				delay_ve_kim = 5;
 				step_run = motor_run_check_step();
-				motorDC = motor_run_check();
+				motor_index = motor_run_check();
 			}
 			
-			if(motorDC && thoi_gian_doi_doc_cam && !--thoi_gian_doi_doc_cam) cam_vao = cam_vao_han = motorDC = 0;
+			if(motor_index && thoi_gian_doi_doc_cam && !--thoi_gian_doi_doc_cam) cam_vao = cam_vao_han = motor_index = 0;
 			
-			if(step_run && thoi_gian_doi_doc_cam_step && !--thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = step_run = 0;//if(!(--thoi_gian_doi_doc_cam_step)) motorDC
+			if(step_run && thoi_gian_doi_doc_cam_step && !--thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = step_run = 0;//if(!(--thoi_gian_doi_doc_cam_step)) motor_index
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
 			if(key_wait1 && key_hold1){
@@ -221,7 +221,7 @@ void main() {
 		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		
 
-		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && !step_run && !motorDC && (!eep_mp3 || !mp3_playing)){
+		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5 && !step_run && !motor_index && (!eep_mp3 || !mp3_playing)){
 			EA=0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
 			RingRelay = 1;
@@ -235,7 +235,7 @@ void main() {
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi mat xung giay");
 		}
 		if(!thoi_gian_doi_doc_cam && !thoi_gian_doi_doc_cam_step && !loi_cam_motor){
-			step_run = motorDC = 0;
+			step_run = motor_index = 0;
 			loi_cam_motor = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam");
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
@@ -283,7 +283,7 @@ void main() {
 					delay_ve_kim = canhkim = canhkimbuoc = 0;
 					mode = 5;
 					sub_mode = 1;
-					step_run = motorDC = 0;
+					step_run = motor_index = 0;
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(key_pressed2) key_pressed2 = 0;
@@ -316,7 +316,7 @@ void main() {
 					mode = sub_mode;
 					sub_mode = 0;
 					step_run = motor_run_check_step();
-					motorDC = motor_run_check();
+					motor_index = motor_run_check();
 					if(mode){
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
@@ -526,7 +526,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 	//82 = 9V
 	//91 = 10V	
 	dien_ap_nguon = ADC_RES;
-	if(!motorDC && !step_run){
+	if(!motor_index && !step_run){
 		if(dien_ap_thap){
 			if(dien_ap_nguon<82) ChargeRelay = 0;
 			else if(dien_ap_nguon>110) {
@@ -535,7 +535,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			}
 		}else if(dien_ap_nguon<92){
 			dien_ap_thap = 1;
-			motorDC = step_run = 0;
+			motor_index = step_run = 0;
 			P2 &= 0x0F;
 			if(eep_phut!=phut || eep_gio!=gio){
 				IAP_xoasector(SECTOR2);
