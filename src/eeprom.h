@@ -17,8 +17,10 @@
 
 #define     SECTOR1_LENGTH      LOITHESIM_EEPROM+1
 
-#define		PHUT_EEPROM		0x03FE
-#define		GIO_EEPROM		0x03FF
+#define		PHUT2_EEPROM		0x03FC
+#define		GIO2_EEPROM		    0x03FD
+#define		PHUT1_EEPROM		0x03FE
+#define		GIO1_EEPROM		    0x03FF
 
 
 #define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
@@ -34,8 +36,10 @@
 #define phonephuEEprom              PHONEPHU_EEPROM+MOVC_START_ADDRESS
 #define loithesimEEprom             LOITHESIM_EEPROM+MOVC_START_ADDRESS
 
-#define phutEEprom					PHUT_EEPROM+MOVC_START_ADDRESS
-#define gioEEprom					GIO_EEPROM+MOVC_START_ADDRESS
+#define phut1EEprom					PHUT1_EEPROM+MOVC_START_ADDRESS
+#define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
+#define phut2EEprom					PHUT2_EEPROM+MOVC_START_ADDRESS
+#define gio2EEprom					GIO2_EEPROM+MOVC_START_ADDRESS
 
 
 __code __at     motorEEprom         u8 eep_motor;
@@ -51,8 +55,10 @@ __code __at     mp3EEprom           u8 eep_mp3;
 __code __at     phonephuEEprom      u8 eep_phonephu[12];
 __code __at     loithesimEEprom     u8 eep_loithesim;
 
-__code __at     phutEEprom          u8 eep_phut; 
-__code __at     gioEEprom           u8 eep_gio; 
+__code __at     phut1EEprom          u8 eep_phut1; 
+__code __at     gio1EEprom           u8 eep_gio1; 
+__code __at     phut2EEprom          u8 eep_phut2; 
+__code __at     gio2EEprom           u8 eep_gio2; 
 
 extern u8  __xdata eeprom_buf[SECTOR1_LENGTH];
 

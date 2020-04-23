@@ -17,31 +17,31 @@ void xu_ly_tin_nhan(){
                             giodelta = giodelta*10 + 4 + hour + lenh_sms[5]-lenh_sms[10];
                             phutdelta = 6+lenh_sms[11]-lenh_sms[6];
                             phutdelta = phutdelta*10 + lenh_sms[12]-lenh_sms[7];
-                            gio  = (giodelta - (minute+60<phutdelta))%12;
+                            gio[0]  = (giodelta - (minute+60<phutdelta))%12;
                             phutdelta = minute+120-phutdelta;
-                            phut = phutdelta%60;
-                            IAP_xoasector(SECTOR2);
-                            IAP_ghibyte(PHUT_EEPROM,phut);
-                            IAP_ghibyte(GIO_EEPROM,gio);
+                            phut[0] = phutdelta%60;
+                            luu_gio_kim();
+                            
+                            
                     }else if(lenh_sms[4]>47 && lenh_sms[4]<54 && lenh_sms[5]>47 && lenh_sms[5]<58){
                         phutdelta = (lenh_sms[4] - '0')*10 +lenh_sms[5]-'0';
-                        giodelta = 12 + gio - (phut<phutdelta);
-                        gio = giodelta%12;
-                        phut = (60+phut-phutdelta)%60;
-                        IAP_xoasector(SECTOR2);
-                        IAP_ghibyte(PHUT_EEPROM,phut);
-                        IAP_ghibyte(GIO_EEPROM,gio);
+                        giodelta = 12 + gio[0] - (phut[0]<phutdelta);
+                        gio[0] = giodelta%12;
+                        phut[0] = (60+phut[0]-phutdelta)%60;
+                        luu_gio_kim();
+                        
+                        
                     }else lenh_khong_hop_le=1;
                 }else if(lenh_sms[3]=='-'){
                     if(lenh_sms[4]>47 && lenh_sms[4]<54 && lenh_sms[5]>47 && lenh_sms[5]<58){
-                        phut = phut + (lenh_sms[4]-'0')*10 + lenh_sms[5]-'0';
-                        if(phut>59){
-                            gio++;
-                            phut-=60;
+                        phut[0] = phut[0] + (lenh_sms[4]-'0')*10 + lenh_sms[5]-'0';
+                        if(phut[0]>59){
+                            gio[0]++;
+                            phut[0]-=60;
                         }
-                        IAP_xoasector(SECTOR2);
-                        IAP_ghibyte(PHUT_EEPROM,phut);
-                        IAP_ghibyte(GIO_EEPROM,gio);
+                        luu_gio_kim();
+                        
+                        
                     }else lenh_khong_hop_le=1;
                 }else if(lenh_sms[4]=='N' || lenh_sms[4]=='n'){
                     //eeprom dh on
@@ -88,11 +88,11 @@ void xu_ly_tin_nhan(){
                     }else if(lenh_sms[3]>47 && lenh_sms[3]<51 && lenh_sms[4]>47 && lenh_sms[4]<58 &&
                         lenh_sms[5]>47 && lenh_sms[5]<54 && lenh_sms[6]>47 && lenh_sms[6]<58){
 
-                        gio  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
-                        phut = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
-                        IAP_xoasector(SECTOR2);
-                        IAP_ghibyte(PHUT_EEPROM,phut);
-                        IAP_ghibyte(GIO_EEPROM,gio);
+                        gio[0]  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
+                        phut[0] = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
+                        luu_gio_kim();
+                        
+                        
 
                         //LAY gio tu dong CCLK
                         if(lenh_sms[8]=='g' || lenh_sms[8]=='G' || lenh_sms[8]=='a' || lenh_sms[8]=='A'){

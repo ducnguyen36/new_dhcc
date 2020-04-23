@@ -99,13 +99,13 @@ void main() {
 	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2; 	
 
 	IAP_ghisector1();
-	if(eep_phut>59 || eep_gio>11){
-		IAP_xoasector(SECTOR2);
-		IAP_ghibyte(PHUT_EEPROM,0);
-		IAP_ghibyte(GIO_EEPROM,0);
+	if(eep_phut1>59 || eep_gio1>11){
+		luu_gio_kim();
+		
+		
 	}else{
-		phut = eep_phut;
-		gio  = eep_gio;
+		phut[0] = eep_phut1;
+		gio[0]  = eep_gio1;
 	}
 
 	//khoi dong sac acqui
@@ -177,10 +177,10 @@ void main() {
 	
 	while(1){
 		
-		if(eep_phut!=phut || eep_gio!=gio){
-			IAP_xoasector(SECTOR2);
-			IAP_ghibyte(PHUT_EEPROM,phut);
-			IAP_ghibyte(GIO_EEPROM,gio);
+		if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){
+			luu_gio_kim();
+			
+			
 		}
 		
 		if(!mode_wait || !mode) {
@@ -272,7 +272,7 @@ void main() {
 					send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
 					sms_dang_xu_ly = 0;
 				}
-				else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio,phut,second,flip_pulse);
+				else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
 				
 				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
 				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
@@ -321,7 +321,7 @@ void main() {
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
 						switch(mode){
-							case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio,phut,0,flip_pulse); break;
+							case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse); break;
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\3001 PHUT          ");LCD_blinkXY(DUOI,0);break;
@@ -341,23 +341,23 @@ void main() {
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
 						case GIOCHUC  :
-							if(gio>13)gio%=10;
-							else gio +=10;
+							if(gio[0]>13)gio[0]%=10;
+							else gio[0] +=10;
 						break;
 						case GIODVI   :
-							if(gio>22) gio = 20;
-							else if(gio%10==9) gio-=9;
-							else gio++;
+							if(gio[0]>22) gio[0] = 20;
+							else if(gio[0]%10==9) gio[0]-=9;
+							else gio[0]++;
 						break;
 						case PHUTCHUC :
-							if(phut>49) phut-=50;
-							else phut+=10;
+							if(phut[0]>49) phut[0]-=50;
+							else phut[0]+=10;
 						break;
 						case PHUTDVI  :
-							if(!(++phut%10)) phut-=10;
+							if(!(++phut[0]%10)) phut[0]-=10;
 						break;
 					}
-					LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio,phut,0,flip_pulse);
+					LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse);
 				}
 				if(key_pressed2){
 					key_pressed2 = 0;
@@ -373,10 +373,10 @@ void main() {
 						LCD_noblink();
 						sub_mode = mode;
 						mode = SELECT;
-						gio = gio%12;
-						IAP_xoasector(SECTOR2);
-						IAP_ghibyte(PHUT_EEPROM,phut);
-						IAP_ghibyte(GIO_EEPROM,gio);
+						gio[0] = gio[0]%12;
+						luu_gio_kim();
+						
+						
 					}
 				}
 				break;
@@ -537,10 +537,10 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			dien_ap_thap = 1;
 			motor_index  = 0;
 			P2 &= 0x0F;
-			if(eep_phut!=phut || eep_gio!=gio){
-				IAP_xoasector(SECTOR2);
-				IAP_ghibyte(PHUT_EEPROM,phut);
-				IAP_ghibyte(GIO_EEPROM,gio);
+			if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){
+				luu_gio_kim();
+				
+				
 			}
 			baocaosms(CHINH,"\r*dien ap acqui thap*");
 		}

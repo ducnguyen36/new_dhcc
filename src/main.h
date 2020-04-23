@@ -48,8 +48,8 @@ u8	__data  hour;
 u8	__data  hour12;
 u8	__data  date;
 
-u8	__data	gio;
-u8	__data	phut;
+u8	__data	gio[2];
+u8	__data	phut[2];
 
 u8  __xdata canhkim, canhkimbuoc, delay_ve_kim;
 u16	__data	PCA_Timer0;
