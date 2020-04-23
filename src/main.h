@@ -72,7 +72,7 @@ __bit		giay_out;
 __bit		phut_out;
 __bit		flip_pulse;
 
-__bit       step_run;
+// __bit       step_run;
 
 u8	__xdata	 lcd_dis_buf[60];
 u8	__data	 lcd_index;

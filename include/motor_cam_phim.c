@@ -3,14 +3,7 @@ __bit motor_run_check(){
 	motorDir = canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 360;
 	return 1;
 }
-__bit motor_run_check_step(){
-	if ((!eep_motorST && thoi_gian_doi_doc_cam) || !thoi_gian_doi_doc_cam_step || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (!canhkim && ((phut==minute && gio==hour12) || delay_ve_kim))){
-		P2 &= 0x0F;
-		return 0;
-	} 
-	motorDir = canhkim || (720 + gio*60 + phut - hour12*60 - minute) % 720 > 360;
-	return 1;
-}
+
 
 void PCA_Timer_init(){
 	CCAP0L = CCAP0H = 0;
@@ -80,16 +73,15 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
-		trang_thai_cam = !cam_che || !cam_che2;
 		
 
-		if(motor_index || step_run){
-			if(trang_thai_cam)
+		if(motor_index){
+			if(!cam_che || !cam_che2)
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
 			else if(cam_ra){
-				if(canhkim) canhkim--;
-				else if(motorDir && ++phut>59){
+				thoi_gian_doi_doc_cam = 30;
+				if(motorDir && ++phut>59){
 					phut = 0;
 					if(++gio>11) gio = 0;
 				}else if(!motorDir && --phut>60){
@@ -98,7 +90,6 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
 				if(!motor_run_check()) motor_index = 0;
-				if(!motor_run_check_step()) step_run = 0;
 				IAP_xoasector(SECTOR2);
 				IAP_ghibyte(PHUT_EEPROM,phut);
 				IAP_ghibyte(GIO_EEPROM,gio);
