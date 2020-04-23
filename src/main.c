@@ -60,8 +60,7 @@ void main() {
 	/****************/
 	
 	xung_giay_check=250;
-	thoi_gian_doi_doc_cam=30;
-	thoi_gian_doi_doc_cam_step=0;
+	thoi_gian_doi_doc_cam[0]=30;
 
 	gsm_delay_reset=10;
 	key_wait1 = key_wait2 = key_wait3 = 2;
@@ -205,9 +204,8 @@ void main() {
 				motor_index = motor_run_check();
 			}
 			
-			if(motor_index && thoi_gian_doi_doc_cam && !--thoi_gian_doi_doc_cam) cam_vao = cam_vao_han = motor_index = 0;
+			if(motor_index && thoi_gian_doi_doc_cam[0] && !--thoi_gian_doi_doc_cam[0]) cam_vao = cam_vao_han = motor_index = 0;
 			
-			// if(step_run && thoi_gian_doi_doc_cam_step && !--thoi_gian_doi_doc_cam_step) cam_vao = cam_vao_han = step_run = 0;//if(!(--thoi_gian_doi_doc_cam_step)) motor_index
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
 			if(key_wait1 && key_hold1){
@@ -234,12 +232,12 @@ void main() {
 			baocaosms(CHINH,"\rphat hien loi mat xung giay");
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi mat xung giay");
 		}
-		if(!thoi_gian_doi_doc_cam && !thoi_gian_doi_doc_cam_step && !loi_cam_motor){
-			motor_index = 0;
-			loi_cam_motor = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam");
-			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
-		}
+		// if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor){
+		// 	motor_index = 0;
+		// 	loi_cam_motor = 1;
+		// 	baocaosms(CHINH,"\rphat hien loi doc cam");
+		// 	if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
+		// }
 
 
 		if(!da_gui_bao_cao && minute<5 ) {
@@ -272,7 +270,8 @@ void main() {
 					send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
 					sms_dang_xu_ly = 0;
 				}
-				else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
+				else {LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");}
+				// else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
 				
 				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
 				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
@@ -321,7 +320,8 @@ void main() {
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
 						switch(mode){
-							case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse); break;
+							// case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse); break;
+							case GIOKIM : LCD_guigio(0xc0," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0xc5," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      "); break;
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\3001 PHUT          ");LCD_blinkXY(DUOI,0);break;
@@ -335,7 +335,7 @@ void main() {
 				LCD_chop(TREN,mode_select[sub_mode]);		
 				break;
 			case GIOKIM:
-				LCD_blinkXY(DUOI,7+sub_mode+sub_mode/2);
+				LCD_blinkXY(DUOI,1+sub_mode+sub_mode/4);
 				if(key_pressed3){
 					key_pressed3 = 0;
 					mode_wait = TIME_MODE_WAIT;
@@ -355,9 +355,25 @@ void main() {
 						break;
 						case PHUTDVI  :
 							if(!(++phut[0]%10)) phut[0]-=10;
+						case GIO2CHUC  :
+							if(gio[1]>13)gio[1]%=10;
+							else gio[1] +=10;
+						break;
+						case GIO2DVI   :
+							if(gio[1]>22) gio[1] = 20;
+							else if(gio[1]%10==9) gio[1]-=9;
+							else gio[1]++;
+						break;
+						case PHUT2CHUC :
+							if(phut[1]>49) phut[1]-=50;
+							else phut[1]+=10;
+						break;
+						case PHUT2DVI  :
+							if(!(++phut[1]%10)) phut[1]-=10;
 						break;
 					}
-					LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse);
+					LCD_guigio(0xc0," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0xc5," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");
+					// LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse);
 				}
 				if(key_pressed2){
 					key_pressed2 = 0;
@@ -369,7 +385,7 @@ void main() {
 
 					key_pressed1 = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode>3){
+					if(++sub_mode>7){
 						LCD_noblink();
 						sub_mode = mode;
 						mode = SELECT;

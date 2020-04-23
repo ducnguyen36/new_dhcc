@@ -47,11 +47,11 @@ __bit kiemtrataikhoan(){
 
 
 void baocaosms(__bit chinh, u8  *noidung){
-    u8 __xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',0};
+    u8 __xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',',',gio[1]/10+'0',gio[1]%10+'0',':',phut[1]/10+'0',phut[1]%10+'0',0};
     u8 __xdata thuc[]  = {' ','T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0',0};
     u8 __xdata dien_ap = dien_ap_nguon*28/256;
-    u8 __xdata param[] = {' ','D','H','=',eep_motor+'0',' ','B','C','=',eep_baocao+'0',' ','D','C','=',thoi_gian_doi_doc_cam?'1':'0'
-                ,' ','S','T','=',thoi_gian_doi_doc_cam_step?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
+    u8 __xdata param[] = {' ','D','H','=',eep_motor+'0',' ','B','C','=',eep_baocao+'0',' ','M','1','=',thoi_gian_doi_doc_cam[0]?'1':'0'
+                ,' ','M','2','=',thoi_gian_doi_doc_cam[1]?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
                 ,'/',eep_ngayreset+'0',' ','T','R','=',eep_gioreset/10+'0',eep_gioreset%10+'0',' ','D','E','N','=',DenRelay+'0'
                 ,' ','V','O','L','=',dien_ap/10+'0',dien_ap%10+'0',' ','M','P','3','=',eep_mp3+'0',chinh?' ':0,'D','T','=',eep_phonephu[11]+'0',0};
                 

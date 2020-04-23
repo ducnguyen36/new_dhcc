@@ -122,11 +122,16 @@ void LCD_Init(){
 }
 
 void LCD_guigio(u8 vitri, u8 *chuoi, u8 gio, u8 phut, u8 giay,__bit haicham){
-	u8 time[] = {gio/10+'0',gio%10+'0',haicham?':':' ',phut/10+'0',phut%10+'0',haicham?':':' ',giay/10+'0',giay%10+'0',0};
-	
-	LCD_guilenh(vitri);
-	LCD_guichuoi(chuoi);
-	if(gio<24)
-	LCD_guichuoi(time);
+	if(giay>250){
+		u8 time[] = {gio/10+'0',gio%10+'0',phut/10+'0',phut%10+'0',0};
+		LCD_guilenh(vitri);
+		LCD_guichuoi(chuoi);
+		LCD_guichuoi(time);
+	}else{
+		u8 time[] = {gio/10+'0',gio%10+'0',haicham?':':' ',phut/10+'0',phut%10+'0',haicham?':':' ',giay/10+'0',giay%10+'0',0};
+		LCD_guilenh(vitri);
+		LCD_guichuoi(chuoi);
+		if(gio<24) LCD_guichuoi(time);
+	}
 	
 }

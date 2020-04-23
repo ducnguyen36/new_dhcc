@@ -57,8 +57,7 @@ u8  __data  ngay_reset_con_lai;
 u8  __xdata xung_giay_check;
 
 //MOTOR va CAM
-u8 __xdata thoi_gian_doi_doc_cam;
-u8 __xdata thoi_gian_doi_doc_cam_step;
+u8 __xdata thoi_gian_doi_doc_cam[2];
 u8 __code motor_step[]={128,144,16,48,32,96,64,192};
 u8 __data step_index;
 u8 __data motor_index;
@@ -113,10 +112,14 @@ u8 mode_wait;
 #define MP3TEST 4
 #define SELECT  5
 
-#define GIOCHUC  0
-#define GIODVI   1
-#define PHUTCHUC 2
-#define PHUTDVI  3
+#define GIOCHUC     0
+#define GIODVI      1
+#define PHUTCHUC    2
+#define PHUTDVI     3
+#define GIO2CHUC    4
+#define GIO2DVI     5
+#define PHUT2CHUC   6
+#define PHUT2DVI    7
 //GSM MODULE
 __bit   gui_lenh_thanh_cong;
 __bit   have_not;
