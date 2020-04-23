@@ -2,10 +2,15 @@ u8 motor_run_check(){
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 0;
 	if(may_canh_kim){motorDir = 1;return canhkim?may_canh_kim:0;}
-	if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
-		motorDir = canhkim || (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
-		return 1;
-	}else return 0;
+	u8 i = motor_index;
+	do{
+		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)){
+			motorDir = canhkim || (720 + gio[i]*60 + phut[i] - hour12*60 - minute) % 720 > 360;
+			return i+1;
+		}
+		i = 1 - i;
+	}while(i != motor_index);
+	return 0;
 }
 
 void luu_gio_kim(){
@@ -101,7 +106,8 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 						if(--gio[motor_index-1]>12) gio[motor_index-1] = 11;
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
-				if(!motor_run_check()) motor_index = 0;
+				// if(!motor_run_check()) motor_index = 0;
+				motor_index = motor_run_check();
 				luu_gio_kim();
 				
 				

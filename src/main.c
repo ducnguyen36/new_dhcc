@@ -358,6 +358,7 @@ void main() {
 						break;
 						case PHUTDVI  :
 							if(!(++phut[0]%10)) phut[0]-=10;
+						break;
 						case GIO2CHUC  :
 							if(gio[1]>13)gio[1]%=10;
 							else gio[1] +=10;
