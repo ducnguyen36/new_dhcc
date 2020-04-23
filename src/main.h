@@ -51,7 +51,7 @@ u8	__data  date;
 u8	__data	gio[2];
 u8	__data	phut[2];
 
-u8  __xdata canhkim, canhkimbuoc, delay_ve_kim;
+u8  __xdata canhkim, may_canh_kim, delay_ve_kim;
 u16	__data	PCA_Timer0;
 u8  __data  ngay_reset_con_lai;
 u8  __xdata xung_giay_check;

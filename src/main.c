@@ -283,7 +283,7 @@ void main() {
 				if(!key_wait1 && !cam_vao){
 					key_pressed1=0;
 					mode_wait = TIME_MODE_WAIT;
-					delay_ve_kim = canhkim = canhkimbuoc = 0;
+					delay_ve_kim = canhkim = may_canh_kim = 0;
 					mode = 5;
 					sub_mode = 1;
 					motor_index = 0;
@@ -318,7 +318,6 @@ void main() {
 					mode_wait = TIME_MODE_WAIT;
 					mode = sub_mode;
 					sub_mode = 0;
-					// step_run = motor_run_check_step();
 					motor_index = motor_run_check();
 					if(mode){
 						LCD_guilenh(0x80);
@@ -328,7 +327,7 @@ void main() {
 							case GIOKIM : LCD_guigio(0xc0," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0xc5," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      "); break;
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse); 
 											giotemp=hour;phuttemp=minute;break;
-							case CANHKIM: LCD_guichuoi("\3001 PHUT          ");LCD_blinkXY(DUOI,0);break;
+							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
 							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,0,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;break;
 						}
 					}
@@ -511,7 +510,8 @@ void main() {
 			case CANHKIM:
 				if(key_pressed1){
 					key_pressed1=0;
-					canhkim = canhkimbuoc = sub_mode+1;
+					canhkim = 5; 
+					may_canh_kim = sub_mode+1;
 					delay_ve_kim = 5;
 					sub_mode = mode;
 					mode = SELECT;
@@ -519,9 +519,9 @@ void main() {
 				}
 				if(key_pressed3){
 					key_pressed3 = 0;
-					sub_mode = 4 - sub_mode;
+					sub_mode = 1 - sub_mode;
 					LCD_guidulieu(sub_mode+'1');
-					LCD_guilenh(DUOI);
+					LCD_guilenh(DUOI+4);
 				}
 				break;
 			default: mode = sub_mode = 0;
