@@ -198,13 +198,12 @@ void main() {
 				}
 			}
 			if(delay_ve_kim && !canhkim && !--delay_ve_kim){
-				canhkim = canhkimbuoc;
+				canhkim = 5;
 				delay_ve_kim = 5;
-				// step_run = motor_run_check_step();
 				motor_index = motor_run_check();
 			}
 			
-			if(motor_index && thoi_gian_doi_doc_cam[0] && !--thoi_gian_doi_doc_cam[0]) cam_vao = cam_vao_han = motor_index = 0;
+			if(motor_index && thoi_gian_doi_doc_cam[motor_index-1] && !--thoi_gian_doi_doc_cam[motor_index-1]) cam_vao = cam_vao_han = motor_index = 0;
 			
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
@@ -232,12 +231,16 @@ void main() {
 			baocaosms(CHINH,"\rphat hien loi mat xung giay");
 			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi mat xung giay");
 		}
-		// if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor){
-		// 	motor_index = 0;
-		// 	loi_cam_motor = 1;
-		// 	baocaosms(CHINH,"\rphat hien loi doc cam");
-		// 	if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam");
-		// }
+		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
+			loi_cam_motor1 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 1");
+			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam 1");
+		}
+		if(!thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
+			loi_cam_motor2 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 2");
+			if(bat_phone_phu)baocaosms(PHU,"\rphat hien loi doc cam 2");
+		}
 
 
 		if(!da_gui_bao_cao && minute<5 ) {

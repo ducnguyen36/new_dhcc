@@ -141,7 +141,8 @@ u8 __xdata  date_str[30];
 
 //ERROR
 __bit      mat_xung_giay;
-__bit      loi_cam_motor;
+__bit      loi_cam_motor1;
+__bit      loi_cam_motor2;
 __bit      loi_eeprom_tat_mo_den;
 
 //CHARGE SAC ACQUI

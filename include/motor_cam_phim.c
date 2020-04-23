@@ -87,13 +87,13 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
 			else if(cam_ra){
-				thoi_gian_doi_doc_cam[0] = 30;
-				if(motorDir && ++phut[0]>59){
-					phut[0] = 0;
-					if(++gio[0]>11) gio[0] = 0;
-				}else if(!motorDir && --phut[0]>60){
-						phut[0] = 59;
-						if(--gio[0]>12) gio[0] = 11;
+				thoi_gian_doi_doc_cam[motor_index-1] = 30;
+				if(motorDir && ++phut[motor_index-1]>59){
+					phut[motor_index-1] = 0;
+					if(++gio[motor_index-1]>11) gio[motor_index-1] = 0;
+				}else if(!motorDir && --phut[motor_index-1]>60){
+						phut[motor_index-1] = 59;
+						if(--gio[motor_index-1]>12) gio[motor_index-1] = 11;
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
 				if(!motor_run_check()) motor_index = 0;
