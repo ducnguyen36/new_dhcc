@@ -34,8 +34,8 @@
 /*********** MOTORS DC ***************/
 // Timer 0 = motor control
 
-#define		motorA0		P43
-#define		motorDC    P44
+#define		motor2	  P43
+#define		motor1    P44
 
 
 #define	cam_sign_out	cam_out1

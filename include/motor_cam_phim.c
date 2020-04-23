@@ -146,12 +146,12 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 void cam_phim() __interrupt 1 __using 2 {
 	WATCHDOG;
 	if(motor_index){
-			motorDC = 1;
+			motor1 = motor_index == 1; motor2 = motor_index ==2; 
 			P2=(P2&0x0f)|motor_step[step_index];
 			step_index+= motorDir?1:-1; 
 			if(step_index>8) step_index=7;
 			else if(step_index==8) step_index=0;
-	} else {motorDC = 0; P2 &= 0x0f;}
+	} else {motor1 = motor2 = 0; P2 &= 0x0f;}
 	
 
 }
