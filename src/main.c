@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 3.3.65";
+u8 __code ver[] = " STEP GPS 1.1.1 ";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -61,7 +61,7 @@ void main() {
 	
 	xung_giay_check=250;
 	thoi_gian_doi_doc_cam=30;
-	thoi_gian_doi_doc_cam_step=5;
+	thoi_gian_doi_doc_cam_step=0;
 
 	gsm_delay_reset=10;
 	key_wait1 = key_wait2 = key_wait3 = 2;
@@ -156,14 +156,14 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
-	gsm_laygio_gps();
+	// gsm_laygio_gps();
     hour12 = (hour>11)?hour-12:hour;
 	bat_phone_phu = eep_phonephu[11]&1;
 	ADC_CONTR = 0x8b;
-	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-		baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
-		if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
-	}
+	// if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
+	// 	baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
+	// 	if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
+	// }
 	if(!eep_norreset){
 		mode_wait = 5;
 		IAP_docxoasector1();
