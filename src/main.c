@@ -156,14 +156,14 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
-	// gsm_laygio_gps();
+	gsm_laygio_gps();
     hour12 = (hour>11)?hour-12:hour;
 	bat_phone_phu = eep_phonephu[11]&1;
 	ADC_CONTR = 0x8b;
-	// if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-	// 	baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
-	// 	if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
-	// }
+	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
+		baocaosms(CHINH,"\rbo dieu khien khoi dong san sang");
+		if(bat_phone_phu)baocaosms(PHU,"\rbo dieu khien khoi dong san sang");
+	}
 	if(!eep_norreset){
 		mode_wait = 5;
 		IAP_docxoasector1();
