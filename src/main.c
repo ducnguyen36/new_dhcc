@@ -132,10 +132,6 @@ void main() {
 	
 	/*PCA TIMER 0 INIT 50us*/
 	PCA_Timer_init();
-	// CCAP0L = CCAP0H = 0;
-	// PCA_Timer0 = 36000;
-	// CCAPM0 = 0x49;
-	// CR=1;
 	/******** Initial watdog ****WDT**/	
 	
 	
@@ -241,7 +237,7 @@ void main() {
 		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		
 
-		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien == 5)  && !motor_index && (!eep_mp3 || !mp3_playing)){
+		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 2)  && !motor_index && (!eep_mp3 || !mp3_playing)){
 			EA=0;
 			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
@@ -300,9 +296,9 @@ void main() {
 				else {LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");}
 				// else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
 				
-				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,so_lan_goi_dien,flip_pulse);
-				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,so_lan_goi_dien,flip_pulse);
-				else LCD_guigio(0xc0," ASIA  ",hour,minute,so_lan_goi_dien,flip_pulse);
+				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second	,flip_pulse);
+				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
+				else LCD_guigio(0xc0," ASIA  ",hour,minute,second,flip_pulse);
 				if(!key_wait1 && !cam_vao){
 					key_pressed1=0;
 					mode_wait = TIME_MODE_WAIT;

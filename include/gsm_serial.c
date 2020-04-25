@@ -293,7 +293,7 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                     if(!sms_index){
                         if(SBUF=='\r'){
                             if(co_cuoc_goi_toi){
-                                delay_cuoc_goi_ke_tiep = 3;
+                                delay_cuoc_goi_ke_tiep = 2;
                                 so_lan_goi_dien++;
                             } 
                             gsm_serial_cmd = CMD;
