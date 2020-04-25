@@ -152,6 +152,7 @@ void gsm_laygio_gps(){
     __bit GPS_time_temp = 0;
     if(gsm_sendandcheck("AT\r", 15, 1,ver)){
 		if(gsm_sendandcheck("AT+IPR=0\r", 15, 1,"  SENDING IPR   ")){
+		    gsm_sendandcheck("AT+CLIP=1\r", 15, 1,"  SENDING CLIP  ");
 			if(eep_gpson){
                 if(gsm_sendandcheck("AT+CLTS=1\r", 15, 1,"  SENDING CLTS  ")){
                     if(gsm_sendandcheck("AT+CFUN=0\r", 15, 1,"  SENDING CFUN0  ")){
@@ -214,6 +215,13 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                     gsm_serial_cmd = CLK;
                 /*SMS buoc 1: khi co tin nhan toi se co lenh CMTI bat co tin nhan moi new_message = 1
                                 khi co tin nhan moi thi gui lenh CMGL ALL de liet ke tat ca tin nhan toi*/
+                }else if((gsm_receive_buf[gsm_receive_pointer]=='G' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='N' &&
+                gsm_receive_buf[(gsm_receive_pointer+11)%13] =='I' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='R')){
+                                        
+                    send_gsm_cmd("ATH\r");
+                    
+                /*SMS buoc 2: sau khi kiem duoc CMGL thi chuyen qua tim kiem so dien thoai phu hop
+                                neu nhu da nhan duoc tin nhan can xu ly thi khong doc tin nhan khac tiep tuc*/
                 }else if((gsm_receive_buf[gsm_receive_pointer]==':' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='I' &&
                 gsm_receive_buf[(gsm_receive_pointer+11)%13] =='T' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='M' &&
                 gsm_receive_buf[(gsm_receive_pointer+9)%13] =='C' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='+')){
@@ -222,13 +230,16 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                     
                 /*SMS buoc 2: sau khi kiem duoc CMGL thi chuyen qua tim kiem so dien thoai phu hop
                                 neu nhu da nhan duoc tin nhan can xu ly thi khong doc tin nhan khac tiep tuc*/
-                }else if(gsm_receive_buf[gsm_receive_pointer]==' ' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':' &&
+                }else if((gsm_receive_buf[gsm_receive_pointer]==' ' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':' &&
                 gsm_receive_buf[(gsm_receive_pointer+11)%13] =='L' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='G' &&
                 gsm_receive_buf[(gsm_receive_pointer+9)%13] =='M'  && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='C' &&
-                gsm_receive_buf[(gsm_receive_pointer+7)%13] =='+'){
-                    if(sms_dang_xu_ly) break;
+                gsm_receive_buf[(gsm_receive_pointer+7)%13] =='+')||(gsm_receive_buf[gsm_receive_pointer]==' ' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':' &&
+                gsm_receive_buf[(gsm_receive_pointer+11)%13] =='P' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='I' &&
+                gsm_receive_buf[(gsm_receive_pointer+9)%13] =='L'  && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='C' &&
+                gsm_receive_buf[(gsm_receive_pointer+7)%13] =='+')){
+                    co_cuoc_goi_toi = gsm_receive_buf[(gsm_receive_pointer+9)%13] =='L';
+                    if(!co_cuoc_goi_toi && sms_dang_xu_ly) break;
                     
-                    message_receive++;
                     
                     phone_header = 0;
                     phone_phu_so_sanh_that_bai = 0;
@@ -281,6 +292,10 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                 if(phone_header){
                     if(!sms_index){
                         if(SBUF=='\r'){
+                            if(co_cuoc_goi_toi){
+                                delay_cuoc_goi_ke_tiep = 3;
+                                so_lan_goi_dien++;
+                            } 
                             gsm_serial_cmd = CMD;
                         }
                         
@@ -300,8 +315,8 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                 }/*SMS buoc 3: sau khi thay CMGL thi se vao day luc nay se tim kiem +84 la dau so chuan
                                 neu khong tim duoc truoc khi co ky tu xuong dong thi quay ve tim CMGL hoac OK*/
                 else {
-                    if(gsm_receive_buf[gsm_receive_pointer]=='4' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='8' &&
-                        gsm_receive_buf[(gsm_receive_pointer+11)%13] =='+' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='"'){
+                    if((co_cuoc_goi_toi && gsm_receive_buf[gsm_receive_pointer]=='0' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='"') || (gsm_receive_buf[gsm_receive_pointer]=='4' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='8' &&
+                        gsm_receive_buf[(gsm_receive_pointer+11)%13] =='+' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='"')){
                             phone_header = 1;
                             sms_index = 1;
                     }

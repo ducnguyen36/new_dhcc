@@ -52,6 +52,7 @@ void xunggiay(){
 	
 	if(mode!=2 && ++second>59){
 			second=0;
+			if(so_lan_goi_dien && !--delay_cuoc_goi_ke_tiep) so_lan_goi_dien = 0;
 			phut_out = 1;
 			if(++minute>59){
 				da_gui_bao_cao = 0;
@@ -106,11 +107,8 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 						if(--gio[motor_index-1]>12) gio[motor_index-1] = 11;
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
-				// if(!motor_run_check()) motor_index = 0;
 				motor_index = motor_run_check();
-				luu_gio_kim();
-				
-				
+				luu_gio_kim();				
 			}else if(cam_vao_han) cam_ra = 1;
 			else if(cam_vao) cam_vao = 0;
 			

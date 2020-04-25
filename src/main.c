@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " STEP GPS 1.1.1 ";
+u8 __code ver[] = " STEP GPS 1.1.5 ";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -60,6 +60,7 @@ void main() {
 	/****************/
 	
 	xung_giay_check=250;
+	so_lan_goi_dien = 0;
 	thoi_gian_doi_doc_cam[0]=30;
 	thoi_gian_doi_doc_cam[1]=30;
 
@@ -97,15 +98,15 @@ void main() {
 	if(eeprom_buf[LOITHESIM_EEPROM]>24)eeprom_buf[LOITHESIM_EEPROM] = 0;
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
 	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2; 	
-
+//multi motor
 	IAP_ghisector1();
-	if(eep_phut1>59 || eep_gio1>11){
+	if(eep_phut1>59 || eep_gio1>11 || eep_phut2>59 || eep_gio2>11){
 		luu_gio_kim();
-		
-		
 	}else{
 		phut[0] = eep_phut1;
 		gio[0]  = eep_gio1;
+		phut[1] = eep_phut2;
+		gio[1]  = eep_gio2;
 	}
 
 	//khoi dong sac acqui
@@ -177,15 +178,13 @@ void main() {
 	
 	while(1){
 		
-		if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){
-			luu_gio_kim();
+		if(eep_phut1!=phut[0] || eep_gio1!=gio[0] || eep_phut2!=phut[1] || eep_gio2!=gio[1])luu_gio_kim();
 			
 			
-		}
+		
 		
 		if(!mode_wait || !mode) {
 			mode=0;
-			// if(!step_run) step_run = motor_run_check_step();
 			if(!motor_index) motor_index = motor_run_check();
 		}
 
@@ -219,12 +218,13 @@ void main() {
 		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		
 
-		if(eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5  && !motor_index && (!eep_mp3 || !mp3_playing)){
+		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien == 5)  && !motor_index && (!eep_mp3 || !mp3_playing)){
 			EA=0;
+			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
 			RingRelay = 1;
-			delay_ms(2000);
-			while(1);
+			delay_ms(4000);
+			IAP_CONTR = 0x60;
 		}
 
 		if(!xung_giay_check && !mat_xung_giay){
@@ -277,9 +277,9 @@ void main() {
 				else {LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");}
 				// else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
 				
-				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second,flip_pulse);
-				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
-				else LCD_guigio(0xc0," ASIA  ",hour,minute,second,flip_pulse);
+				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,so_lan_goi_dien,flip_pulse);
+				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,so_lan_goi_dien,flip_pulse);
+				else LCD_guigio(0xc0," ASIA  ",hour,minute,so_lan_goi_dien,flip_pulse);
 				if(!key_wait1 && !cam_vao){
 					key_pressed1=0;
 					mode_wait = TIME_MODE_WAIT;

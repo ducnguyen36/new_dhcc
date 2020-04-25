@@ -189,7 +189,11 @@ void xu_ly_tin_nhan(){
                         baocaosms(PHU,"\rkhoi dong lai bo dieu khien");
                     }
                     EA=0;
-                    while(1);
+                    gsm_pw = 0;
+                    IAP_ghibyte(NORRESET_EEPROM,0);
+                    RingRelay = 1;
+                    delay_ms(4000);
+                    IAP_CONTR = 0x60;
                 }
                 //dat ngay gio reset
                 else if(lenh_sms[4]=='g' || lenh_sms[4]=='G'){
