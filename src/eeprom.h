@@ -14,8 +14,9 @@
 #define     MP3_EEPROM          TATMODEN_EEPROM+9
 #define     PHONEPHU_EEPROM     MP3_EEPROM+1
 #define     LOITHESIM_EEPROM    PHONEPHU_EEPROM+12
+#define     SOMOTOR_EEPROM      LOITHESIM_EEPROM+1
 
-#define     SECTOR1_LENGTH      LOITHESIM_EEPROM+1
+#define     SECTOR1_LENGTH      SOMOTOR_EEPROM+1
 
 #define		PHUT2_EEPROM		0x03FC
 #define		GIO2_EEPROM		    0x03FD
@@ -35,6 +36,7 @@
 #define mp3EEprom                   MP3_EEPROM+MOVC_START_ADDRESS
 #define phonephuEEprom              PHONEPHU_EEPROM+MOVC_START_ADDRESS
 #define loithesimEEprom             LOITHESIM_EEPROM+MOVC_START_ADDRESS
+#define somotorEEprom               SOMOTOR_EEPROM+MOVC_START_ADDRESS
 
 #define phut1EEprom					PHUT1_EEPROM+MOVC_START_ADDRESS
 #define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
@@ -54,6 +56,7 @@ __code __at     tatmodenEEprom      u8 eep_tatmoden[9];
 __code __at     mp3EEprom           u8 eep_mp3;
 __code __at     phonephuEEprom      u8 eep_phonephu[12];
 __code __at     loithesimEEprom     u8 eep_loithesim;
+__code __at     somotorEEprom       u8 eep_somotor;
 
 __code __at     phut1EEprom          u8 eep_phut1; 
 __code __at     gio1EEprom           u8 eep_gio1; 

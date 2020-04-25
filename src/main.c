@@ -97,7 +97,8 @@ void main() {
 
 	if(eeprom_buf[LOITHESIM_EEPROM]>24)eeprom_buf[LOITHESIM_EEPROM] = 0;
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
-	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2; 	
+	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2; 
+	if(eeprom_buf[SOMOTOR_EEPROM]-1>3)eeprom_buf[SOMOTOR_EEPROM] = 1;	
 //multi motor
 	IAP_ghisector1();
 	if(eep_phut1>59 || eep_gio1>11 || eep_phut2>59 || eep_gio2>11){
@@ -157,6 +158,28 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
+	if(key_pressed1 && key_pressed2 && key_pressed3){
+		key_pressed1 = key_pressed2 = key_pressed3 = 0;
+		LCD_guichuoi("\200 NHA PHAT TRIEN");
+		LCD_guichuoi("\3001 MAY");
+		LCD_blinkXY(DUOI,0);
+		sub_mode = 0;
+		while(1){
+			if(key_pressed3){
+				key_pressed3 = 0;
+				sub_mode = sub_mode<3?sub_mode+1:0;
+				LCD_guidulieu(sub_mode+'1');
+				LCD_guilenh(DUOI);
+			}
+			if(key_pressed1){
+				key_pressed1 = 0;
+				IAP_xoasector(SECTOR1);
+				IAP_xoasector(SECTOR2);
+				IAP_ghibyte(SOMOTOR_EEPROM,sub_mode+1);
+				IAP_CONTR = 0x60;
+			}
+		}
+	}
 	gsm_laygio_gps();
     hour12 = (hour>11)?hour-12:hour;
 	bat_phone_phu = eep_phonephu[11]&1;
@@ -177,7 +200,7 @@ void main() {
 	
 	
 	while(1){
-		
+		//multi motor
 		if(eep_phut1!=phut[0] || eep_gio1!=gio[0] || eep_phut2!=phut[1] || eep_gio2!=gio[1])luu_gio_kim();
 			
 			
