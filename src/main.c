@@ -65,7 +65,7 @@ void main() {
 	thoi_gian_doi_doc_cam[1]=30;
 
 	gsm_delay_reset=10;
-	key_wait1 = key_wait2 = key_wait3 = 2;
+	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
 	mode = 5; sub_mode = 1;
 	motor_step_int_init();
 	/*validate eeprom*/
@@ -154,21 +154,21 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
-	if(key_pressed1 && key_pressed2 && key_pressed3){
-		key_pressed1 = key_pressed2 = key_pressed3 = 0;
+	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
+		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
 		LCD_guichuoi("\200 NHA PHAT TRIEN");
 		LCD_guichuoi("\3001 MAY");
 		LCD_blinkXY(DUOI,0);
 		sub_mode = 0;
 		while(1){
-			if(key_pressed3){
-				key_pressed3 = 0;
+			if(phim_cong_nhan){
+				phim_cong_nhan = 0;
 				sub_mode = sub_mode<3?sub_mode+1:0;
 				LCD_guidulieu(sub_mode+'1');
 				LCD_guilenh(DUOI);
 			}
-			if(key_pressed1){
-				key_pressed1 = 0;
+			if(phim_mode_nhan){
+				phim_mode_nhan = 0;
 				IAP_xoasector(SECTOR1);
 				IAP_xoasector(SECTOR2);
 				IAP_ghibyte(SOMOTOR_EEPROM,sub_mode+1);
@@ -226,8 +226,8 @@ void main() {
 			
 			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
 			
-			if(key_wait1 && key_hold1){
-				key_wait1--;
+			if(phim_mode_doi && phim_mode_giu){
+				phim_mode_doi--;
 			}
 			giay_out=0;
 		}
@@ -299,8 +299,8 @@ void main() {
 				if(GPS_time) LCD_guigio(0xc0,"  GPS  ",hour,minute,second	,flip_pulse);
 				else if(eep_gpson) LCD_guigio(0xc0,"   DS  ",hour,minute,second,flip_pulse);
 				else LCD_guigio(0xc0," ASIA  ",hour,minute,second,flip_pulse);
-				if(!key_wait1 && !cam_vao){
-					key_pressed1=0;
+				if(!phim_mode_doi && !cam_vao){
+					phim_mode_nhan=0;
 					mode_wait = TIME_MODE_WAIT;
 					delay_ve_kim = canhkim = may_canh_kim = 0;
 					mode = 5;
@@ -308,7 +308,7 @@ void main() {
 					motor_index = 0;
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
-					if(key_pressed2) key_pressed2 = 0;
+					if(phim_back_nhan) phim_back_nhan = 0;
 					else{
 						if(bat_phone_phu){
 							baocaosms(CHINH,"\rchinh gio bang tay");
@@ -319,21 +319,21 @@ void main() {
 				break;
 				
 			case SELECT:
-				if(key_pressed1){
-					key_pressed1 = 0;
+				if(phim_mode_nhan){
+					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(++sub_mode==MP3TEST && !eep_mp3) sub_mode++;
 					if(sub_mode>MAX_MODE)sub_mode = 0;
 					chop=0;
 				}
-				if(key_pressed3){
-					key_pressed3 = 0;
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					sub_mode = 0;
 					chop=0;
 				}
-				if(key_pressed2){
-					key_pressed2 = 0;
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					mode = sub_mode;
 					sub_mode = 0;
@@ -358,8 +358,8 @@ void main() {
 				break;
 			case GIOKIM:
 				LCD_blinkXY(DUOI,1+sub_mode+sub_mode/4);
-				if(key_pressed3){
-					key_pressed3 = 0;
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
 						case GIOCHUC  :
@@ -398,15 +398,15 @@ void main() {
 					LCD_guigio(0xc0," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0xc5," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");
 					// LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse);
 				}
-				if(key_pressed2){
-					key_pressed2 = 0;
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
 				}
 				
-				if(key_pressed1){
+				if(phim_mode_nhan){
 
-					key_pressed1 = 0;
+					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(++sub_mode>7){
 						LCD_noblink();
@@ -421,7 +421,7 @@ void main() {
 				break;
 			case GIOTHUC:
 				LCD_blinkXY(DUOI,7+sub_mode+sub_mode/2);
-				if(eep_gpson && !key_wait1){
+				if(eep_gpson && !phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
 					mp3_hour = 24;
@@ -430,8 +430,8 @@ void main() {
 					// else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
-				if(key_pressed3){
-					key_pressed3 = 0;
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
 						case GIOCHUC  :
@@ -455,14 +455,14 @@ void main() {
 					LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),giotemp,phuttemp,mode_wait,flip_pulse);
 
 				}
-				if(key_pressed2){
-					key_pressed2 = 0;
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
 				}
 				
-				if(key_pressed1){
-					key_pressed1 = 0;
+				if(phim_mode_nhan){
+					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(++sub_mode>3){
 						LCD_noblink();
@@ -480,13 +480,13 @@ void main() {
 				break;
 			case MP3TEST:
 				LCD_blinkXY(DUOI,7+sub_mode+sub_mode/2);
-				if(!key_wait1){
+				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
 					AmplyRelay = 0;
 				}
-				if(key_pressed3){
-					key_pressed3 = 0;
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
 						case GIOCHUC  :
@@ -508,15 +508,15 @@ void main() {
 					}
 					LCD_guigio(0xc0,"  MP3  ",giotemp,phuttemp,0,flip_pulse);
 				}
-				if(key_pressed2){
-					key_pressed2 = 0;
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
 				}
 				
-				if(key_pressed1){
+				if(phim_mode_nhan){
 
-					key_pressed1 = 0;
+					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(++sub_mode>3){
 						sub_mode = 0;
@@ -528,8 +528,8 @@ void main() {
 				}
 				break;
 			case CANHKIM:
-				if(key_pressed1){
-					key_pressed1=0;
+				if(phim_mode_nhan){
+					phim_mode_nhan=0;
 					canhkim = 5; 
 					may_canh_kim = sub_mode+1;
 					delay_ve_kim = 5;
@@ -537,8 +537,8 @@ void main() {
 					mode = SELECT;
 					LCD_noblink();
 				}
-				if(key_pressed3){
-					key_pressed3 = 0;
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
 					sub_mode = 1 - sub_mode;
 					LCD_guidulieu(sub_mode+'1');
 					LCD_guilenh(DUOI+4);

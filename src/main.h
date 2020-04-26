@@ -51,23 +51,25 @@ u8	__data  hour;
 u8	__data  hour12;
 u8	__data  date;
 
-u8	__data	gio[2];
-u8	__data	phut[2];
+u8	__data	gio[4];
+u8	__data	phut[4];
 
 u8  __xdata canhkim, may_canh_kim, delay_ve_kim;
-u16	__data	PCA_Timer0;
-u8  __data  ngay_reset_con_lai;
+u16	__xdata	PCA_Timer0;
+u8  __xdata  ngay_reset_con_lai;
 u8  __xdata xung_giay_check;
 
 //MOTOR va CAM
-u8 __xdata thoi_gian_doi_doc_cam[2];
-u8 __code motor_step[]={128,144,16,48,32,96,64,192};
-u8 __data step_index;
-u8 __data motor_index;
-__bit      trang_thai_cam;
-__bit      cam_vao, cam_in_step;
-__bit      cam_vao_han, cam_cover_step;
-__bit      cam_ra, cam_out_step;
+u8  __xdata thoi_gian_doi_doc_cam[4];
+u8  __code     motor_step[]={128,144,16,48,32,96,64,192};
+u8  __data     step_index;
+u8  __data     motor_index;
+u8  __data     motor_index2;
+u8  __data     motorDir,motorDir1, motorDir2;
+__bit      trang_thai_cam, trang_thai_cam2;
+__bit      cam_vao, cam_vao2;
+__bit      cam_vao_han, cam_vao_han2;
+__bit      cam_ra, cam_ra2;
 
 __bit       GPS_time;
 __bit		giay_out;
@@ -77,35 +79,31 @@ __bit		flip_pulse;
 // __bit       step_run;
 
 u8	__xdata	 lcd_dis_buf[60];
-u8	__data	 lcd_index;
-u8	__data	 lcd_process_index;
-u8	__data	 lcd_data_index;
+u8	__xdata	 lcd_index;
+u8	__xdata	 lcd_process_index;
+u8	__xdata	 lcd_data_index;
 
-u8	__data	 motorDir;
-__bit      key_down1;
-__bit      key_pressed1;
-__bit      key_up1;
-__bit      key_last1;
-__bit      key_hold1;
-u8         key_wait1;
-__bit      key_down2;
-__bit      key_pressed2;
-__bit      key_up2;
-__bit      key_last2;
-__bit      key_hold2;
-u8         key_wait2;
-__bit      key_down3;
-__bit      key_pressed3;
-__bit      key_up3;
-__bit      key_last3;
-__bit      key_hold3;
-u8         key_wait3;
+__bit      phim_mode_xuong;
+__bit      phim_mode_nhan;
+__bit      phim_mode_cu;
+__bit      phim_mode_giu;
+u8 __xdata phim_mode_doi;
+__bit      phim_back_xuong;
+__bit      phim_back_nhan;
+__bit      phim_back_cu;
+__bit      phim_back_giu;
+u8 __xdata phim_back_doi;
+__bit      phim_cong_xuong;
+__bit      phim_cong_nhan;
+__bit      phim_cong_cu;
+__bit      phim_cong_giu;
+u8 __xdata phim_cong_doi;
 
-u8 mode;
-u8 sub_mode;
+u8 __xdata mode;
+u8 __xdata sub_mode;
 __bit chop;
-__code u8 mode_select[][16] = {"      EXIT","  CHINH GIO KIM"," CHINH GIO THUC","    CANH KIM","    TEST MP3"};
-u8 mode_wait;
+__code u8 mode_select[][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    "};
+u8 __xdata mode_wait;
 #define TIME_MODE_WAIT  60
 #define MAX_MODE 4
 #define EXIT    0
@@ -128,14 +126,14 @@ __bit   gui_lenh_thanh_cong;
 __bit   have_not;
 __bit   new_message;
 
-u8 __data   connect;
-u8 __data   connect_time_out;
-u8 __data   total_try_time_out;
-u8 __data   gsm_serial_cmd;
-u8 __data   have_time;
+u8 __xdata   connect;
+u8 __xdata   connect_time_out;
+u8 __xdata   total_try_time_out;
+u8 __xdata   gsm_serial_cmd;
+u8 __xdata   have_time;
 
-u8 __data   gsm_receive_pointer;
-u8 __data   date_pointer;
+u8 __xdata   gsm_receive_pointer;
+u8 __xdata   date_pointer;
 u8 __xdata  gsm_receive_buf[15];
 u8 __xdata  date_str[30];
 

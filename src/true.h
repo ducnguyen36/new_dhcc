@@ -11,7 +11,7 @@
 
 
 /*********** Keys ***************/
-#define		key_in1		P35
+#define		phim_mode_vao		P35
 #define		key_in2		P33
 #define		key_in3		P34
 

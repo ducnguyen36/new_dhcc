@@ -13,7 +13,7 @@
 void gsm_init();
 void send_gsm_cmd(u8 *cmd);
 
-extern u8 __data    gsm_serial_cmd;
+extern u8 __xdata    gsm_serial_cmd;
 
 #define     PHU         0
 #define     CHINH       1

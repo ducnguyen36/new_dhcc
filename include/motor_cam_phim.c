@@ -2,14 +2,14 @@ u8 motor_run_check(){
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 0;
 	if(may_canh_kim){motorDir = 1;return canhkim?may_canh_kim:0;}
-	u8 i = motor_index;
+	u8 i = motor_index%2;
 	do{
 		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)){
 			motorDir = canhkim || (720 + gio[i]*60 + phut[i] - hour12*60 - minute) % 720 > 360;
 			return i+1;
 		}
 		i = 1 - i;
-	}while(i != motor_index);
+	}while(i != (motor_index%2));
 	return 0;
 }
 
@@ -115,23 +115,23 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		}
 
 		
-		if(key_down1 && key_in1) key_wait1 = 2;
-		key_hold1 = key_down1 && !key_in1;
-		key_down1 = !key_last1 && !key_in1;
-		key_pressed1 = key_pressed1 || (!key_hold1 && key_down1);
-		key_last1 = key_in1;
+		if(phim_mode_xuong && phim_mode_vao) phim_mode_doi = 2;
+		phim_mode_giu = phim_mode_xuong && !phim_mode_vao;
+		phim_mode_xuong = !phim_mode_cu && !phim_mode_vao;
+		phim_mode_nhan = phim_mode_nhan || (!phim_mode_giu && phim_mode_xuong);
+		phim_mode_cu = phim_mode_vao;
 		
-		if(key_down2 && key_in2) key_wait2 = 2;
-		key_hold2 = key_down2 && !key_in2;
-		key_down2 = !key_last2 && !key_in2;
-		key_pressed2 = key_pressed2 || (!key_hold2 && key_down2);
-		key_last2 = key_in2;
+		if(phim_back_xuong && key_in2) phim_back_doi = 2;
+		phim_back_giu = phim_back_xuong && !key_in2;
+		phim_back_xuong = !phim_back_cu && !key_in2;
+		phim_back_nhan = phim_back_nhan || (!phim_back_giu && phim_back_xuong);
+		phim_back_cu = key_in2;
 
-		if(key_down3 && key_in3) key_wait3 = 2;
-		key_hold3 = key_down3 && !key_in3;
-		key_down3 = !key_last3 && !key_in3;
-		key_pressed3 = key_pressed3 || (!key_hold3 && key_down3);
-		key_last3 = key_in3;
+		if(phim_cong_xuong && key_in3) phim_cong_doi = 2;
+		phim_cong_giu = phim_cong_xuong && !key_in3;
+		phim_cong_xuong = !phim_cong_cu && !key_in3;
+		phim_cong_nhan = phim_cong_nhan || (!phim_cong_giu && phim_cong_xuong);
+		phim_cong_cu = key_in3;
 
 		if(!--cnt){
 			cnt=14;

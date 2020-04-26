@@ -18,6 +18,10 @@
 
 #define     SECTOR1_LENGTH      SOMOTOR_EEPROM+1
 
+#define		PHUT4_EEPROM		0x03F8
+#define		GIO4_EEPROM		    0x03F9
+#define		PHUT3_EEPROM		0x03FA
+#define		GIO3_EEPROM		    0x03FB
 #define		PHUT2_EEPROM		0x03FC
 #define		GIO2_EEPROM		    0x03FD
 #define		PHUT1_EEPROM		0x03FE
@@ -42,6 +46,10 @@
 #define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
 #define phut2EEprom					PHUT2_EEPROM+MOVC_START_ADDRESS
 #define gio2EEprom					GIO2_EEPROM+MOVC_START_ADDRESS
+#define phut3EEprom					PHUT3_EEPROM+MOVC_START_ADDRESS
+#define gio3EEprom					GIO3_EEPROM+MOVC_START_ADDRESS
+#define phut4EEprom					PHUT4_EEPROM+MOVC_START_ADDRESS
+#define gio4EEprom					GIO4_EEPROM+MOVC_START_ADDRESS
 
 
 __code __at     motorEEprom         u8 eep_motor;
@@ -62,6 +70,10 @@ __code __at     phut1EEprom          u8 eep_phut1;
 __code __at     gio1EEprom           u8 eep_gio1; 
 __code __at     phut2EEprom          u8 eep_phut2; 
 __code __at     gio2EEprom           u8 eep_gio2; 
+__code __at     phut3EEprom          u8 eep_phut3; 
+__code __at     gio3EEprom           u8 eep_gio3; 
+__code __at     phut4EEprom          u8 eep_phut4; 
+__code __at     gio4EEprom           u8 eep_gio4; 
 
 extern u8  __xdata eeprom_buf[SECTOR1_LENGTH];
 
