@@ -183,10 +183,10 @@ void xu_ly_tin_nhan(){
                 //reset system
                 if(lenh_sms[4]=='y' || lenh_sms[4]=='Y' || lenh_sms[4]=='D' || lenh_sms[4]=='d'){
                     if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rkhoi dong lai bo dieu khien");
+                        baocaosms(CHINH,"\rreset bo dieu khien");
                     else{
-                        baocaosms(CHINH,"\rkhoi dong lai bo dieu khien\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rkhoi dong lai bo dieu khien");
+                        baocaosms(CHINH,"\rreset bo dieu khien\rPhone phu gui lenh");
+                        baocaosms(PHU,"\rreset bo dieu khien");
                     }
                     EA=0;
                     gsm_pw = 0;
@@ -207,17 +207,17 @@ void xu_ly_tin_nhan(){
                         }
                         IAP_ghisector1();
                         if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rdat ngay gio reset thanh cong");
+                            baocaosms(CHINH,"\rdat reset thanh cong");
                         else{
-                            baocaosms(CHINH,"\rdat ngay gio reset thanh cong\rPhone phu gui lenh");
+                            baocaosms(CHINH,"\rdat reset thanh cong\rPhone phu gui lenh");
                             baocaosms(PHU,"\rdat ngay gio reset thanh cong");
                         }
                     }else {
                         if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rdat ngay gio reset khong hop le");
+                            baocaosms(CHINH,"\rdat reset khong hop le");
                         else{
-                            baocaosms(CHINH,"\rdat ngay gio reset khong hop le\rPhone phu gui lenh");
-                            baocaosms(PHU,"\rdat ngay gio reset khong hop le");
+                            baocaosms(CHINH,"\rdat reset khong hop le\rPhone phu gui lenh");
+                            baocaosms(PHU,"\rdat reset khong hop le");
                         }
                         break;
                     }
@@ -225,10 +225,10 @@ void xu_ly_tin_nhan(){
                 //reset sim
                 else if(lenh_sms[4] == 'i' || lenh_sms[4] == 'I'){
                     if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rgsm module khoi dong lai sau 10s");
+                        baocaosms(CHINH,"\rreset gsm sau10s");
                     else{
-                        baocaosms(CHINH,"\rgsm module khoi dong lai sau 10s\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rgsm module khoi dong lai sau 10s");
+                        baocaosms(CHINH,"\rreset gsm sau10s\rPhone phu gui lenh");
+                        baocaosms(PHU,"\rreset gsm sau10s");
                     }
                     gsm_pw = 0;
                 }else {
@@ -271,10 +271,10 @@ void xu_ly_tin_nhan(){
                     eeprom_buf[TATMODEN_EEPROM] = 0;
                     IAP_ghisector1();
                     if(phone_phu_so_sanh_that_bai)
-                        baocaoden(CHINH,"\rxoa tat mo den thanh cong");
+                        baocaoden(CHINH,"\rxoa gio den thanh cong");
                     else{
-                        baocaoden(CHINH,"\rxoa tat mo den thanh cong\rPhone phu gui lenh");
-                        baocaoden(PHU,"\rxoa tat mo den thanh cong");
+                        baocaoden(CHINH,"\rxoa gio den thanh cong\rPhone phu gui lenh");
+                        baocaoden(PHU,"\rxoa gio den thanh cong");
                     }
                 }else {
                     IAP_docxoasector1();
@@ -296,17 +296,17 @@ void xu_ly_tin_nhan(){
                         IAP_xoasector(SECTOR1);
                         IAP_ghisector1();
                         if(phone_phu_so_sanh_that_bai)
-                            baocaoden(CHINH,"\rgui lenh tat mo den thanh cong");
+                            baocaoden(CHINH,"\rlenh den thanh cong");
                         else{
-                            baocaoden(CHINH,"\rgui lenh tat mo den thanh cong\rPhone phu gui lenh");
-                            baocaoden(PHU,"\rgui lenh tat mo den thanh cong");
+                            baocaoden(CHINH,"\rlenh den thanh cong\rPhone phu gui lenh");
+                            baocaoden(PHU,"\rlenh den thanh cong");
                         }
                     }else
                         if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rthong so tat mo den khong hop le");
+                            baocaosms(CHINH,"\rthong so den khong hop le");
                         else{
-                            baocaosms(CHINH,"\rthong so tat mo den khong hop le\rPhone phu gui lenh");
-                            baocaosms(PHU,"\rthong so tat mo den khong hop le");
+                            baocaosms(CHINH,"\rthong so den khong hop le\rPhone phu gui lenh");
+                            baocaosms(PHU,"\rthong so den khong hop le");
                         } 
                 }
                 break;
