@@ -24,14 +24,8 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
 
 
 
-__bit send_sms(__bit chinh,u8 *noidung){
-    if(lenh_sms[0] && !lenh_sms[3]){
-        gsm_sendandcheck("\032",2,1,"TK<1000 K BAOCAO"); 
-        gsm_sendandcheck("\032",2,1,noidung+1); 
-        return 0;
-    }
-    LCD_guilenh(0x80);
-    LCD_guichuoi(noidung+1);    
+__bit send_sms(__bit chinh){
+    if(lenh_sms[0] && !lenh_sms[3]){gsm_sendandcheck("\032",3,1,"TK<1000 K BAOCAO"); return 0;}
     send_gsm_cmd("AT+CMGS=\"");
     send_gsm_cmd(chinh?phone_chinh:eep_phonephu);
     send_gsm_cmd("\"\r");
@@ -60,11 +54,11 @@ void baocaosms(__bit chinh, u8  *noidung){
                 ,' ','M','2','=',thoi_gian_doi_doc_cam[1]?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
                 ,'/',eep_ngayreset+'0',' ','T','R','=',eep_gioreset/10+'0',eep_gioreset%10+'0',' ','D','E','N','=',DenRelay+'0'
                 ,' ','V','O','L','=',dien_ap/10+'0',dien_ap%10+'0',' ','M','P','3','=',eep_mp3+'0',chinh?' ':0,'D','T','=',eep_phonephu[11]+'0',0};
-   
+                
     if(*(noidung+1)!='*') 
         kiemtrataikhoan();
     else lenh_sms[0]=0;
-    if(!send_sms(chinh,noidung)) return;
+    if(!send_sms(chinh)) return;
 
     send_gsm_cmd(ver);
     send_gsm_cmd(kim);
@@ -92,8 +86,7 @@ void baocaoden(__bit chinh, u8 *noidung){
                             ,' ','D','E','N','=',DenRelay+'0',0};
     u8 __xdata den[9] = {'\r','M','O','D','E','N','=',eep_tatmoden[0]+'0',0};
     u8 __data i;
-    kiemtrataikhoan();
-    if(!send_sms(chinh,noidung)) return;
+    if(!send_sms(chinh)) return;
     send_gsm_cmd(thuc);
     send_gsm_cmd(den);
     if(eep_tatmoden[0]){
@@ -136,8 +129,7 @@ void baocaoden(__bit chinh, u8 *noidung){
 
 void gui_huong_dan(){
     lenh_sms[0]=0;
-    kiemtrataikhoan();
-    if(!send_sms(CHINH,"GUI HUONG DAN")) return;
+    if(!send_sms(CHINH)) return;
     send_gsm_cmd(huongdan);
     gsm_sendandcheck("\032",50,1," GUI HUONG DAN  ");
 }
