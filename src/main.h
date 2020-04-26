@@ -61,6 +61,7 @@ u8  __xdata xung_giay_check;
 
 //MOTOR va CAM
 u8  __xdata thoi_gian_doi_doc_cam[4];
+u8  __xdata thoi_gian_doi_cam_chuan;
 u8  __code     motor_step[]={128,144,16,48,32,96,64,192};
 u8  __data     step_index;
 u8  __data     motor_index;
@@ -121,6 +122,14 @@ u8 __xdata mode_wait;
 #define GIO2DVI     5
 #define PHUT2CHUC   6
 #define PHUT2DVI    7
+#define GIO3CHUC    8
+#define GIO3DVI     9
+#define PHUT3CHUC   10
+#define PHUT3DVI    11
+#define GIO4CHUC    12
+#define GIO4DVI     13
+#define PHUT4CHUC   14
+#define PHUT4DVI    15
 //GSM MODULE
 __bit   gui_lenh_thanh_cong;
 __bit   have_not;
@@ -144,6 +153,8 @@ u8 __xdata  date_str[30];
 __bit      mat_xung_giay;
 __bit      loi_cam_motor1;
 __bit      loi_cam_motor2;
+__bit      loi_cam_motor3;
+__bit      loi_cam_motor4;
 __bit      loi_eeprom_tat_mo_den;
 
 //CHARGE SAC ACQUI

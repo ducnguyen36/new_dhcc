@@ -18,14 +18,14 @@
 
 #define     SECTOR1_LENGTH      SOMOTOR_EEPROM+1
 
-#define		PHUT4_EEPROM		0x03F8
-#define		GIO4_EEPROM		    0x03F9
-#define		PHUT3_EEPROM		0x03FA
-#define		GIO3_EEPROM		    0x03FB
-#define		PHUT2_EEPROM		0x03FC
-#define		GIO2_EEPROM		    0x03FD
-#define		PHUT1_EEPROM		0x03FE
-#define		GIO1_EEPROM		    0x03FF
+#define		PHUT1_EEPROM		0x0200
+#define		GIO1_EEPROM		    0x0201
+#define		PHUT2_EEPROM		0x0202
+#define		GIO2_EEPROM		    0x0203
+#define		PHUT3_EEPROM		0x0204
+#define		GIO3_EEPROM		    0x0205
+#define		PHUT4_EEPROM		0x0206
+#define		GIO4_EEPROM		    0x0207
 
 
 #define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
@@ -53,7 +53,7 @@
 
 
 __code __at     motorEEprom         u8 eep_motor;
-__code __at     motorSTEEprom       u8 eep_motorST;
+__code __at     motorSTEEprom       u8 eep_motorst;
 __code __at     baocaoEEprom        u8 eep_baocao;
 __code __at     gpsonEEprom         u8 eep_gpson;
 __code __at     ngayresetEEprom     u8 eep_ngayreset;
