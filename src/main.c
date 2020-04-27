@@ -216,6 +216,32 @@ void main() {
 			if(motor_index2 == 5) motor_index2 = motor_run_check2();
 		}
 
+
+		if(!xung_giay_check && !mat_xung_giay){
+			mat_xung_giay = 1;
+			baocaosms(CHINH,"\rmat xung giay");
+			if(bat_phone_phu)baocaosms(PHU,"\rmat xung giay");
+		}
+		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
+			loi_cam_motor1 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 1");
+			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 1");
+		}
+		if(!thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
+			loi_cam_motor2 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 2");
+			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 2");
+		}
+		if(!thoi_gian_doi_doc_cam[2] && !loi_cam_motor3){
+			loi_cam_motor3 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 3");
+			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 3");
+		}
+		if(!thoi_gian_doi_doc_cam[3] && !loi_cam_motor4){
+			loi_cam_motor4 = 1;
+			baocaosms(CHINH,"\rphat hien loi doc cam 4");
+			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 4");
+		}
 		if(giay_out){
 			if(!gsm_pw){
 				if(!--gsm_delay_reset){
@@ -255,32 +281,6 @@ void main() {
 			RingRelay = 1;
 			delay_ms(4000);
 			IAP_CONTR = 0x60;
-		}
-
-		if(!xung_giay_check && !mat_xung_giay){
-			mat_xung_giay = 1;
-			baocaosms(CHINH,"\rmat xung giay");
-			if(bat_phone_phu)baocaosms(PHU,"\rmat xung giay");
-		}
-		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
-			loi_cam_motor1 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 1");
-			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 1");
-		}
-		if(!thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
-			loi_cam_motor2 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 2");
-			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 2");
-		}
-		if(!thoi_gian_doi_doc_cam[2] && !loi_cam_motor3){
-			loi_cam_motor3 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 3");
-			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 3");
-		}
-		if(!thoi_gian_doi_doc_cam[3] && !loi_cam_motor4){
-			loi_cam_motor4 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 4");
-			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 4");
 		}
 
 
