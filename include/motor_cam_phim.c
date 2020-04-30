@@ -1,45 +1,143 @@
-u8 motor_run_check(){
-	motorDir1 = 1;
+
+// u8 motor_run_check(){
+// 	motorDir1 = 1;
+// 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
+// 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
+// 	if(may_canh_kim)return (canhkim && may_canh_kim<3)?may_canh_kim-1:5;
+// 	u8 j = (1+motor_index)%2;
+// 	u8 i = j;
+// 	do{
+// 		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)){
+// 			// motorDir = canhkim || (720 + gio[i]*60 + phut[i] - hour12*60 - minute) % 720 > 360;
+// 			return i;
+// 		}
+// 		i = 1 - i;
+// 	}while(i != j);
+// 	return 5;
+// }
+// u8 motor_run_check2(){
+// 	motorDir2 = 1;
+// 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
+// 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
+// 	if(may_canh_kim)return (canhkim && may_canh_kim>2)?may_canh_kim-1:5;
+// 	u8 j = (1+motor_index2)%2+2;
+// 	u8 i = j;
+// 	do{
+// 		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)) return i;
+// 		i = 5 - i;
+// 	}while(i != j);
+// 	return 5;
+// }
+
+// void luu_gio_kim(){
+// 	IAP_xoasector(SECTOR2);
+// 	IAP_ghibyte(PHUT1_EEPROM,phut[0]);
+// 	IAP_ghibyte(GIO1_EEPROM,gio[0]);
+// 	IAP_ghibyte(PHUT2_EEPROM,phut[1]);
+// 	IAP_ghibyte(GIO2_EEPROM,gio[1]);
+// 	IAP_ghibyte(PHUT3_EEPROM,phut[2]);
+// 	IAP_ghibyte(GIO3_EEPROM,gio[2]);
+// 	IAP_ghibyte(PHUT4_EEPROM,phut[3]);
+// 	IAP_ghibyte(GIO4_EEPROM,gio[3]);
+// }
+
+u8 motor_run_check() reentrant {
+	// u8 m,j=0;  
+	// motorDir1 = 1;
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
-	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
-	if(may_canh_kim)return (canhkim && may_canh_kim<3)?may_canh_kim-1:5;
-	u8 j = (1+motor_index)%2;
-	u8 i = j;
-	do{
-		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)){
-			// motorDir = canhkim || (720 + gio[i]*60 + phut[i] - hour12*60 - minute) % 720 > 360;
-			return i;
+	if (dien_ap_thap || motor_dung || mode ){ motorDir1 = 0; return 5;}
+	if(may_canh_kim)return (canhkim && (may_canh_kim & 1))?may_canh_kim-1:5;
+	// return 0;
+	if(so_motor<3){
+		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
+			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
+			return 0;
+		}else {motorDir1 = 0; return 5;}
+	}
+	// if(motor_index>1) j = 0;
+	// else j = 2;
+	// j = (motor_index>1)?0:2;
+	// // return 2-j;
+	// if(thoi_gian_doi_doc_cam[j] && (phut[j]!=minute || gio[j]!=hour12)){
+	// 		motorDir1 = (720 + gio[j]*60 + phut[j] - hour12*60 - minute) % 720 > 360;
+	// 		return j;
+	// }
+	// if(thoi_gian_doi_doc_cam[2-j] && (phut[2-j]!=minute || gio[2-j]!=hour12)){
+	// 		motorDir1 = (720 + gio[2-j]*60 + phut[2-j] - hour12*60 - minute) % 720 > 360;
+	// 		return 0;
+	// }
+	if(motor_index>1){
+		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
+			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
+			return 0;
 		}
-		i = 1 - i;
-	}while(i != j);
+	}
+	if(thoi_gian_doi_doc_cam[2] && (phut[2]!=minute || gio[2]!=hour12)){
+		motorDir1 = (720 + gio[2]*60 + phut[2] - hour12*60 - minute) % 720 > 360;
+		return 2;
+	}
+	if(motor_index<2){
+		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
+			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
+			return 0;
+		}
+	}
+	// j = 2-(motor_index>1?2:0);
+	// m = j;
+	// // return m;
+	// do{
+	// 	if(thoi_gian_doi_doc_cam[m] && (phut[m]!=minute || gio[m]!=hour12)){
+	// 		motorDir1 = (720 + gio[m]*60 + phut[m] - hour12*60 - minute) % 720 > 360;
+	// 		return m;
+	// 	}
+	// 	m = 2 - m;
+	// }while(m != j);
+	motorDir1 = 0;
 	return 5;
 }
 u8 motor_run_check2(){
-	motorDir2 = 1;
+	// u8 m,j;
+	// motorDir2 = 1;
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
-	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
-	if(may_canh_kim)return (canhkim && may_canh_kim>2)?may_canh_kim-1:5;
-	u8 j = (1+motor_index2)%2+2;
-	u8 i = j;
-	do{
-		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)) return i;
-		i = 5 - i;
-	}while(i != j);
+	if (so_motor==1 || dien_ap_thap || motor_dung || mode ) {motorDir2 = 0;return 5;}
+	if(may_canh_kim)return (canhkim && !(may_canh_kim & 1))?may_canh_kim-1:5;
+	if(so_motor<4){
+		if(thoi_gian_doi_doc_cam[1] && (phut[1]!=minute || gio[1]!=hour12)){
+			motorDir2 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
+			return 1;
+		}else {motorDir2 = 0; return 5;}
+	}
+	if(motor_index>1){
+		if(thoi_gian_doi_doc_cam[1] && (phut[1]!=minute || gio[1]!=hour12)){
+			motorDir1 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
+			return 1;
+		}
+	}
+	if(thoi_gian_doi_doc_cam[3] && (phut[3]!=minute || gio[3]!=hour12)){
+		motorDir1 = (720 + gio[3]*60 + phut[3] - hour12*60 - minute) % 720 > 360;
+		return 3;
+	}
+	if(motor_index<2){
+		if(thoi_gian_doi_doc_cam[1] && (phut[1]!=minute || gio[1]!=hour12)){
+			motorDir1 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
+			return 1;
+		}
+	}
+	motorDir2 = 0;
 	return 5;
 }
-
+//multi motor
 void luu_gio_kim(){
 	IAP_xoasector(SECTOR2);
-	IAP_ghibyte(PHUT1_EEPROM,phut[0]);
-	IAP_ghibyte(GIO1_EEPROM,gio[0]);
-	IAP_ghibyte(PHUT2_EEPROM,phut[1]);
-	IAP_ghibyte(GIO2_EEPROM,gio[1]);
-	IAP_ghibyte(PHUT3_EEPROM,phut[2]);
-	IAP_ghibyte(GIO3_EEPROM,gio[2]);
-	IAP_ghibyte(PHUT4_EEPROM,phut[3]);
-	IAP_ghibyte(GIO4_EEPROM,gio[3]);
+	switch(so_motor){
+		case 4:IAP_ghibyte(PHUT4_EEPROM,phut[3]);IAP_ghibyte(GIO4_EEPROM,gio[3]);
+		case 3:IAP_ghibyte(PHUT3_EEPROM,phut[2]);IAP_ghibyte(GIO3_EEPROM,gio[2]);
+		case 2:IAP_ghibyte(PHUT2_EEPROM,phut[1]);IAP_ghibyte(GIO2_EEPROM,gio[1]);
+		case 1:IAP_ghibyte(PHUT1_EEPROM,phut[0]);IAP_ghibyte(GIO1_EEPROM,gio[0]);
+		default : break;
+	}
+	
 }
-
 void PCA_Timer_init(){
 	CCAP0L = CCAP0H = 0;
 	PCA_Timer0 = 25000;
@@ -65,7 +163,7 @@ void xunggiay(){
 	if(connect) connect--;
 	if(total_try_time_out) total_try_time_out--;
 	
-	if(mode!=2 && ++second>59){
+	if(mode!=2 && ++second>max_second-1){
 			second=0;
 			if(so_lan_goi_dien && !--delay_cuoc_goi_ke_tiep) so_lan_goi_dien = 0;
 			phut_out = 1;
@@ -96,6 +194,7 @@ void clock_servide () __interrupt INT_DONG_HO __using MEM_DONG_HO {
 
 u8 __xdata cnt = 20;
 u8 __xdata counter_xung_giay=40;
+__bit lcd_update_chop = 0;
 void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 	WATCHDOG;
 	if(CCF0){
@@ -104,19 +203,24 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
-		
+		trang_thai_cam = !cam_che;
+		trang_thai_cam2 = !cam_che2;
+		if(so_motor == 1){
+			if(may_dc) trang_thai_cam = !trang_thai_cam && !trang_thai_cam2;  
+			else trang_thai_cam = trang_thai_cam || trang_thai_cam2;
+		}
 
 		if(motor_index!=5){
-			if(!cam_che)
+			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
 			else if(cam_ra){
 				thoi_gian_doi_doc_cam[motor_index] = thoi_gian_doi_cam_chuan;
 				if(canhkim) canhkim--;
-				else if(motorDir1 && ++phut[motor_index]>59){
+				else if(motorDir && ++phut[motor_index]>59){
 					phut[motor_index] = 0;
 					if(++gio[motor_index]>11) gio[motor_index] = 0;
-				}else if(!motorDir1 && --phut[motor_index]>60){
+				}else if(!motorDir && --phut[motor_index]>60){
 						phut[motor_index] = 59;
 						if(--gio[motor_index]>12) gio[motor_index] = 11;
 				}

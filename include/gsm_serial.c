@@ -43,31 +43,125 @@ __bit kiemtrataikhoan(){
 }
 
 
+void send_gio_kim(){
+    u8 i = 0;
+    do{
+        send_gsm_cmd(" K");
+        send_gsm_byte(i+'0');
+        send_gsm_byte('=');
+        send_gsm_byte(thoi_gian_doi_doc_cam[i]?0:'E');
+        send_gsm_byte(gio[i]/10+'0');
+        send_gsm_byte(gio[i]%10+'0');
+        send_gsm_byte(':');
+        send_gsm_byte(phut[i]/10+'0');
+        send_gsm_byte(phut[i]%10+'0');
+    }while(++i!=so_motor);
 
 
+    // send_gsm_cmd(" K1=");
+    // send_gsm_byte(thoi_gian_doi_doc_cam[0]?0:'E');
+    // send_gsm_byte(gio[0]/10+'0');
+    // send_gsm_byte(gio[0]%10+'0');
+    // send_gsm_byte(':');
+    // send_gsm_byte(phut[0]/10+'0');
+    // send_gsm_byte(phut[0]%10+'0');
+    // if(so_motor==1) return;
+    // send_gsm_cmd(" K2=");
+    // send_gsm_byte(thoi_gian_doi_doc_cam[1]?0:'E');
+    // send_gsm_byte(gio[1]/10+'0');
+    // send_gsm_byte(gio[1]%10+'0');
+    // send_gsm_byte(':');
+    // send_gsm_byte(phut[1]/10+'0');
+    // send_gsm_byte(phut[1]%10+'0');
+    // if(so_motor==2) return;
+    // send_gsm_cmd(" K3=");
+    // send_gsm_byte(thoi_gian_doi_doc_cam[2]?0:'E');
+    // send_gsm_byte(gio[2]/10+'0');
+    // send_gsm_byte(gio[2]%10+'0');
+    // send_gsm_byte(':');
+    // send_gsm_byte(phut[2]/10+'0');
+    // send_gsm_byte(phut[2]%10+'0');
+    // if(so_motor==3) return;
+    // send_gsm_cmd(" K4=");
+    // send_gsm_byte(thoi_gian_doi_doc_cam[3]?0:'E');
+    // send_gsm_byte(gio[3]/10+'0');
+    // send_gsm_byte(gio[3]%10+'0');
+    // send_gsm_byte(':');
+    // send_gsm_byte(phut[3]/10+'0');
+    // send_gsm_byte(phut[3]%10+'0');
+}
 
-void baocaosms(__bit chinh, u8  *noidung){
-    u8 __xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',',',gio[1]/10+'0',gio[1]%10+'0',':',phut[1]/10+'0',phut[1]%10+'0',0};
-    u8 __xdata thuc[]  = {' ','T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0',0};
-    u8 __xdata dien_ap = dien_ap_nguon*28/256;
-    u8 __xdata param[] = {' ','D','H','=',eep_motor+'0',' ','B','C','=',eep_baocao+'0',' ','M','1','=',thoi_gian_doi_doc_cam[0]?'1':'0'
-                ,' ','M','2','=',thoi_gian_doi_doc_cam[1]?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
-                ,'/',eep_ngayreset+'0',' ','T','R','=',eep_gioreset/10+'0',eep_gioreset%10+'0',' ','D','E','N','=',DenRelay+'0'
-                ,' ','V','O','L','=',dien_ap/10+'0',dien_ap%10+'0',' ','M','P','3','=',eep_mp3+'0',chinh?' ':0,'D','T','=',eep_phonephu[11]+'0',0};
+void send_gio_thuc(){
+    send_gsm_cmd(" T=");
+    send_gsm_byte(hour/10+'0');
+    send_gsm_byte(hour%10+'0');
+    send_gsm_byte(':');
+    send_gsm_byte(minute/10+'0');
+    send_gsm_byte(minute%10+'0');
+    send_gsm_cmd(" GPS=");
+    send_gsm_byte((GPS_time?'1':'0')+eep_gpson);
+}
+
+void send_thong_so(bit chinh){
+    u8 dien_ap = dien_ap_nguon*28/256;
+    send_gsm_cmd(" DH=");
+    send_gsm_byte(motor_dung?1:0+'0');
+    send_gsm_cmd(" BC=");
+    send_gsm_byte(eep_baocao+'0');
+    send_gsm_cmd(" XG=");
+    send_gsm_byte(xung_giay_check?'1':'0');
+    send_gsm_cmd(" RS=");
+    send_gsm_byte(ngay_reset_con_lai+'0');
+    send_gsm_byte('/');
+    send_gsm_byte(eep_ngayreset+'0');
+    send_gsm_cmd(" TR=");
+    send_gsm_byte(eep_gioreset/10+'0');
+    send_gsm_byte(eep_gioreset%10+'0');
+    send_gsm_cmd(":06");
+    send_gsm_cmd(" DEN=");
+    send_gsm_byte(DenRelay?'1':'0');
+    send_gsm_cmd(" VOL=");
+    send_gsm_byte(dien_ap/10+'0');
+    send_gsm_byte(dien_ap%10+'0');
+    send_gsm_cmd(" MP3=");
+    send_gsm_byte(eep_mp3+'0');
+    if(!chinh) return;
+    send_gsm_cmd(" DT=");
+    send_gsm_byte(eep_phonephu[11]+'0');
+    if(eep_phonephu[11]==2) return;
+    send_gsm_byte(',');
+    send_gsm_cmd(eep_phonephu);
+
+}
+
+
+void baocaosms(bit chinh, u8  *noidung){
+    // u8 xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',',',gio[1]/10+'0',gio[1]%10+'0',':',phut[1]/10+'0',phut[1]%10+'0',0};
+    // u8 xdata thuc[]  = {' ','T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0',0};
+    // u8 xdata dien_ap = dien_ap_nguon*28/256;
+    // u8 xdata param[] = {' ','D','H','=',eep_motor+'0',' ','B','C','=',eep_baocao+'0',' ','M','1','=',thoi_gian_doi_doc_cam[0]?'1':'0'
+    //             ,' ','M','2','=',thoi_gian_doi_doc_cam[1]?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
+    //             ,'/',eep_ngayreset+'0',' ','T','R','=',eep_gioreset/10+'0',eep_gioreset%10+'0',' ','D','E','N','=',DenRelay+'0'
+    //             ,' ','V','O','L','=',dien_ap/10+'0',dien_ap%10+'0',' ','M','P','3','=',eep_mp3+'0',chinh?' ':0,'D','T','=',eep_phonephu[11]+'0',0};
                 
+    if(!sms_on) return;
     if(*(noidung+1)!='*') 
         kiemtrataikhoan();
     else lenh_sms[0]=0;
     if(!send_sms(chinh)) return;
-
     send_gsm_cmd(ver);
-    send_gsm_cmd(kim);
-    send_gsm_cmd(thuc);
-    send_gsm_cmd(param);
-    if(eep_phonephu[11]<2 && chinh){
-        send_gsm_cmd(",");
-        send_gsm_cmd(eep_phonephu);
-    }
+    // send_gsm_cmd(kim);
+    // send_gsm_cmd(thuc);
+    // send_gsm_cmd(param);
+
+    send_gio_kim();
+    send_gio_thuc();
+    send_thong_so(chinh);
+
+    // if(eep_phonephu[11]<2 && chinh){
+    //     send_gsm_cmd(",");
+    //     send_gsm_cmd(eep_phonephu);
+    // }
     if(*(noidung+1)!='*' && lenh_sms[0]){
         send_gsm_cmd("\rTK Chinh=");
         send_gsm_cmd(lenh_sms);
@@ -81,51 +175,171 @@ void baocaosms(__bit chinh, u8  *noidung){
     
     
 }
-void baocaoden(__bit chinh, u8 *noidung){
-    u8 __xdata thuc[]  = {'T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0'
-                            ,' ','D','E','N','=',DenRelay+'0',0};
-    u8 __xdata den[9] = {'\r','M','O','D','E','N','=',eep_tatmoden[0]+'0',0};
-    u8 __data i;
-    if(!send_sms(chinh)) return;
-    send_gsm_cmd(thuc);
-    send_gsm_cmd(den);
-    if(eep_tatmoden[0]){
-        send_gsm_cmd("\rGio Mo Den:");
-        i = eep_tatmoden[0];
-        den[1] = eep_tatmoden[i]/60 +'0';
-        den[2] = eep_tatmoden[i]/6%10 +'0';
-        den[3] = ':';
-        den[4] = eep_tatmoden[i]%6 +'0';
-        den[5] = '0';
-        den[6] = ' ';
-        den[7] = '-';
-        send_gsm_cmd(den);
-        den[0] = ' ';
-        den[1] = eep_tatmoden[1]/60 +'0';
-        den[2] = eep_tatmoden[1]/6%10 +'0';
-        den[4] = eep_tatmoden[1]%6 +'0';
-        den[6] = 0;
-        send_gsm_cmd(den);
-        for(i=2;i<eep_tatmoden[0];i++){
-            den[1] = eep_tatmoden[i]/60 + '0';
-            den[2] = eep_tatmoden[i]/6%10 + '0';
-            den[4] = eep_tatmoden[i]%6 + '0';
-            if(i%2){
-                den[0] = ' ';
-                den[6] = 0;
-            }else{
-                den[0] = '\r';
-                den[6] = ' ';
-            }
-            send_gsm_cmd(den); 
-        }
-    }else{
-        send_gsm_cmd("\rKhong co gio mo den");
+
+void send_thong_so_den(){
+    u8 i;
+    send_gsm_cmd(" DEN=");
+    send_gsm_byte(DenRelay?'1':'0');
+    send_gsm_cmd("\rMODEN=");
+    send_gsm_byte(eep_tatmoden[0]+'0');
+    if(!eep_tatmoden[0]){send_gsm_cmd("\rKhong co gio mo den"); return;}
+    send_gsm_cmd("\rGio Mo Den:");
+    i = eep_tatmoden[0];
+    send_gsm_byte('\r');
+    send_gsm_byte(eep_tatmoden[i]/60 +'0');
+    send_gsm_byte(eep_tatmoden[i]/6%10 +'0');
+    send_gsm_byte(':');
+    send_gsm_byte(eep_tatmoden[i]%6 +'0');
+    send_gsm_cmd("0 - ");
+    send_gsm_byte(eep_tatmoden[1]/60 +'0');
+    send_gsm_byte(eep_tatmoden[1]/6%10 +'0');
+    send_gsm_byte(':');
+    send_gsm_byte(eep_tatmoden[1]%6 +'0');
+    send_gsm_byte('0');
+    for(i=2;i<eep_tatmoden[0];i+=2){
+        send_gsm_byte('\r');
+        send_gsm_byte(eep_tatmoden[i]/60 +'0');
+        send_gsm_byte(eep_tatmoden[i]/6%10 +'0');
+        send_gsm_byte(':');
+        send_gsm_byte(eep_tatmoden[i]%6 +'0');
+        send_gsm_cmd("0 - ");
+        send_gsm_byte(eep_tatmoden[i+1]/60 +'0');
+        send_gsm_byte(eep_tatmoden[i+1]/6%10 +'0');
+        send_gsm_byte(':');
+        send_gsm_byte(eep_tatmoden[i+1]%6 +'0');
+        send_gsm_byte('0');
     }
-    
+}
+
+void baocaoden(bit chinh, u8 *noidung){
+    // u8 xdata thuc[]  = {'T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0'
+    //                         ,' ','D','E','N','=',DenRelay+'0',0};
+    // u8 xdata den[9] = {'\r','M','O','D','E','N','=',eep_tatmoden[0]+'0',0};
+    // u8 data i;
+    if(!sms_on) return;
+    if(!send_sms(chinh)) return;
+    send_gio_thuc();
+    send_thong_so(chinh);
+    // if(eep_tatmoden[0]){
+    //     send_gsm_cmd("\rGio Mo Den:");
+    //     i = eep_tatmoden[0];
+    //     den[1] = eep_tatmoden[i]/60 +'0';
+    //     den[2] = eep_tatmoden[i]/6%10 +'0';
+    //     den[3] = ':';
+    //     den[4] = eep_tatmoden[i]%6 +'0';
+    //     den[5] = '0';
+    //     den[6] = ' ';
+    //     den[7] = '-';
+    //     send_gsm_cmd(den);
+    //     den[0] = ' ';
+    //     den[1] = eep_tatmoden[1]/60 +'0';
+    //     den[2] = eep_tatmoden[1]/6%10 +'0';
+    //     den[4] = eep_tatmoden[1]%6 +'0';
+    //     den[6] = 0;
+    //     send_gsm_cmd(den);
+    //     for(i=2;i<eep_tatmoden[0];i++){
+    //         den[1] = eep_tatmoden[i]/60 + '0';
+    //         den[2] = eep_tatmoden[i]/6%10 + '0';
+    //         den[4] = eep_tatmoden[i]%6 + '0';
+    //         if(i%2){
+    //             den[0] = ' ';
+    //             den[6] = 0;
+    //         }else{
+    //             den[0] = '\r';
+    //             den[6] = ' ';
+    //         }
+    //         send_gsm_cmd(den); 
+    //     }
+    // }else{
+    //     send_gsm_cmd("\rKhong co gio mo den");
+    // }
+    send_thong_so_den();
     send_gsm_cmd(noidung);
     gsm_sendandcheck("\032",50,1,"GUI BAO CAO DEN ");
 }
+
+
+
+// void baocaosms(__bit chinh, u8  *noidung){
+//     u8 __xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',',',gio[1]/10+'0',gio[1]%10+'0',':',phut[1]/10+'0',phut[1]%10+'0',0};
+//     u8 __xdata thuc[]  = {' ','T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0',0};
+//     u8 __xdata dien_ap = dien_ap_nguon*28/256;
+//     u8 __xdata param[] = {' ','D','H','=',eep_motor+'0',' ','B','C','=',eep_baocao+'0',' ','M','1','=',thoi_gian_doi_doc_cam[0]?'1':'0'
+//                 ,' ','M','2','=',thoi_gian_doi_doc_cam[1]?'1':'0',' ','X','G','=',xung_giay_check?'1':'0',' ','R','S','=',ngay_reset_con_lai+'0'
+//                 ,'/',eep_ngayreset+'0',' ','T','R','=',eep_gioreset/10+'0',eep_gioreset%10+'0',' ','D','E','N','=',DenRelay+'0'
+//                 ,' ','V','O','L','=',dien_ap/10+'0',dien_ap%10+'0',' ','M','P','3','=',eep_mp3+'0',chinh?' ':0,'D','T','=',eep_phonephu[11]+'0',0};
+                
+//     if(*(noidung+1)!='*') 
+//         kiemtrataikhoan();
+//     else lenh_sms[0]=0;
+//     if(!send_sms(chinh)) return;
+
+//     send_gsm_cmd(ver);
+//     send_gsm_cmd(kim);
+//     send_gsm_cmd(thuc);
+//     send_gsm_cmd(param);
+//     if(eep_phonephu[11]<2 && chinh){
+//         send_gsm_cmd(",");
+//         send_gsm_cmd(eep_phonephu);
+//     }
+//     if(*(noidung+1)!='*' && lenh_sms[0]){
+//         send_gsm_cmd("\rTK Chinh=");
+//         send_gsm_cmd(lenh_sms);
+//         if(chinh && !lenh_sms[4]) send_gsm_cmd("\rTai khoan con duoi 10000");
+//         lenh_sms[1] = lenh_sms[2] = lenh_sms[3] = lenh_sms[4] = 0;
+//     }
+//     send_gsm_cmd(noidung);
+
+//     if(*(noidung+1)=='*') send_gsm_cmd("\032");
+//     else gsm_sendandcheck("\032",50,1,"DANG GUI BAO CAO");
+    
+    
+// }
+// void baocaoden(__bit chinh, u8 *noidung){
+//     u8 __xdata thuc[]  = {'T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0'
+//                             ,' ','D','E','N','=',DenRelay+'0',0};
+//     u8 __xdata den[9] = {'\r','M','O','D','E','N','=',eep_tatmoden[0]+'0',0};
+//     u8 __data i;
+//     if(!send_sms(chinh)) return;
+//     send_gsm_cmd(thuc);
+//     send_gsm_cmd(den);
+//     if(eep_tatmoden[0]){
+//         send_gsm_cmd("\rGio Mo Den:");
+//         i = eep_tatmoden[0];
+//         den[1] = eep_tatmoden[i]/60 +'0';
+//         den[2] = eep_tatmoden[i]/6%10 +'0';
+//         den[3] = ':';
+//         den[4] = eep_tatmoden[i]%6 +'0';
+//         den[5] = '0';
+//         den[6] = ' ';
+//         den[7] = '-';
+//         send_gsm_cmd(den);
+//         den[0] = ' ';
+//         den[1] = eep_tatmoden[1]/60 +'0';
+//         den[2] = eep_tatmoden[1]/6%10 +'0';
+//         den[4] = eep_tatmoden[1]%6 +'0';
+//         den[6] = 0;
+//         send_gsm_cmd(den);
+//         for(i=2;i<eep_tatmoden[0];i++){
+//             den[1] = eep_tatmoden[i]/60 + '0';
+//             den[2] = eep_tatmoden[i]/6%10 + '0';
+//             den[4] = eep_tatmoden[i]%6 + '0';
+//             if(i%2){
+//                 den[0] = ' ';
+//                 den[6] = 0;
+//             }else{
+//                 den[0] = '\r';
+//                 den[6] = ' ';
+//             }
+//             send_gsm_cmd(den); 
+//         }
+//     }else{
+//         send_gsm_cmd("\rKhong co gio mo den");
+//     }
+    
+//     send_gsm_cmd(noidung);
+//     gsm_sendandcheck("\032",50,1,"GUI BAO CAO DEN ");
+// }
 
 void gui_huong_dan(){
     lenh_sms[0]=0;
