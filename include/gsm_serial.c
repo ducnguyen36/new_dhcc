@@ -102,7 +102,7 @@ void send_gio_thuc(){
     send_gsm_byte((GPS_time?'1':'0')+eep_gpson);
 }
 
-void send_thong_so(bit chinh){
+void send_thong_so(__bit chinh){
     u8 dien_ap = dien_ap_nguon*28/256;
     send_gsm_cmd(" DH=");
     send_gsm_byte(motor_dung?1:0+'0');
@@ -135,7 +135,7 @@ void send_thong_so(bit chinh){
 }
 
 
-void baocaosms(bit chinh, u8  *noidung){
+void baocaosms(__bit chinh, u8  *noidung){
     // u8 xdata kim[]   = {' ','K','=',gio[0]/10+'0',gio[0]%10+'0',':',phut[0]/10+'0',phut[0]%10+'0',',',gio[1]/10+'0',gio[1]%10+'0',':',phut[1]/10+'0',phut[1]%10+'0',0};
     // u8 xdata thuc[]  = {' ','T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0',0};
     // u8 xdata dien_ap = dien_ap_nguon*28/256;
@@ -211,7 +211,7 @@ void send_thong_so_den(){
     }
 }
 
-void baocaoden(bit chinh, u8 *noidung){
+void baocaoden(__bit chinh, u8 *noidung){
     // u8 xdata thuc[]  = {'T','=',hour/10+'0',hour%10+'0',':',minute/10+'0',minute%10+'0',' ','G','P','S','=',GPS_time+eep_gpson+'0'
     //                         ,' ','D','E','N','=',DenRelay+'0',0};
     // u8 xdata den[9] = {'\r','M','O','D','E','N','=',eep_tatmoden[0]+'0',0};
@@ -364,6 +364,7 @@ __bit gsm_laygioGPSCCLK(){
 }
 void gsm_laygio_gps(){
     __bit GPS_time_temp = 0;
+    if(sim_test_sec==61) return;
     if(gsm_sendandcheck("AT\r", 15, 1,ver)){
 		if(gsm_sendandcheck("AT+IPR=0\r", 15, 1,"  SENDING IPR   ")){
 		    gsm_sendandcheck("AT+CLIP=1\r", 15, 1,"  SENDING CLIP  ");
@@ -399,7 +400,7 @@ void gsm_laygio_gps(){
 
 
 __bit gsm_thietlapnhantin(){
-    if(!gsm_pw) return 0;
+    if(!gsm_pw || !sms_on) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 2,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
             if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ")){

@@ -19,13 +19,16 @@ u8 __data  mp3_doi_start;
 #define PHONE_LENGTH 10
 // u8  __code  phone_chinh[] = "0949847098";
 u8  __code  phone_chinh[] = "0988888901";
+
 u8  __xdata lenh_sms[161]; 
 __bit da_gui_bao_cao;
 __bit da_gui_bao_cao_thang;
+
 __bit gsm_reset;
+u8 __xdata gsm_delay_reset;
+
 u8 __data so_lan_goi_dien;
 u8 __data delay_cuoc_goi_ke_tiep;
-u8 __xdata gsm_delay_reset;
 __bit co_cuoc_goi_toi;
 __bit phone_chinh_so_sanh_that_bai;
 __bit phone_phu_so_sanh_that_bai;
@@ -66,7 +69,7 @@ u8  __code     motor_step[]={128,144,16,48,32,96,64,192};
 u8  __data     step_index;
 u8  __data     motor_index;
 u8  __data     motor_index2;
-u8  __data     motorDir,motorDir1, motorDir2;
+__bit     motorDir,motorDir1, motorDir2;
 __bit      trang_thai_cam, trang_thai_cam2;
 __bit      cam_vao, cam_vao2;
 __bit      cam_vao_han, cam_vao_han2;
@@ -79,7 +82,6 @@ __bit		flip_pulse;
 
 // __bit       step_run;
 
-u8	__xdata	 lcd_dis_buf[60];
 u8	__xdata	 lcd_index;
 u8	__xdata	 lcd_process_index;
 u8	__xdata	 lcd_data_index;
@@ -146,7 +148,12 @@ u8 __xdata   date_pointer;
 u8 __xdata  gsm_receive_buf[15];
 u8 __xdata  date_str[30];
 
-
+//EXTRACT EEPROM
+u8 __xdata so_motor;
+u8 __xdata max_second, sim_test_sec;
+__bit test_gps;
+__bit may_dc,atmel_phat, motor_dung, motor_debug;
+__bit sms_on;
 
 
 //ERROR
@@ -156,6 +163,7 @@ __bit      loi_cam_motor2;
 __bit      loi_cam_motor3;
 __bit      loi_cam_motor4;
 __bit      loi_eeprom_tat_mo_den;
+__bit      bao_cao_dien_ap_thap;
 
 //CHARGE SAC ACQUI
 u8  __xdata     phut_sac_xa_acqui_con_lai;

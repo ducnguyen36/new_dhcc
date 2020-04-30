@@ -16,8 +16,8 @@
 #define		key_in3		P34
 
 /************ CAMS ******************/
-#define		cam_che	        P37
-#define		cam_che2    	P36
+#define		cam_che2	    P37
+#define		cam_che     	P36
 
 /*********** DALAS ***************/
 #define		clock_in	P32
@@ -33,13 +33,13 @@
 
 /*********** MOTORS DC ***************/
 // Timer 0 = motor control
-#define		motorD2	  P43
-#define		motorD1   P44
+#define		motorS2	  P43
+#define		motorS1   P44
 
 /*********** MOTORS DRIVER ***************/
 #define     motor1    P27
-#define     motor2    P26
-#define     motor3    P25
+#define     motor3    P26
+#define     motor2    P25
 #define     motor4    P24
 
 

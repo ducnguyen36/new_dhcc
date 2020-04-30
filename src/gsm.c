@@ -16,6 +16,13 @@ void gsm_init(){
 	ES = 1;
     gsm_pw = 1;
 }
+void send_gsm_byte(u8 dulieu){
+	if(!dulieu) return;
+	gsm_TI = 0;
+	gsm_SBUF = dulieu;
+	while(!gsm_TI)WATCHDOG;
+	gsm_TI = 0;
+}
 
 void send_gsm_cmd(u8 *cmd){
 	gsm_TI = 0;

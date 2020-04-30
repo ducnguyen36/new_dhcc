@@ -1,6 +1,6 @@
 
 
-void LCD_guichuoi(u8 *vanban);
+void LCD_guichuoi(u8 *vanban) __reentrant;
 void LCD_guilenh(u8 lenh);
 void LCD_guidulieu(u8 dulieu);
 void LCD_Init();

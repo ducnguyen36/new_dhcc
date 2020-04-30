@@ -1,10 +1,14 @@
+
+
 #define		SECTOR1    		    0x0000
 #define		SECTOR2	            0x0200
 #define     MOVC_START_ADDRESS  0xF000
 
-#define     MOTOR_EEPROM        SECTOR1
-#define     MOTORST_EEPROM      MOTOR_EEPROM+1
-#define     BAOCAO_EEPROM       MOTORST_EEPROM+1
+// #define     MOTORST_EEPROM      MOTOR_EEPROM+1
+#define     MOTOR_EEPROM        SECTOR1 // mac dinh: 00000000
+            /* 1     1     1     1     1     1     1    1
+               X    C4P   MDB   STO  ST-55 ST-DC  [SO_MAY]  */
+#define     BAOCAO_EEPROM       MOTOR_EEPROM+1
 #define     GPSON_EEPROM        BAOCAO_EEPROM+1
 #define     NGAYRESET_EEPROM    GPSON_EEPROM+1
 #define     GIORESET_EEPROM     NGAYRESET_EEPROM+1
@@ -14,22 +18,24 @@
 #define     MP3_EEPROM          TATMODEN_EEPROM+9
 #define     PHONEPHU_EEPROM     MP3_EEPROM+1
 #define     LOITHESIM_EEPROM    PHONEPHU_EEPROM+12
-#define     SOMOTOR_EEPROM      LOITHESIM_EEPROM+1
+#define     DEBUG_EEPROM        LOITHESIM_EEPROM+1//default 00100000 0x20
+            /* 1   1 1     1        1 0 1 1
+               X   SMS  GPS-MOTOR  [SO_GIAY]  */
 
-#define     SECTOR1_LENGTH      SOMOTOR_EEPROM+1
+#define     SECTOR1_LENGTH      DEBUG_EEPROM+1
 
-#define		PHUT1_EEPROM		0x0200
-#define		GIO1_EEPROM		    0x0201
-#define		PHUT2_EEPROM		0x0202
-#define		GIO2_EEPROM		    0x0203
-#define		PHUT3_EEPROM		0x0204
-#define		GIO3_EEPROM		    0x0205
-#define		PHUT4_EEPROM		0x0206
-#define		GIO4_EEPROM		    0x0207
+#define		PHUT1_EEPROM		SECTOR2
+#define		GIO1_EEPROM		   SECTOR2+1
+#define		PHUT2_EEPROM		SECTOR2+2
+#define		GIO2_EEPROM		   SECTOR2+3
+#define		PHUT3_EEPROM		SECTOR2+4
+#define		GIO3_EEPROM		   SECTOR2+5
+#define		PHUT4_EEPROM		SECTOR2+6
+#define		GIO4_EEPROM		   SECTOR2+7
 
 
+// #define motorSTEEprom               MOTORST_EEPROM+MOVC_START_ADDRESS
 #define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
-#define motorSTEEprom               MOTORST_EEPROM+MOVC_START_ADDRESS
 #define baocaoEEprom                BAOCAO_EEPROM+MOVC_START_ADDRESS
 #define gpsonEEprom                 GPSON_EEPROM+MOVC_START_ADDRESS
 #define ngayresetEEprom             NGAYRESET_EEPROM+MOVC_START_ADDRESS
@@ -40,7 +46,7 @@
 #define mp3EEprom                   MP3_EEPROM+MOVC_START_ADDRESS
 #define phonephuEEprom              PHONEPHU_EEPROM+MOVC_START_ADDRESS
 #define loithesimEEprom             LOITHESIM_EEPROM+MOVC_START_ADDRESS
-#define somotorEEprom               SOMOTOR_EEPROM+MOVC_START_ADDRESS
+#define debugEEprom                 DEBUG_EEPROM+MOVC_START_ADDRESS
 
 #define phut1EEprom					PHUT1_EEPROM+MOVC_START_ADDRESS
 #define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
@@ -53,7 +59,6 @@
 
 
 __code __at     motorEEprom         u8 eep_motor;
-__code __at     motorSTEEprom       u8 eep_motorst;
 __code __at     baocaoEEprom        u8 eep_baocao;
 __code __at     gpsonEEprom         u8 eep_gpson;
 __code __at     ngayresetEEprom     u8 eep_ngayreset;
@@ -64,7 +69,7 @@ __code __at     tatmodenEEprom      u8 eep_tatmoden[9];
 __code __at     mp3EEprom           u8 eep_mp3;
 __code __at     phonephuEEprom      u8 eep_phonephu[12];
 __code __at     loithesimEEprom     u8 eep_loithesim;
-__code __at     somotorEEprom       u8 eep_somotor;
+__code __at     debugEEprom         u8 eep_debug;
 
 __code __at     phut1EEprom          u8 eep_phut1; 
 __code __at     gio1EEprom           u8 eep_gio1; 

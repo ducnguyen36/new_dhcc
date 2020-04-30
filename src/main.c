@@ -62,11 +62,11 @@ void main() {
 	xung_giay_check=250;
 	so_lan_goi_dien = 0;
 	motor_index = motor_index2 = 5;
-	thoi_gian_doi_cam_chuan = eep_motorst?5:30;
-	thoi_gian_doi_doc_cam[0]=thoi_gian_doi_cam_chuan;
-	thoi_gian_doi_doc_cam[1]=thoi_gian_doi_cam_chuan;
-	thoi_gian_doi_doc_cam[2]=thoi_gian_doi_cam_chuan;
-	thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
+	// thoi_gian_doi_cam_chuan = eep_motorst?5:30;
+	// thoi_gian_doi_doc_cam[0]=thoi_gian_doi_cam_chuan;
+	// thoi_gian_doi_doc_cam[1]=thoi_gian_doi_cam_chuan;
+	// thoi_gian_doi_doc_cam[2]=thoi_gian_doi_cam_chuan;
+	// thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
 
 	gsm_delay_reset=10;
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
@@ -75,7 +75,8 @@ void main() {
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]>1)eeprom_buf[MOTOR_EEPROM] = 1;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 0;
+	if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
 	if(eeprom_buf[BAOCAO_EEPROM]>1)eeprom_buf[BAOCAO_EEPROM] = 0;
 	if(eeprom_buf[GPSON_EEPROM]>1)eeprom_buf[GPSON_EEPROM] = 1;
 	if(eeprom_buf[NGAYRESET_EEPROM]>9)eeprom_buf[NGAYRESET_EEPROM] = 1;
@@ -101,23 +102,64 @@ void main() {
 
 	if(eeprom_buf[LOITHESIM_EEPROM]>24)eeprom_buf[LOITHESIM_EEPROM] = 0;
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
-	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2; 
-	if(eeprom_buf[SOMOTOR_EEPROM]-1>3)eeprom_buf[SOMOTOR_EEPROM] = 1;	
+	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2;
+	// if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x30; 	
 //multi motor
 	IAP_ghisector1();
-	if(eep_phut1>59 || eep_gio1>11 || eep_phut2>59 || eep_gio2>11
-	|| eep_phut3>59 || eep_gio3>11 || eep_phut4>59 || eep_gio4>11)
-		luu_gio_kim();
-	else{
-		phut[0] = eep_phut1;
-		gio[0]  = eep_gio1;
-		phut[1] = eep_phut2;
-		gio[1]  = eep_gio2;
-		phut[2] = eep_phut3;
-		gio[2]  = eep_gio3;
-		phut[3] = eep_phut4;
-		gio[3]  = eep_gio4;
+	so_motor = (eep_motor & 3) + 1;
+	may_dc   = (eep_motor & 4);
+	motorDir = atmel_phat = (eep_motor & 8);
+	motor_dung  = (eep_motor & 16);
+	motor_debug = (eep_motor & 32);
+	sim_test_sec = 0;
+	sms_on = 1;
+	max_second = 60;
+	// if(eep_debug & 16) max_second = (eep_debug & 15)<6?(eep_debug & 15)+1:(60/(12-(eep_debug & 15)));
+	// else {
+	// 	if((eep_debug & 7)>1) sim_test_sec = 60/(8-(eep_debug&7));
+	// 	else if(eep_debug & 7) sim_test_sec = 61;
+	// }
+	// sms_on = eep_debug & 96;
+	// i = phone_chinh[10] = 0;
+	// while(i<10) phone_chinh[i] = ((eep_debug & 96) == 32)? phone1[i++]:phone2[i++];
+	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:5);
+
+	switch(so_motor){
+		case 4: thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
+				if(eep_phut4>59 || eep_gio4>11)
+					luu_gio_kim();
+				phut[3] = eep_phut4; 
+				gio[3] = eep_gio4;
+		case 3: thoi_gian_doi_doc_cam[2]=thoi_gian_doi_cam_chuan;
+				if(eep_phut3>59 || eep_gio3>11)
+					luu_gio_kim();
+				phut[2] = eep_phut3; gio[2] = eep_gio3;
+		case 2: thoi_gian_doi_doc_cam[1]=thoi_gian_doi_cam_chuan;
+				if(eep_phut2>59 || eep_gio2>11)
+					luu_gio_kim();
+				phut[1] = eep_phut2; gio[1] = eep_gio2;
+		case 1: thoi_gian_doi_doc_cam[0]=thoi_gian_doi_cam_chuan;
+				if(eep_phut1>59 || eep_gio1>11)
+					luu_gio_kim();
+				phut[0] = eep_phut1; gio[0] = eep_gio1;
+		default: break;
 	}
+
+
+
+	// if(eep_phut1>59 || eep_gio1>11 || eep_phut2>59 || eep_gio2>11
+	// || eep_phut3>59 || eep_gio3>11 || eep_phut4>59 || eep_gio4>11)
+	// 	luu_gio_kim();
+	// else{
+	// 	phut[0] = eep_phut1;
+	// 	gio[0]  = eep_gio1;
+	// 	phut[1] = eep_phut2;
+	// 	gio[1]  = eep_gio2;
+	// 	phut[2] = eep_phut3;
+	// 	gio[2]  = eep_gio3;
+	// 	phut[3] = eep_phut4;
+	// 	gio[3]  = eep_gio4;
+	// }
 
 	//khoi dong sac acqui
 	ChargeRelay = 1;
@@ -148,7 +190,97 @@ void main() {
 	LCD_Init();
 
 	// rtc_settime(0,0,0);
+	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
 	
+		
+		
+		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
+		LCD_guichuoi("\200 NHA PHAT TRIEN");
+		LCD_guichuoi("\300MAY:");
+		LCD_guidulieu(so_motor+'0');
+		LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
+		LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+		LCD_blinkXY(DUOI,4);
+		sub_mode = so_motor-1;
+		mode = 0;
+		while(1){
+			switch(mode){
+				case 0:
+					sub_mode = so_motor-1;
+					LCD_guilenh(0xc4); 
+					break;
+				case 1:
+					sub_mode = may_dc;
+					LCD_noblink(); 
+					if(lcd_update_chop){
+						lcd_update_chop = 0;
+						LCD_guichuoi(chop?"\305 __ ":(may_dc?"\305 DC ":"\305 ST "));
+					}
+					break;
+				case 2:
+					sub_mode = atmel_phat;
+					if(lcd_update_chop){
+						lcd_update_chop = 0;
+						LCD_guichuoi(chop?"\311_____":(atmel_phat?"\311ATMEL  ":"\311STC15  "));
+					}
+					break;
+				case 3:
+					LCD_guichuoi("\200      SAVE      ");
+					LCD_guichuoi("\300MODE:OK    RS:BO");
+					break;
+				case 4:
+					phuttemp = 0;
+					phuttemp += (so_motor-1);
+					phuttemp += (may_dc?4:0); 
+					if(so_motor!=1) phuttemp += (atmel_phat?8:0);
+					// IAP_xoasector(SECTOR1);
+					IAP_docxoasector1();
+					eeprom_buf[MOTOR_EEPROM] = phuttemp;
+					IAP_ghisector1();
+					IAP_xoasector(SECTOR2);
+					// IAP_ghibyte(MOTOR_EEPROM,phuttemp);
+					IAP_CONTR = 0x60;
+			}
+			if(phim_cong_nhan){
+				phim_cong_nhan = 0;
+				switch(mode){
+					case 0:
+						sub_mode = sub_mode<3?sub_mode+1:0;
+						so_motor = sub_mode + 1;
+						LCD_guidulieu(so_motor+'0');
+						LCD_guilenh(0xc4);
+						break;
+					case 1:
+						may_dc = sub_mode = 1 - sub_mode;
+						break;
+					case 2:
+						atmel_phat = sub_mode = 1 - sub_mode;
+						break;
+				}
+				
+			}
+			if(phim_mode_nhan){
+				phim_mode_nhan = 0;
+				mode++;
+				LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
+				LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
+				LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+				LCD_noblink();
+			}
+			if(phim_back_nhan){
+				phim_back_nhan = 0;
+				if(mode) mode--;
+				
+				LCD_guichuoi("\200 NHA PHAT TRIEN"); 
+				LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
+				LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
+				LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+				if(!mode) LCD_blinkXY(DUOI,4);
+			}
+		}
+		
+	}
+
 	// /**************/
 
 	
@@ -163,36 +295,15 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
-	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
-		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
-		LCD_guichuoi("\200 NHA PHAT TRIEN");
-		LCD_guichuoi("\3001 MAY");
-		LCD_blinkXY(DUOI,0);
-		sub_mode = 0;
-		while(1){
-			if(phim_cong_nhan){
-				phim_cong_nhan = 0;
-				sub_mode = sub_mode<3?sub_mode+1:0;
-				LCD_guidulieu(sub_mode+'1');
-				LCD_guilenh(DUOI);
-			}
-			if(phim_mode_nhan){
-				phim_mode_nhan = 0;
-				IAP_xoasector(SECTOR1);
-				IAP_xoasector(SECTOR2);
-				IAP_ghibyte(SOMOTOR_EEPROM,sub_mode+1);
-				IAP_CONTR = 0x60;
-			}
-		}
+	gsm_laygio_gps();
+	bat_phone_phu = eep_phonephu[11]&1;
+	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
+		baocaosms(CHINH,"\rkhoi dong san sang bo dieu khien");
+		if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang bo dieu khien");
 	}
-	// gsm_laygio_gps();
+
     hour12 = (hour>11)?hour-12:hour;
-	// bat_phone_phu = eep_phonephu[11]&1;
 	ADC_CONTR = 0x8b;
-	// if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-	// 	baocaosms(CHINH,"\rkhoi dong san sang bo dieu khien");
-	// 	if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang bo dieu khien");
-	// }
 	if(!eep_norreset){
 		mode_wait = 5;
 		IAP_docxoasector1();
@@ -206,10 +317,13 @@ void main() {
 	
 	while(1){
 		// multi motor
-		if(eep_phut1!=phut[0] || eep_gio1!=gio[0] || eep_phut2!=phut[1] || eep_gio2!=gio[1]
-		|| eep_phut3!=phut[2] || eep_gio3!=gio[2] || eep_phut4!=phut[3] || eep_gio4!=gio[3])
-			luu_gio_kim();
-		
+		// if(eep_phut1!=phut[0] || eep_gio1!=gio[0] || eep_phut2!=phut[1] || eep_gio2!=gio[1]
+		// || eep_phut3!=phut[2] || eep_gio3!=gio[2] || eep_phut4!=phut[3] || eep_gio4!=gio[3])
+		// 	luu_gio_kim();
+		if(so_motor==4 && (eep_phut4!=phut[3] || eep_gio4!=gio[3])) luu_gio_kim();
+		else if(so_motor>2 && (eep_phut3!=phut[2] || eep_gio3!=gio[2])) luu_gio_kim();
+		else if(so_motor>1 && (eep_phut2!=phut[1] || eep_gio2!=gio[1])) luu_gio_kim();
+		else if(eep_phut1!=phut[0] || eep_gio1!=gio[0]) luu_gio_kim();
 		if(!mode_wait || !mode) {
 			mode=0;
 			if(motor_index  == 5) motor_index  = motor_run_check();
@@ -217,27 +331,36 @@ void main() {
 		}
 
 
+		if(!bao_cao_dien_ap_thap && dien_ap_thap){
+			baocaosms(CHINH,"\r*dien ap thap*");
+			bao_cao_dien_ap_thap = 10;
+		}
+		if(bao_cao_dien_ap_thap && !dien_ap_thap){
+			baocaosms(CHINH,"\r*dien ap khoi phuc*");
+			bao_cao_dien_ap_thap = 0;
+		}
 		if(!xung_giay_check && !mat_xung_giay){
 			mat_xung_giay = 1;
 			baocaosms(CHINH,"\rmat xung giay");
 			if(bat_phone_phu)baocaosms(PHU,"\rmat xung giay");
 		}
+		//multi motor
 		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
 			loi_cam_motor1 = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam 1");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 1");
 		}
-		if(!thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
+		if(so_motor>1 && !thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
 			loi_cam_motor2 = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam 2");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 2");
 		}
-		if(!thoi_gian_doi_doc_cam[2] && !loi_cam_motor3){
+		if(so_motor>2 && !thoi_gian_doi_doc_cam[2] && !loi_cam_motor3){
 			loi_cam_motor3 = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam 3");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 3");
 		}
-		if(!thoi_gian_doi_doc_cam[3] && !loi_cam_motor4){
+		if(so_motor==4 && !thoi_gian_doi_doc_cam[3] && !loi_cam_motor4){
 			loi_cam_motor4 = 1;
 			baocaosms(CHINH,"\rphat hien loi doc cam 4");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 4");
@@ -285,9 +408,11 @@ void main() {
 
 
 		if(!da_gui_bao_cao && minute<5 ) {
-			if(!GPS_time && eep_gpson) gsm_laygio_gps();
-			// else rtc_gettime(&hour,&minute,&second);
-			hour12 = (hour>11)?hour-12:hour;
+			if(!GPS_time && eep_gpson) {
+				gsm_laygio_gps();
+				hour12 = (hour>11)?hour-12:hour;
+			}
+
 			if(eep_baocao) {
 				baocaosms(CHINH,"\rbao cao dau gio");
 				if(bat_phone_phu)baocaosms(PHU,"\rbao cao dau gio");
@@ -315,14 +440,21 @@ void main() {
 					sms_dang_xu_ly = 0;
 				}
 				else {
-					LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);
-					LCD_guigio(0x8a," ",gio[2],phut[2],253,flip_pulse);LCD_guigio(0xc0," ",gio[3],phut[3],253,flip_pulse);
+					switch(so_motor){
+						case 1: LCD_guigio(0x80,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],second,flip_pulse);break;
+						case 2: LCD_guigio(0x80,"  ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x87,"  ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("  ");break;
+						case 4:	LCD_guigio(0xc5,GPS_time?" G ":(eep_gpson?" D ":" A "),hour,minute,second,flip_pulse); 
+								LCD_guigio(0xc0," ",gio[3],phut[3],251,0);
+						case 3: LCD_guigio(0x80," ",gio[0],phut[0],251,0);LCD_guigio(0x85," ",gio[1],phut[1],251,0);
+								LCD_guigio(0x8a," ",gio[2],phut[2],251,0);LCD_guidulieu(' ');
+					}
+					if(so_motor!=4){
+						// if(second%2)LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,may_dc?30:20,flip_pulse);
+						LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse);
+					} 
+					// LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);
+					// LCD_guigio(0x8a," ",gio[2],phut[2],253,flip_pulse);LCD_guigio(0xc0," ",gio[3],phut[3],253,flip_pulse);
 				}
-				// else LCD_guigio(0x80,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],second,flip_pulse);
-				
-				if(GPS_time) LCD_guigio(0xc5," G ",hour,minute,second	,flip_pulse);
-				else if(eep_gpson) LCD_guigio(0xc5," D ",hour,minute,second,flip_pulse);
-				else LCD_guigio(0xc5," A ",hour,minute,second,flip_pulse);
 				if(!phim_mode_doi && !cam_vao){
 					phim_mode_nhan=0;
 					mode_wait = TIME_MODE_WAIT;
@@ -367,11 +499,15 @@ void main() {
 						LCD_guilenh(0x80);
 						LCD_guichuoi(mode_select[mode]);
 						switch(mode){
-							// case GIOKIM : LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse); break;
-							case GIOKIM : LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      "); 
-										  LCD_guigio(0xc0," ",gio[2],phut[2],253,flip_pulse);LCD_guigio(0xc5," ",gio[3],phut[3],253,flip_pulse);LCD_guichuoi("      "); 
-										  break;
-							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse); 
+							case GIOKIM : if(so_motor==1)LCD_guigio(0xc0,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],0,1);
+										else {LCD_guigio((so_motor<3)?0xc0:0x80,"  ",gio[0],phut[0],253,1);LCD_guigio((so_motor<3)?0xc7:0x87,"  ",gio[1],phut[1],253,1);LCD_guichuoi("  "); }
+										if(so_motor>2){
+										  	LCD_guigio(0xc0,"  ",gio[2],phut[2],253,1);
+										  	if(so_motor==4){LCD_guigio(0xc7,"  ",gio[3],phut[3],253,1);LCD_guichuoi("  ");}
+											else LCD_guichuoi("         ");   
+										}
+										break;
+							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
 							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,0,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;break;
@@ -384,79 +520,40 @@ void main() {
 				LCD_chop(TREN,mode_select[sub_mode]);		
 				break;
 			case GIOKIM:
-				LCD_blinkXY(sub_mode<8?TREN:DUOI,1+sub_mode%8+sub_mode%8/4);
+				LCD_blinkXY((sub_mode<8 && so_motor>2)?TREN:DUOI,so_motor==1?(7+sub_mode+sub_mode/2):(2+sub_mode%8+sub_mode%8/2+sub_mode%8/4));
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
-						case GIOCHUC  :
-							if(gio[0]>13)gio[0]%=10;
-							else gio[0] +=10;
+						case GIOCHUC  : case GIO2CHUC  :
+						case GIO3CHUC : case GIO4CHUC  :
+							if(gio[sub_mode/4]>13)gio[sub_mode/4]%=10;
+							else gio[sub_mode/4] +=10;
 						break;
-						case GIODVI   :
-							if(gio[0]>22) gio[0] = 20;
-							else if(gio[0]%10==9) gio[0]-=9;
-							else gio[0]++;
+						case GIODVI   : case GIO2DVI   :
+						case GIO3DVI  : case GIO4DVI   :
+							if(gio[sub_mode/4]>22) gio[sub_mode/4] = 20;
+							else if(gio[sub_mode/4]%10==9) gio[sub_mode/4]-=9;
+							else gio[sub_mode/4]++;
 						break;
-						case PHUTCHUC :
-							if(phut[0]>49) phut[0]-=50;
-							else phut[0]+=10;
+						case PHUTCHUC : case PHUT2CHUC :
+						case PHUT3CHUC: case PHUT4CHUC :
+							if(phut[sub_mode/4]>49) phut[sub_mode/4]-=50;
+							else phut[sub_mode/4]+=10;
 						break;
-						case PHUTDVI  :
-							if(!(++phut[0]%10)) phut[0]-=10;
-						break;
-						case GIO2CHUC  :
-							if(gio[1]>13)gio[1]%=10;
-							else gio[1] +=10;
-						break;
-						case GIO2DVI   :
-							if(gio[1]>22) gio[1] = 20;
-							else if(gio[1]%10==9) gio[1]-=9;
-							else gio[1]++;
-						break;
-						case PHUT2CHUC :
-							if(phut[1]>49) phut[1]-=50;
-							else phut[1]+=10;
-						break;
-						case PHUT2DVI  :
-							if(!(++phut[1]%10)) phut[1]-=10;
-						break;
-						case GIO3CHUC  :
-							if(gio[2]>13)gio[2]%=10;
-							else gio[2] +=10;
-						break;
-						case GIO3DVI   :
-							if(gio[2]>22) gio[2] = 20;
-							else if(gio[2]%10==9) gio[2]-=9;
-							else gio[2]++;
-						break;
-						case PHUT3CHUC :
-							if(phut[2]>49) phut[2]-=50;
-							else phut[2]+=10;
-						break;
-						case PHUT3DVI  :
-							if(!(++phut[2]%10)) phut[2]-=10;
-						break;
-						case GIO4CHUC  :
-							if(gio[3]>13)gio[3]%=10;
-							else gio[3] +=10;
-						break;
-						case GIO4DVI   :
-							if(gio[3]>22) gio[3] = 20;
-							else if(gio[3]%10==9) gio[3]-=9;
-							else gio[3]++;
-						break;
-						case PHUT4CHUC :
-							if(phut[3]>49) phut[3]-=50;
-							else phut[3]+=10;
-						break;
-						case PHUT4DVI  :
-							if(!(++phut[3]%10)) phut[3]-=10;
+						case PHUTDVI  : case PHUT2DVI  :
+						case PHUT3DVI : case PHUT4DVI  :
+							if(!(++phut[sub_mode/4]%10)) phut[sub_mode/4]-=10;
 						break;
 					}
-					LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("      ");
-					LCD_guigio(0xc0," ",gio[2],phut[2],253,flip_pulse);LCD_guigio(0xc5," ",gio[3],phut[3],253,flip_pulse);LCD_guichuoi("      ");
-					// LCD_guigio(0xc0,eep_motorST? "  MST  " : "  MDC  ",gio[0],phut[0],0,flip_pulse);
+
+					if(so_motor==1)LCD_guigio(0xc0,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],0,flip_pulse);
+					else {LCD_guigio((so_motor<3)?0xc0:0x80,"  ",gio[0],phut[0],253,1);LCD_guigio((so_motor<3)?0xc7:0x87,"  ",gio[1],phut[1],253,1);LCD_guichuoi("  ");}
+					if(so_motor>2){
+						LCD_guigio(0xc0,"  ",gio[2],phut[2],253,1);
+						if(so_motor==4){LCD_guigio(0xc7,"  ",gio[3],phut[3],253,1);LCD_guichuoi("  ");}
+						else LCD_guichuoi("         ");   
+					}
 				}
 				if(phim_back_nhan){
 					phim_back_nhan = 0;
@@ -468,7 +565,7 @@ void main() {
 
 					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode>15){
+					if(++sub_mode>(4*so_motor-1)){
 						LCD_noblink();
 						sub_mode = mode;
 						mode = SELECT;
@@ -515,7 +612,7 @@ void main() {
 						break;
 					}
 					
-					LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),giotemp,phuttemp,mode_wait,flip_pulse);
+					LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),giotemp,phuttemp,mode_wait,1);
 
 				}
 				if(phim_back_nhan){
@@ -602,7 +699,7 @@ void main() {
 				}
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
-					sub_mode = 1 - sub_mode;
+					if(++sub_mode>so_motor-1) sub_mode = 0;
 					LCD_guidulieu(sub_mode+'1');
 					LCD_guilenh(DUOI+4);
 				}
@@ -634,18 +731,16 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			if(dien_ap_nguon<82) ChargeRelay = 0;
 			else if(dien_ap_nguon>110) {
 				dien_ap_thap = 0;
-				baocaosms(CHINH,"\r*dien ap khoi phuc*");
+				// baocaosms(CHINH,"\r*dien ap khoi phuc*");
 			}
 		}else if(dien_ap_nguon<92){
 			dien_ap_thap = 1;
 			motor_index  = motor_index2 = 5;
 			P2 &= 0x0F;
-			if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){
+			// if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){}
 				luu_gio_kim();
 				
-				
-			}
-			baocaosms(CHINH,"\r*dien ap thap*");
+			// baocaosms(CHINH,"\r*dien ap thap*");
 		}
 	}
 

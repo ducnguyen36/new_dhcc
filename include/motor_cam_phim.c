@@ -41,7 +41,7 @@
 // 	IAP_ghibyte(GIO4_EEPROM,gio[3]);
 // }
 
-u8 motor_run_check() reentrant {
+u8 motor_run_check() __reentrant {
 	// u8 m,j=0;  
 	// motorDir1 = 1;
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;

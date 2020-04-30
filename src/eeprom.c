@@ -57,12 +57,13 @@ void IAP_docxoasector1(){
     while(i) eeprom_buf[--i] = 0xff;
     
     while(i<SECTOR1_LENGTH) eeprom_buf[i] = *(&eep_motor+i++);
+    // while(i<SECTOR1_LENGTH) eeprom_buf[i++] = *(&eep_motor+i);
     IAP_xoasector(SECTOR1);
 }
 
 void IAP_ghisector1(){
     u8 __data i=0;
-    while(i<205){
+    while(i<SECTOR1_LENGTH){
         IAP_CONTR = ENABLE_IAP;
         IAP_CMD = CMD_PROGRAM;
         IAP_ADDRL = i;

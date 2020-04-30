@@ -85,7 +85,7 @@ void LCD_xoa(u8 hang){
 
 
 
-void LCD_guichuoi(u8 *vanban){
+void LCD_guichuoi(u8 *vanban) __reentrant {
 	u8 i=0;
 	while (*vanban && i<16)
 		if(*vanban<128 && *vanban>31 && ++i)LCD_guidulieu(*vanban++);
