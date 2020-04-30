@@ -238,10 +238,10 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 			else if(cam_ra2){
 				thoi_gian_doi_doc_cam[motor_index2] = thoi_gian_doi_cam_chuan;
 				if(canhkim) canhkim--;
-				else if(motorDir2 && ++phut[motor_index2]>59){
+				else if(motorDir && ++phut[motor_index2]>59){
 					phut[motor_index2] = 0;
 					if(++gio[motor_index2]>11) gio[motor_index2] = 0;
-				}else if(!motorDir2 && --phut[motor_index2]>60){
+				}else if(!motorDir && --phut[motor_index2]>60){
 						phut[motor_index2] = 59;
 						if(--gio[motor_index2]>12) gio[motor_index2] = 11;
 				}
@@ -273,6 +273,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		phim_cong_cu = key_in3;
 
 		if(!--cnt){
+			lcd_update_chop = 1;
 			cnt=14;
 			chop=!chop;
 		}
@@ -291,8 +292,19 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 
 void cam_phim() __interrupt 1 __using 2 {
 	WATCHDOG;
-	motor1 = motor_index == 0; motor2 = motor_index == 1;
-	motor3 = motor_index2 == 2; motor4 = motor_index2 == 3;
+	if(atmel_phat){
+		motor1 = motor_index == 0; motor2 = motor_index2 == 1;
+		motor3 = motor_index == 2; motor4 = motor_index2 == 3;
+	}else{
+		motorS1 = !motor_index && (eep_motor & 7) ; motorS2 = motor_index2 == 1;
+		motorDir = may_canh_kim || motorDir1 || motorDir2;
+		if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
+			P2=(P2&0x0f)|motor_step[step_index];
+			step_index+= motorDir?1:-1; 
+			if(step_index>8) step_index=7;
+			else if(step_index==8) step_index=0;
+		} else P2 &= 0x0f;
+	}
 	 
 	
 	// if(motor_index){
