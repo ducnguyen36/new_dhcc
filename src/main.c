@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " STEP GPS 1.1.5 ";
+u8 __code ver[] = " ASIA GPS 4.1.0S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -103,7 +103,7 @@ void main() {
 	if(eeprom_buf[LOITHESIM_EEPROM]>24)eeprom_buf[LOITHESIM_EEPROM] = 0;
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
 	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2;
-	// if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x30; 	
+	if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x3b; 	
 //multi motor
 	IAP_ghisector1();
 	so_motor = (eep_motor & 3) + 1;
@@ -111,9 +111,16 @@ void main() {
 	motorDir = atmel_phat = (eep_motor & 8);
 	motor_dung  = (eep_motor & 16);
 	motor_debug = (eep_motor & 32);
+
+	sms_on = (eep_debug & 96)>>5;
+	for(i=0;i<11;i++)phone_chinh[i]= (sms_on<2)? phone1[i] : phone2[i];
 	sim_test_sec = 0;
-	sms_on = 1;
-	max_second = 60;
+	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
+	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
+
+	// sim_test_sec = 0;
+	// sms_on = 1;
+	// max_second = 60;
 	// if(eep_debug & 16) max_second = (eep_debug & 15)<6?(eep_debug & 15)+1:(60/(12-(eep_debug & 15)));
 	// else {
 	// 	if((eep_debug & 7)>1) sim_test_sec = 60/(8-(eep_debug&7));
@@ -191,8 +198,10 @@ void main() {
 
 	// rtc_settime(0,0,0);
 	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
-	
-		
+		u8 debug_dem = 0;
+		__bit debug = 0;
+		giotemp = eep_debug;
+		i = eep_motor;
 		
 		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
 		LCD_guichuoi("\200 NHA PHAT TRIEN");
@@ -204,83 +213,131 @@ void main() {
 		sub_mode = so_motor-1;
 		mode = 0;
 		while(1){
-			switch(mode){
-				case 0:
-					sub_mode = so_motor-1;
-					LCD_guilenh(0xc4); 
-					break;
-				case 1:
-					sub_mode = may_dc;
-					LCD_noblink(); 
-					if(lcd_update_chop){
-						lcd_update_chop = 0;
-						LCD_guichuoi(chop?"\305 __ ":(may_dc?"\305 DC ":"\305 ST "));
+			if(debug){
+				if(lcd_update_chop){
+					lcd_update_chop = 0;
+					LCD_guichuoi("\300P:");
+					phuttemp = (giotemp & 15) < 6?(giotemp & 15)+1:(60/(12-(giotemp & 15)));
+					LCD_guidulieu((mode==0&&chop)?'_':phuttemp/10+'0');
+					LCD_guidulieu((mode==0&&chop)?'_':phuttemp%10+'0');
+					LCD_guichuoi(" TN:");
+					LCD_guidulieu((mode==1&&chop)?'_':(((giotemp&96)>>5)+'0'));
+					LCD_guichuoi(" GPS:");
+					LCD_guidulieu((mode==2&&chop)?'_':(((giotemp&16)>>4)+'0'));
+				}
+				if(phim_mode_nhan){
+					phim_mode_nhan = 0;
+					mode++;
+					switch(mode){
+						case 1:sub_mode = (giotemp&96)>>5;break;
+						case 2:sub_mode = (giotemp&16)>>4;break;
+						case 3:IAP_docxoasector1();
+							   eeprom_buf[DEBUG_EEPROM] = giotemp;
+							   IAP_ghisector1();
+							   IAP_CONTR = 0x60;
 					}
-					break;
-				case 2:
-					sub_mode = atmel_phat;
-					if(lcd_update_chop){
-						lcd_update_chop = 0;
-						LCD_guichuoi(chop?"\311_____":(atmel_phat?"\311ATMEL  ":"\311STC15  "));
+				}
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
+					if(mode) mode--;
+					switch(mode){
+						case 0:sub_mode = giotemp & 15;break;
+						case 1:sub_mode = (giotemp&96)>>5;break;
 					}
-					break;
-				case 3:
-					LCD_guichuoi("\200      SAVE      ");
-					LCD_guichuoi("\300MODE:OK    RS:BO");
-					break;
-				case 4:
-					phuttemp = 0;
-					phuttemp += (so_motor-1);
-					phuttemp += (may_dc?4:0); 
-					if(so_motor!=1) phuttemp += (atmel_phat?8:0);
-					// IAP_xoasector(SECTOR1);
-					IAP_docxoasector1();
-					eeprom_buf[MOTOR_EEPROM] = phuttemp;
-					IAP_ghisector1();
-					IAP_xoasector(SECTOR2);
-					// IAP_ghibyte(MOTOR_EEPROM,phuttemp);
-					IAP_CONTR = 0x60;
+				}
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
+					sub_mode++;
+					switch(mode){
+						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
+						case 1:if(sub_mode>2) sub_mode = 0;giotemp = giotemp & 0x1f | (sub_mode<<5); break;
+						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
+					}
+				}
 			}
-			if(phim_cong_nhan){
-				phim_cong_nhan = 0;
+			else{
 				switch(mode){
 					case 0:
-						sub_mode = sub_mode<3?sub_mode+1:0;
-						so_motor = sub_mode + 1;
-						LCD_guidulieu(so_motor+'0');
-						LCD_guilenh(0xc4);
+						sub_mode = so_motor-1;
+						LCD_guilenh(0xc4); 
 						break;
 					case 1:
-						may_dc = sub_mode = 1 - sub_mode;
+						sub_mode = may_dc;
+						LCD_noblink(); 
+						if(lcd_update_chop){
+							lcd_update_chop = 0;
+							LCD_guichuoi(chop?"\305 __ ":(may_dc?"\305 DC ":"\305 ST "));
+						}
 						break;
 					case 2:
-						atmel_phat = sub_mode = 1 - sub_mode;
+						sub_mode = atmel_phat;
+						if(lcd_update_chop){
+							lcd_update_chop = 0;
+							LCD_guichuoi(chop?"\311_____":(atmel_phat?"\311ATMEL  ":"\311STC15  "));
+						}
 						break;
+					case 3:
+						LCD_guichuoi("\200      SAVE      ");
+						LCD_guichuoi("\300MODE:OK    RS:BO");
+						break;
+					case 4:
+						phuttemp = 0;
+						phuttemp += (so_motor-1);
+						phuttemp += (may_dc?4:0); 
+						if(so_motor!=1) phuttemp += (atmel_phat?8:0);
+						IAP_xoasector(SECTOR1);
+						IAP_xoasector(SECTOR2);
+						IAP_ghibyte(MOTOR_EEPROM,phuttemp);
+						IAP_CONTR = 0x60;
 				}
-				
-			}
-			if(phim_mode_nhan){
-				phim_mode_nhan = 0;
-				mode++;
-				LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
-				LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-				LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
-				LCD_noblink();
-			}
-			if(phim_back_nhan){
-				phim_back_nhan = 0;
-				if(mode) mode--;
-				
-				LCD_guichuoi("\200 NHA PHAT TRIEN"); 
-				LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
-				LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-				LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
-				if(!mode) LCD_blinkXY(DUOI,4);
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
+					debug_dem = 0;
+					switch(mode){
+						case 0:
+							sub_mode = sub_mode<3?sub_mode+1:0;
+							so_motor = sub_mode + 1;
+							LCD_guidulieu(so_motor+'0');
+							LCD_guilenh(0xc4);
+							break;
+						case 1:
+							may_dc = sub_mode = 1 - sub_mode;
+							break;
+						case 2:
+							atmel_phat = sub_mode = 1 - sub_mode;
+							break;
+					}
+					
+				}
+				if(phim_mode_nhan){
+					phim_mode_nhan = 0;
+					debug_dem = 0;
+					mode++;
+					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
+					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
+					LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+					LCD_noblink();
+				}
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
+					if(mode) mode--;
+					LCD_guichuoi("\200 NHA PHAT TRIEN"); 
+					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
+					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
+					LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+					if(!mode){ 
+						if(debug_dem++>8){
+							debug = 1;
+							LCD_noblink();
+							sub_mode = eep_debug & 15;
+						} 
+						else LCD_blinkXY(DUOI,4);
+					}
+				}
 			}
 		}
 		
 	}
-
 	// /**************/
 
 	

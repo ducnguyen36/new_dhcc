@@ -1,7 +1,7 @@
 void xu_ly_tin_nhan(){
     //lenh DH
     lenh_khong_hop_le = 0;
-    u8 giodelta,phutdelta;
+    u8 giodelta,phutdelta, kim_index;
     u8 __xdata i;
     if((lenh_sms[0]=='?'||lenh_sms[1]=='?') && !phone_chinh_so_sanh_that_bai)gui_huong_dan();
     else{ 
@@ -61,69 +61,120 @@ void xu_ly_tin_nhan(){
                     AmplyRelay = 0;
                 }else {
                     //khong lay gio kim
-                    if(lenh_sms[3]==','){
-                        if(lenh_sms[4]=='g' || lenh_sms[4]=='G' || lenh_sms[4]=='a' || lenh_sms[4]=='A'){
-                            //LAY gio tu dong CCLK
+                    i = 3;
+                    kim_index = 1;
+                    do{
+                        if(lenh_sms[i]==','){
+                            if(!kim_index)i = 101;
+                            else{
+                                kim_index = (kim_index+1)%(so_motor+1);
+                                i++;
+                            }
+                        }
+                        else if(lenh_sms[i]<48) i = !kim_index?101:202;
+                        else if(!kim_index && (lenh_sms[i]=='g' || lenh_sms[i]=='G' || lenh_sms[i]=='a' || lenh_sms[i]=='A')){
+                            
                             AmplyRelay=0;
                             mp3_status = mp3_IDLE;
-                            GPS_time = gsm_laygioGPSCCLK();
+                            gsm_laygio_gps();
+                            hour12 = hour%12;
                             mp3_hour = 24;
                             mp3_minute = 60;
-                        }else if(lenh_sms[4]>47 && lenh_sms[4]<51 && lenh_sms[5]>47 && lenh_sms[5]<58 &&
-                        lenh_sms[6]>47 && lenh_sms[6]<54 && lenh_sms[7]>47 && lenh_sms[7]<58){
-                            giodelta  = (lenh_sms[4]-'0')*10 + lenh_sms[5] - '0';
-                            if(giodelta<24){
-                                AmplyRelay=0;
-                                mp3_status = mp3_IDLE;
-                                hour = giodelta;
-                                minute = (lenh_sms[6]-'0')*10 + lenh_sms[7] - '0';
-                                hour12=hour%12;
-                                rtc_settime(hour,minute,second);
-                                GPS_time = 0;
-                                mp3_hour = 24;
-                                mp3_minute = 60;
-                            }else lenh_khong_hop_le = 1;
-                        }else lenh_khong_hop_le = 1;
-                    //lay gio kim
-                    }else if(lenh_sms[3]>47 && lenh_sms[3]<51 && lenh_sms[4]>47 && lenh_sms[4]<58 &&
-                        lenh_sms[5]>47 && lenh_sms[5]<54 && lenh_sms[6]>47 && lenh_sms[6]<58){
-
-                        gio[0]  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
-                        phut[0] = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
-                        luu_gio_kim();
-                        
-                        
-
-                        //LAY gio tu dong CCLK
-                        if(lenh_sms[8]=='g' || lenh_sms[8]=='G' || lenh_sms[8]=='a' || lenh_sms[8]=='A'){
-                            if(eep_gpson){
-                                GPS_time = gsm_laygioGPSCCLK();
-                                if(eep_mp3){
+                            i = 101;
+                        }
+                        else if(lenh_sms[i]>47 && lenh_sms[i]<51 && lenh_sms[i+1]>47 && lenh_sms[i+1]<58 &&
+                            lenh_sms[i+2]>47 && lenh_sms[i+2]<54 && lenh_sms[i+3]>47 && lenh_sms[i+3]<58){
+                                if(kim_index){
+                                    gio[kim_index-1] = ((lenh_sms[i]-'0')*10 + lenh_sms[i+1] - '0')%12;
+                                    phut[kim_index-1] = (lenh_sms[i+2]-'0')*10 + lenh_sms[i+3] - '0';
+                                    luu_gio_kim();
+                                    kim_index = (kim_index+1)%(so_motor+1);
+                                    i+=5;
+                                }else{
                                     AmplyRelay=0;
                                     mp3_status = mp3_IDLE;
+                                    hour = ((lenh_sms[i]-'0')*10 + lenh_sms[i+1] - '0')%24;
+                                    minute = (lenh_sms[i+2]-'0')*10 + lenh_sms[i+3] - '0';
+                                    hour12=hour%12;
+                                    rtc_settime(hour,minute,second);
+                                    GPS_time = 0;
                                     mp3_hour = 24;
                                     mp3_minute = 60;
+                                    i= 101;
                                 }
-                            }
-                        }else if(lenh_sms[8]>47 && lenh_sms[8]<51 && lenh_sms[9]>47 && lenh_sms[9]<58 &&
-                        lenh_sms[10]>47 && lenh_sms[10]<54 && lenh_sms[11]>47 && lenh_sms[11]<58){
-                            giodelta  = (lenh_sms[8]-'0')*10 + lenh_sms[9] - '0';
-                            if(giodelta<24){
-                                AmplyRelay=0;
-                                mp3_status = mp3_IDLE;
-                                hour = giodelta;
-                                minute = (lenh_sms[10]-'0')*10 + lenh_sms[11] - '0';
-                                hour12=hour%12;
-                                rtc_settime(hour,minute,second);
-                                mp3_hour = 24;
-                                mp3_minute = 60;
-                                GPS_time = 0;
-                            }else lenh_khong_hop_le = 1;
-                        }   
-                    }else lenh_khong_hop_le = 1;
+                        }else i = 202;
+                    }while(i<100);
+
+                    // motor_index = motor_run_check();
+                    // motor_index2 = motor_run_check2();
+                    lenh_khong_hop_le = i==202;
+                    //khong lay gio kim
+                //     if(lenh_sms[3]==','){
+                //         if(lenh_sms[4]=='g' || lenh_sms[4]=='G' || lenh_sms[4]=='a' || lenh_sms[4]=='A'){
+                //             //LAY gio tu dong CCLK
+                //             AmplyRelay=0;
+                //             mp3_status = mp3_IDLE;
+                //             GPS_time = gsm_laygioGPSCCLK();
+                //             mp3_hour = 24;
+                //             mp3_minute = 60;
+                //         }else if(lenh_sms[4]>47 && lenh_sms[4]<51 && lenh_sms[5]>47 && lenh_sms[5]<58 &&
+                //         lenh_sms[6]>47 && lenh_sms[6]<54 && lenh_sms[7]>47 && lenh_sms[7]<58){
+                //             giodelta  = (lenh_sms[4]-'0')*10 + lenh_sms[5] - '0';
+                //             if(giodelta<24){
+                //                 AmplyRelay=0;
+                //                 mp3_status = mp3_IDLE;
+                //                 hour = giodelta;
+                //                 minute = (lenh_sms[6]-'0')*10 + lenh_sms[7] - '0';
+                //                 hour12=hour%12;
+                //                 rtc_settime(hour,minute,second);
+                //                 GPS_time = 0;
+                //                 mp3_hour = 24;
+                //                 mp3_minute = 60;
+                //             }else lenh_khong_hop_le = 1;
+                //         }else lenh_khong_hop_le = 1;
+                //     //lay gio kim
+                //     }else if(lenh_sms[3]>47 && lenh_sms[3]<51 && lenh_sms[4]>47 && lenh_sms[4]<58 &&
+                //         lenh_sms[5]>47 && lenh_sms[5]<54 && lenh_sms[6]>47 && lenh_sms[6]<58){
+
+                //         gio[0]  = ((lenh_sms[3]-'0')*10 + lenh_sms[4] - '0')%12;
+                //         phut[0] = (lenh_sms[5]-'0')*10 + lenh_sms[6] - '0';
+                //         luu_gio_kim();
+                        
+                        
+
+                //         //LAY gio tu dong CCLK
+                //         if(lenh_sms[8]=='g' || lenh_sms[8]=='G' || lenh_sms[8]=='a' || lenh_sms[8]=='A'){
+                //             if(eep_gpson){
+                //                 GPS_time = gsm_laygioGPSCCLK();
+                //                 if(eep_mp3){
+                //                     AmplyRelay=0;
+                //                     mp3_status = mp3_IDLE;
+                //                     mp3_hour = 24;
+                //                     mp3_minute = 60;
+                //                 }
+                //             }
+                //         }else if(lenh_sms[8]>47 && lenh_sms[8]<51 && lenh_sms[9]>47 && lenh_sms[9]<58 &&
+                //         lenh_sms[10]>47 && lenh_sms[10]<54 && lenh_sms[11]>47 && lenh_sms[11]<58){
+                //             giodelta  = (lenh_sms[8]-'0')*10 + lenh_sms[9] - '0';
+                //             if(giodelta<24){
+                //                 AmplyRelay=0;
+                //                 mp3_status = mp3_IDLE;
+                //                 hour = giodelta;
+                //                 minute = (lenh_sms[10]-'0')*10 + lenh_sms[11] - '0';
+                //                 hour12=hour%12;
+                //                 rtc_settime(hour,minute,second);
+                //                 mp3_hour = 24;
+                //                 mp3_minute = 60;
+                //                 GPS_time = 0;
+                //             }else lenh_khong_hop_le = 1;
+                //         }   
+                //     }else lenh_khong_hop_le = 1;
                 }
+                
             
                 //gui thong bao: T=xx:xx K=xx:xx GPS=x DH=x
+                motor_index = motor_run_check();
+                motor_index2 = motor_run_check2();
                 if(lenh_khong_hop_le){
                     if(phone_phu_so_sanh_that_bai)
                         baocaosms(CHINH,"\rlenh khong hop le");
@@ -134,7 +185,6 @@ void xu_ly_tin_nhan(){
                         //gui tin nhan lenh DH khong hop le
                 }else{
                     // step_run = motor_run_check_step();
-                    motor_index = motor_run_check();
                     if(phone_phu_so_sanh_that_bai)
                         baocaosms(CHINH,"\rchinh dong ho thanh cong");
                     else{
