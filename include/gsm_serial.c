@@ -188,20 +188,20 @@ void gui_huong_dan(){
     gsm_sendandcheck("\032",50,1," GUI HUONG DAN  ");
 }
 
-__bit gsm_laygioGPSCCLK(){
-    gsm_serial_cmd = NORMAL;
-    if(gsm_sendandcheck("AT+CCLK?\r", 15, 2,"  SENDING CCLK  ")){
-        if(have_time == CLK){
-            hour=(date_str[9]-'0')*10+date_str[10]-'0';
-            hour12=hour%12;
-            minute = (date_str[12]-'0')*10+date_str[13]-'0';
-            second = (date_str[15]-'0')*10+date_str[16]-'0';
-            rtc_settime(hour,minute,second);
-            return 1;
-        }
-    }
-    return 0;
-}
+// __bit gsm_laygioGPSCCLK(){
+//     gsm_serial_cmd = NORMAL;
+//     if(gsm_sendandcheck("AT+CCLK?\r", 15, 2,"  SENDING CCLK  ")){
+//         if(have_time == CLK){
+//             hour=(date_str[9]-'0')*10+date_str[10]-'0';
+//             hour12=hour%12;
+//             minute = (date_str[12]-'0')*10+date_str[13]-'0';
+//             second = (date_str[15]-'0')*10+date_str[16]-'0';
+//             rtc_settime(hour,minute,second);
+//             return 1;
+//         }
+//     }
+//     return 0;
+// }
 void gsm_laygio_gps(){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;

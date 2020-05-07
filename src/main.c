@@ -390,7 +390,7 @@ void main() {
 
 		if(!bao_cao_dien_ap_thap && dien_ap_thap){
 			baocaosms(CHINH,"\r*dien ap thap*");
-			bao_cao_dien_ap_thap = 10;
+			bao_cao_dien_ap_thap = 1;
 		}
 		if(bao_cao_dien_ap_thap && !dien_ap_thap){
 			baocaosms(CHINH,"\r*dien ap khoi phuc*");
