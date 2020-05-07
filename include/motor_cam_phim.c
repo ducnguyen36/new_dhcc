@@ -297,7 +297,7 @@ void cam_phim() __interrupt 1 __using 2 {
 		motor3 = motor_index == 2; motor4 = motor_index2 == 3;
 	}else{
 		motorS1 = !motor_index && (eep_motor & 7) ; motorS2 = motor_index2 == 1;
-		motorDir = may_canh_kim || motorDir1 || motorDir2;
+		motorDir = may_dc || may_canh_kim || motorDir1 || motorDir2;
 		if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
 			P2=(P2&0x0f)|motor_step[step_index];
 			step_index+= motorDir?1:-1; 
