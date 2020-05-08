@@ -148,8 +148,11 @@ void PCA_Timer_init(){
 void motor_step_int_init(){
 	AUXR &=0x7F;	//Timer clock is 12T mode
 	TMOD = 0;		//Set timer work mode
-	TL0 = 0x24;		//Initial timer value
-	TH0 = 0xFA;		//Initial timer value
+	// TL0 = 0x24;		//Initial timer value
+	// TH0 = 0xFA;		//Initial timer value
+	TL0 = 0x30;		//Initial timer value
+	TH0 = 0xF8;		//Initial timer value
+
 	TF0 = 0;
 	TR0 = 1;
 	ET0 = 1;
