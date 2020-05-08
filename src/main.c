@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.0S";
+u8 __code ver[] = " ASIA GPS 4.1.1S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -341,6 +341,7 @@ void main() {
 	// /**************/
 
 	
+	ADC_CONTR = 0x8b;
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
 	rtc_gettime(&hour, &minute, &second);
@@ -360,7 +361,6 @@ void main() {
 	}
 
     hour12 = (hour>11)?hour-12:hour;
-	ADC_CONTR = 0x8b;
 	if(!eep_norreset){
 		mode_wait = 5;
 		IAP_docxoasector1();
