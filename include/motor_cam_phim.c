@@ -54,18 +54,7 @@ u8 motor_run_check() __reentrant {
 			return 0;
 		}else {motorDir1 = 0; return 5;}
 	}
-	// if(motor_index>1) j = 0;
-	// else j = 2;
-	// j = (motor_index>1)?0:2;
-	// // return 2-j;
-	// if(thoi_gian_doi_doc_cam[j] && (phut[j]!=minute || gio[j]!=hour12)){
-	// 		motorDir1 = (720 + gio[j]*60 + phut[j] - hour12*60 - minute) % 720 > 360;
-	// 		return j;
-	// }
-	// if(thoi_gian_doi_doc_cam[2-j] && (phut[2-j]!=minute || gio[2-j]!=hour12)){
-	// 		motorDir1 = (720 + gio[2-j]*60 + phut[2-j] - hour12*60 - minute) % 720 > 360;
-	// 		return 0;
-	// }
+	
 	if(motor_index>1){
 		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
 			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
@@ -82,16 +71,7 @@ u8 motor_run_check() __reentrant {
 			return 0;
 		}
 	}
-	// j = 2-(motor_index>1?2:0);
-	// m = j;
-	// // return m;
-	// do{
-	// 	if(thoi_gian_doi_doc_cam[m] && (phut[m]!=minute || gio[m]!=hour12)){
-	// 		motorDir1 = (720 + gio[m]*60 + phut[m] - hour12*60 - minute) % 720 > 360;
-	// 		return m;
-	// 	}
-	// 	m = 2 - m;
-	// }while(m != j);
+	
 	motorDir1 = 0;
 	return 5;
 }
@@ -107,19 +87,19 @@ u8 motor_run_check2(){
 			return 1;
 		}else {motorDir2 = 0; return 5;}
 	}
-	if(motor_index>1){
+	if(motor_index2>1){
 		if(thoi_gian_doi_doc_cam[1] && (phut[1]!=minute || gio[1]!=hour12)){
-			motorDir1 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
+			motorDir2 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
 			return 1;
 		}
 	}
 	if(thoi_gian_doi_doc_cam[3] && (phut[3]!=minute || gio[3]!=hour12)){
-		motorDir1 = (720 + gio[3]*60 + phut[3] - hour12*60 - minute) % 720 > 360;
+		motorDir2 = (720 + gio[3]*60 + phut[3] - hour12*60 - minute) % 720 > 360;
 		return 3;
 	}
-	if(motor_index<2){
+	if(motor_index2<2){
 		if(thoi_gian_doi_doc_cam[1] && (phut[1]!=minute || gio[1]!=hour12)){
-			motorDir1 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
+			motorDir2 = (720 + gio[1]*60 + phut[1] - hour12*60 - minute) % 720 > 360;
 			return 1;
 		}
 	}
