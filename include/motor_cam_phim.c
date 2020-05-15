@@ -257,15 +257,15 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 
 		if(!--cnt){
 			lcd_update_chop = 1;
-			cnt=14;
+			cnt=20;
 			chop=!chop;
 		}
 
 		if(xung_giay_check){
 			xung_giay_check--;
-			counter_xung_giay=28;
+			counter_xung_giay=40;
 		}else if(!--counter_xung_giay){
-			counter_xung_giay=28;
+			counter_xung_giay=40;
 			xunggiay();
 		}
 		

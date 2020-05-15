@@ -4,6 +4,7 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
     connect_time_out = delay;
     total_try_time_out = retry*delay + 10;
     gui_lenh_thanh_cong = 0;
+    send_gsm_cmd(cmd);
     while(!gui_lenh_thanh_cong && total_try_time_out){ 
             WATCHDOG;
             LCD_guilenh(0x80);
@@ -14,8 +15,9 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
             if(!connect){
                 if(!retry--) break;
                 connect_time_out = connect = delay;
-                send_gsm_cmd(cmd);
-            }
+                if(*(cmd+3) || (*cmd =='\r')) send_gsm_cmd("A/\r"); 
+                else send_gsm_cmd(cmd);
+            } 
         
     }
     LCD_xoa(TREN);
@@ -23,21 +25,19 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
 }
 
 
-
 __bit send_sms(__bit chinh){
     if(lenh_sms[0] && !lenh_sms[3]){gsm_sendandcheck("\032",3,1,"TK<1000 K BAOCAO"); return 0;}
     send_gsm_cmd("AT+CMGS=\"");
     send_gsm_cmd(chinh?phone_chinh:eep_phonephu);
-    send_gsm_cmd("\"\r");
-    delay_ms(5);
-    return 1;
+    gsm_serial_cmd = CMGS;
+    return gsm_sendandcheck("\"\r",5,61,"   SENDING   ");
 }
 
 __bit kiemtrataikhoan(){
     lenh_sms[0] = 0;
     have_cusd = 0;
     gsm_serial_cmd = CUSD;
-    gsm_sendandcheck("AT+CUSD=1,\"*101#\",\r",15,1,"  KIEM TRA TK   ");
+    gsm_sendandcheck("AT+CUSD=1,\"*101#\",\r",3,30,"  KIEM TRA TK   ");
     gsm_serial_cmd = NORMAL;
     return lenh_sms[0];
 }
@@ -45,11 +45,12 @@ __bit kiemtrataikhoan(){
 
 void send_gio_kim(){
     u8 i = 0;
+    send_gsm_cmd(atmel_phat?"\r89C55":"\rSTC15");
     do{
-        send_gsm_cmd(" K");
+        send_gsm_cmd(may_dc?" DC":" ST");
         send_gsm_byte(i+'1');
         send_gsm_byte('=');
-        send_gsm_byte(thoi_gian_doi_doc_cam[i]?0:'E');
+        if(!thoi_gian_doi_doc_cam[i])send_gsm_byte('E');
         send_gsm_byte(gio[i]/10+'0');
         send_gsm_byte(gio[i]%10+'0');
         send_gsm_byte(':');
@@ -72,7 +73,7 @@ void send_gio_thuc(){
 void send_thong_so(__bit chinh){
     u8 dien_ap = dien_ap_nguon*28/256;
     send_gsm_cmd(" DH=");
-    send_gsm_byte(motor_dung?1:0+'0');
+    send_gsm_byte(motor_dung?'0':'1');
     send_gsm_cmd(" BC=");
     send_gsm_byte(eep_baocao+'0');
     send_gsm_cmd(" XG=");
@@ -106,12 +107,12 @@ void baocaosms(__bit chinh, u8  *noidung){
                 
     if(!sms_on) return;
     gsm_sendandcheck("AT\r", 15, 1,ver);
-    if(*(noidung+1)!='*') 
-        kiemtrataikhoan();
+    if(*(noidung+1)!='*') kiemtrataikhoan();
     else lenh_sms[0]=0;
-    if(!send_sms(chinh)) return;
-    send_gsm_cmd(ver);
 
+    if(!send_sms(chinh)) return;
+    
+    send_gsm_cmd(ver);
 
     send_gio_kim();
     send_gio_thuc();
@@ -188,20 +189,6 @@ void gui_huong_dan(){
     gsm_sendandcheck("\032",50,1," GUI HUONG DAN  ");
 }
 
-// __bit gsm_laygioGPSCCLK(){
-//     gsm_serial_cmd = NORMAL;
-//     if(gsm_sendandcheck("AT+CCLK?\r", 15, 2,"  SENDING CCLK  ")){
-//         if(have_time == CLK){
-//             hour=(date_str[9]-'0')*10+date_str[10]-'0';
-//             hour12=hour%12;
-//             minute = (date_str[12]-'0')*10+date_str[13]-'0';
-//             second = (date_str[15]-'0')*10+date_str[16]-'0';
-//             rtc_settime(hour,minute,second);
-//             return 1;
-//         }
-//     }
-//     return 0;
-// }
 void gsm_laygio_gps(){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
@@ -263,7 +250,9 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
 
         switch(gsm_serial_cmd){
             case NORMAL:
-                if(gsm_receive_buf[gsm_receive_pointer]=='"' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==' ' &&
+                if(SBUF=='>'){
+                    send_gsm_cmd("\032");
+                }else if(gsm_receive_buf[gsm_receive_pointer]=='"' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==' ' &&
                 gsm_receive_buf[(gsm_receive_pointer+11)%13] ==':' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='K' &&
                 gsm_receive_buf[(gsm_receive_pointer+9)%13] =='L' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='C' &&
                 gsm_receive_buf[(gsm_receive_pointer+7)%13] =='C' && gsm_receive_buf[(gsm_receive_pointer+6)%13] =='+'){
@@ -282,7 +271,8 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                 gsm_receive_buf[(gsm_receive_pointer+11)%13] =='T' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='M' &&
                 gsm_receive_buf[(gsm_receive_pointer+9)%13] =='C' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='+')){
                                         
-                    send_gsm_cmd("AT+CMGL=\"ALL\"\r");
+                    // send_gsm_cmd("AT+CMGL=\"ALL\"\r");
+                    co_tin_nhan_moi = 1;
                     
                 /*SMS buoc 2: sau khi kiem duoc CMGL thi chuyen qua tim kiem so dien thoai phu hop
                                 neu nhu da nhan duoc tin nhan can xu ly thi khong doc tin nhan khac tiep tuc*/
@@ -401,6 +391,12 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                                     gsm_receive_buf[(gsm_receive_pointer+9)%13] =='P' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='*';
                     if(SBUF=='\r') gsm_serial_cmd = NORMAL;
                 }
+                break;
+            case CMGS:
+                if(SBUF=='>'){
+                    gsm_serial_cmd = NORMAL;
+                    gui_lenh_thanh_cong = 1;
+                }else if(gsm_receive_buf[gsm_receive_pointer]=='R' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='R' && gsm_receive_buf[(gsm_receive_pointer+11)%13] =='E') connect  = 0;
                 break;
             case CUSD:
                 if(have_cusd){

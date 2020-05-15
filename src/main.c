@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.2S";
+u8 __code ver[] = "ASIA GPS 4.1.3S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -75,7 +75,7 @@ void main() {
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 0;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 4;
 	if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
 	if(eeprom_buf[BAOCAO_EEPROM]>1)eeprom_buf[BAOCAO_EEPROM] = 0;
 	if(eeprom_buf[GPSON_EEPROM]>1)eeprom_buf[GPSON_EEPROM] = 1;
@@ -353,6 +353,7 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
+
 	gsm_laygio_gps();
 	bat_phone_phu = eep_phonephu[11]&1;
 	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
@@ -454,7 +455,7 @@ void main() {
 		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		
 
-		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 2)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
+		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
 			EA=0;
 			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
@@ -476,7 +477,11 @@ void main() {
 			}
 			da_gui_bao_cao = 1;
 		}
-		
+		if(co_tin_nhan_moi){
+			co_tin_nhan_moi = 0;
+			gsm_sendandcheck("AT\r", 15, 1,ver);
+			send_gsm_cmd("AT+CMGL=\"ALL\"\r");
+		}
 		switch(mode){
 			case 0:
 				if(gsm_reset){
@@ -758,7 +763,7 @@ void main() {
 					phim_cong_nhan = 0;
 					if(++sub_mode>so_motor-1) sub_mode = 0;
 					LCD_guidulieu(sub_mode+'1');
-					LCD_guilenh(DUOI+4);
+					LCD_guilenh(0xc4);
 				}
 				break;
 			default: mode = sub_mode = 0;

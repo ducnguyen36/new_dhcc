@@ -2,7 +2,10 @@ void xu_ly_tin_nhan(){
     //lenh DH
     lenh_khong_hop_le = 0;
     u8 giodelta,phutdelta, kim_index;
-    u8 __xdata i;
+    u8 __xdata i = 0;
+    while(lenh_sms[i++])WATCHDOG;
+    while(i<160)lenh_sms[i++] = 0;
+    i=0;
     if((lenh_sms[0]=='?'||lenh_sms[1]=='?') && !phone_chinh_so_sanh_that_bai)gui_huong_dan();
     else{ 
         switch(lenh_sms[1]){

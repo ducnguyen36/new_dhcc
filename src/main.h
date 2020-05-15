@@ -37,7 +37,10 @@ __bit phone_chinh_so_sanh_that_bai;
 __bit phone_phu_so_sanh_that_bai;
 __bit bat_phone_phu;
 
+
+
 __bit phone_header;
+__bit co_tin_nhan_moi;
 __bit pin_chinh_xac;
 __bit sms_dang_xu_ly;
 __bit have_cusd;
