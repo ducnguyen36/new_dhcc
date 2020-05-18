@@ -25,15 +25,18 @@ void LCD_chop(u8 hang,u8 *vanban){
 		LCD_guichuoi(vanban);
 	}else LCD_xoa(hang);
 }
+
 void LCD_guidulieu(u8 dulieu){
 	
+	LCD_rs=1;
 	LCD_D4=(dulieu>>4)&1;
 	LCD_D5=(dulieu>>5)&1;
 	LCD_D6=(dulieu>>6)&1;
 	LCD_D7=(dulieu>>7)&1;
 	LCD_en =1;
-	LCD_rs=1;
+	_nop_();
 	LCD_en=0;
+	_nop_();
 	LCD_D4=dulieu 	  &1;
 	LCD_D5=(dulieu>>1)&1;
 	LCD_D6=(dulieu>>2)&1;
@@ -41,19 +44,21 @@ void LCD_guidulieu(u8 dulieu){
 	LCD_en =1;
 	_nop_();
 	LCD_en=0;
-	delay_us(50);
+	delay_us(100);
 	LCD_rs=0;
 }
 
 void LCD_guilenh(u8 lenh){
 	
+	LCD_rs=0;
 	LCD_D4=(lenh>>4)&1;
 	LCD_D5=(lenh>>5)&1;
 	LCD_D6=(lenh>>6)&1;
 	LCD_D7=(lenh>>7)&1;
 	LCD_en =1;
-	LCD_rs=0;
+	_nop_();
 	LCD_en=0;
+	_nop_();
 	LCD_D4=lenh 	  &1;
 	LCD_D5=(lenh>>1)&1;
 	LCD_D6=(lenh>>2)&1;
@@ -61,7 +66,7 @@ void LCD_guilenh(u8 lenh){
 	LCD_en =1;
 	_nop_();
 	LCD_en=0;
-	delay_us(50);
+	delay_us(100);
 }
 
 void LCD_noblink(){

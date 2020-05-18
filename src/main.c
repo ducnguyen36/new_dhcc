@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = "ASIA GPS 4.1.3S";
+u8 __code ver[] = " ASIA GPS 4.1.5S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -62,11 +62,7 @@ void main() {
 	xung_giay_check=250;
 	so_lan_goi_dien = 0;
 	motor_index = motor_index2 = 5;
-	// thoi_gian_doi_cam_chuan = eep_motorst?5:30;
-	// thoi_gian_doi_doc_cam[0]=thoi_gian_doi_cam_chuan;
-	// thoi_gian_doi_doc_cam[1]=thoi_gian_doi_cam_chuan;
-	// thoi_gian_doi_doc_cam[2]=thoi_gian_doi_cam_chuan;
-	// thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
+	
 
 	gsm_delay_reset=10;
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
@@ -118,17 +114,6 @@ void main() {
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
 
-	// sim_test_sec = 0;
-	// sms_on = 1;
-	// max_second = 60;
-	// if(eep_debug & 16) max_second = (eep_debug & 15)<6?(eep_debug & 15)+1:(60/(12-(eep_debug & 15)));
-	// else {
-	// 	if((eep_debug & 7)>1) sim_test_sec = 60/(8-(eep_debug&7));
-	// 	else if(eep_debug & 7) sim_test_sec = 61;
-	// }
-	// sms_on = eep_debug & 96;
-	// i = phone_chinh[10] = 0;
-	// while(i<10) phone_chinh[i] = ((eep_debug & 96) == 32)? phone1[i++]:phone2[i++];
 	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:5);
 
 	switch(so_motor){
@@ -152,25 +137,7 @@ void main() {
 		default: break;
 	}
 
-
-
-	// if(eep_phut1>59 || eep_gio1>11 || eep_phut2>59 || eep_gio2>11
-	// || eep_phut3>59 || eep_gio3>11 || eep_phut4>59 || eep_gio4>11)
-	// 	luu_gio_kim();
-	// else{
-	// 	phut[0] = eep_phut1;
-	// 	gio[0]  = eep_gio1;
-	// 	phut[1] = eep_phut2;
-	// 	gio[1]  = eep_gio2;
-	// 	phut[2] = eep_phut3;
-	// 	gio[2]  = eep_gio3;
-	// 	phut[3] = eep_phut4;
-	// 	gio[3]  = eep_gio4;
-	// }
-
-	//khoi dong sac acqui
 	ChargeRelay = 1;
-	// phut_sac_xa_acqui_con_lai = (eep_giosacxa >> 4) * 60;
 	
 	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
 	gsm_init();
@@ -374,14 +341,12 @@ void main() {
 	
 	
 	while(1){
-		// multi motor
-		// if(eep_phut1!=phut[0] || eep_gio1!=gio[0] || eep_phut2!=phut[1] || eep_gio2!=gio[1]
-		// || eep_phut3!=phut[2] || eep_gio3!=gio[2] || eep_phut4!=phut[3] || eep_gio4!=gio[3])
-		// 	luu_gio_kim();
+		
 		if(so_motor==4 && (eep_phut4!=phut[3] || eep_gio4!=gio[3])) luu_gio_kim();
 		else if(so_motor>2 && (eep_phut3!=phut[2] || eep_gio3!=gio[2])) luu_gio_kim();
 		else if(so_motor>1 && (eep_phut2!=phut[1] || eep_gio2!=gio[1])) luu_gio_kim();
 		else if(eep_phut1!=phut[0] || eep_gio1!=gio[0]) luu_gio_kim();
+
 		if(!mode_wait || !mode) {
 			mode=0;
 			if(motor_index  == 5) motor_index  = motor_run_check();
@@ -450,12 +415,12 @@ void main() {
 			giay_out=0;
 		}
 
-		
 		kiem_tra_den();
 		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
 		
 
 		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
+			if(max_second<60)rtc_settime(eep_gioreset,6,0);	
 			EA=0;
 			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
@@ -482,6 +447,11 @@ void main() {
 			gsm_sendandcheck("AT\r", 15, 1,ver);
 			send_gsm_cmd("AT+CMGL=\"ALL\"\r");
 		}
+		if(goi_dien_thoai){
+			goi_dien_thoai = 0;
+			gsm_quay_so(phone_chinh);
+			
+		}
 		switch(mode){
 			case 0:
 				if(gsm_reset){
@@ -498,7 +468,7 @@ void main() {
 				if(sms_dang_xu_ly){
 					/*xu ly tin nhan*/
 					xu_ly_tin_nhan();
-					send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
+					gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ");
 					sms_dang_xu_ly = 0;
 				}
 				else {
@@ -511,11 +481,8 @@ void main() {
 								LCD_guigio(0x8a," ",gio[2],phut[2],251,0);LCD_guidulieu(' ');
 					}
 					if(so_motor!=4){
-						// if(second%2)LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,may_dc?30:20,flip_pulse);
 						LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse);
 					} 
-					// LCD_guigio(0x80," ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x85," ",gio[1],phut[1],253,flip_pulse);
-					// LCD_guigio(0x8a," ",gio[2],phut[2],253,flip_pulse);LCD_guigio(0xc0," ",gio[3],phut[3],253,flip_pulse);
 				}
 				if(!phim_mode_doi && !cam_vao){
 					phim_mode_nhan=0;
@@ -583,6 +550,16 @@ void main() {
 				break;
 			case GIOKIM:
 				LCD_blinkXY((sub_mode<8 && so_motor>2)?TREN:DUOI,so_motor==1?(7+sub_mode+sub_mode/2):(2+sub_mode%8+sub_mode%8/2+sub_mode%8/4));
+				if(!phim_mode_doi){
+					LCD_noblink();
+					sub_mode = mode;
+					mode = SELECT;
+					gio[0] = gio[0]%12;
+					gio[1] = gio[1]%12;
+					gio[2] = gio[2]%12;
+					gio[3] = gio[3]%12;
+					luu_gio_kim();	
+				}
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;

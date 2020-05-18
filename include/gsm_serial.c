@@ -15,13 +15,19 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
             if(!connect){
                 if(!retry--) break;
                 connect_time_out = connect = delay;
-                if(*(cmd+3) || (*cmd =='\r')) send_gsm_cmd("A/\r"); 
+                if(*(cmd+2) == '+' || (*cmd =='\r') ) send_gsm_cmd("A/\r"); 
                 else send_gsm_cmd(cmd);
             } 
         
     }
     LCD_xoa(TREN);
     return gui_lenh_thanh_cong;
+}
+
+__bit gsm_quay_so(u8 *phone){
+    send_gsm_cmd("ATD");
+    send_gsm_cmd(phone);
+    return gsm_sendandcheck(";\r",1,60,"    CALLING     ");
 }
 
 
@@ -231,7 +237,7 @@ __bit gsm_thietlapnhantin(){
     if(!gsm_sendandcheck("AT\r", 15, 1,ver)) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 2,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
-            if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ")){
+            if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 20, 3,"  SENDING CMGDA  ")){
                 return 1;
             }
         }
@@ -271,7 +277,6 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                 gsm_receive_buf[(gsm_receive_pointer+11)%13] =='T' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='M' &&
                 gsm_receive_buf[(gsm_receive_pointer+9)%13] =='C' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='+')){
                                         
-                    // send_gsm_cmd("AT+CMGL=\"ALL\"\r");
                     co_tin_nhan_moi = 1;
                     
                 /*SMS buoc 2: sau khi kiem duoc CMGL thi chuyen qua tim kiem so dien thoai phu hop
@@ -389,7 +394,7 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                     pin_chinh_xac = gsm_receive_buf[gsm_receive_pointer]==',' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='C' &&
                                     gsm_receive_buf[(gsm_receive_pointer+11)%13] =='U' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='D' &&
                                     gsm_receive_buf[(gsm_receive_pointer+9)%13] =='P' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='*';
-                    if(SBUF=='\r') gsm_serial_cmd = NORMAL;
+                    if(SBUF=='\r'){sms_index =1; gsm_serial_cmd = NORMAL;}
                 }
                 break;
             case CMGS:
