@@ -34,7 +34,8 @@ __bit gsm_quay_so(u8 *phone){
 __bit send_sms(__bit chinh){
     if(lenh_sms[0] && !lenh_sms[3]){gsm_sendandcheck("\032",3,1,"TK<1000 K BAOCAO"); return 0;}
     send_gsm_cmd("AT+CMGS=\"");
-    send_gsm_cmd(chinh?phone_chinh:eep_phonephu);
+    if(chinh) send_gsm_cmd(phone_chinh);
+    else send_gsm_cmd(eep_phonephu);
     gsm_serial_cmd = CMGS;
     return gsm_sendandcheck("\"\r",5,61,"   SENDING   ");
 }
@@ -65,40 +66,46 @@ void send_gio_kim(){
     }while(++i!=so_motor);
 }
 
-void send_gio_thuc(){
+void send_gio_thuc(__bit chinh){
     send_gsm_cmd(" T=");
     send_gsm_byte(hour/10+'0');
     send_gsm_byte(hour%10+'0');
     send_gsm_byte(':');
     send_gsm_byte(minute/10+'0');
     send_gsm_byte(minute%10+'0');
-    send_gsm_cmd(" GPS=");
-    send_gsm_byte((GPS_time?'1':'0')+eep_gpson);
+    if(chinh){
+        send_gsm_cmd(" GPS=");
+        send_gsm_byte((GPS_time?'1':'0')+eep_gpson);
+    }
 }
 
 void send_thong_so(__bit chinh){
     u8 dien_ap = dien_ap_nguon*28/256;
-    send_gsm_cmd(" DH=");
-    send_gsm_byte(motor_dung?'0':'1');
-    send_gsm_cmd(" BC=");
-    send_gsm_byte(eep_baocao+'0');
-    send_gsm_cmd(" XG=");
-    send_gsm_byte(xung_giay_check?'1':'0');
-    send_gsm_cmd(" RS=");
-    send_gsm_byte(ngay_reset_con_lai+'0');
-    send_gsm_byte('/');
-    send_gsm_byte(eep_ngayreset+'0');
-    send_gsm_cmd(" TR=");
-    send_gsm_byte(eep_gioreset/10+'0');
-    send_gsm_byte(eep_gioreset%10+'0');
-    send_gsm_cmd(":06");
+    if(chinh){
+        send_gsm_cmd(" DH=");
+        send_gsm_byte(motor_dung?'0':'1');
+        send_gsm_cmd(" BC=");
+        send_gsm_byte(eep_baocao+'0');
+        send_gsm_cmd(" XG=");
+        send_gsm_byte(xung_giay_check?'1':'0');
+        send_gsm_cmd(" RS=");
+        send_gsm_byte(ngay_reset_con_lai+'0');
+        send_gsm_byte('/');
+        send_gsm_byte(eep_ngayreset+'0');
+        send_gsm_cmd(" TR=");
+        send_gsm_byte(eep_gioreset/10+'0');
+        send_gsm_byte(eep_gioreset%10+'0');
+        send_gsm_cmd(":06");
+    }
     send_gsm_cmd(" DEN=");
     send_gsm_byte(DenRelay?'1':'0');
     send_gsm_cmd(" VOL=");
     send_gsm_byte(dien_ap/10+'0');
     send_gsm_byte(dien_ap%10+'0');
-    send_gsm_cmd(" MP3=");
-    send_gsm_byte(eep_mp3+'0');
+    if(eep_mp3 || chinh){
+        send_gsm_cmd(" MP3=");
+        send_gsm_byte(eep_mp3+(mp3_playing?'0':47));
+    }
     if(!chinh) return;
     send_gsm_cmd(" DT=");
     send_gsm_byte(eep_phonephu[11]+'0');
@@ -121,7 +128,7 @@ void baocaosms(__bit chinh, u8  *noidung){
     send_gsm_cmd(ver);
 
     send_gio_kim();
-    send_gio_thuc();
+    send_gio_thuc(chinh);
     send_thong_so(chinh);
 
   
@@ -178,7 +185,7 @@ void baocaoden(__bit chinh, u8 *noidung){
     if(!sms_on) return;
     gsm_sendandcheck("AT\r", 15, 1,ver);
     if(!send_sms(chinh)) return;
-    send_gio_thuc();
+    send_gio_thuc(chinh);
     send_thong_so(chinh);
     send_thong_so_den();
     send_gsm_cmd(noidung);

@@ -1,45 +1,4 @@
 
-// u8 motor_run_check(){
-// 	motorDir1 = 1;
-// 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
-// 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
-// 	if(may_canh_kim)return (canhkim && may_canh_kim<3)?may_canh_kim-1:5;
-// 	u8 j = (1+motor_index)%2;
-// 	u8 i = j;
-// 	do{
-// 		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)){
-// 			// motorDir = canhkim || (720 + gio[i]*60 + phut[i] - hour12*60 - minute) % 720 > 360;
-// 			return i;
-// 		}
-// 		i = 1 - i;
-// 	}while(i != j);
-// 	return 5;
-// }
-// u8 motor_run_check2(){
-// 	motorDir2 = 1;
-// 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
-// 	if (dien_ap_thap || !eep_motor || eep_loithesim>23 || mode ) return 5;
-// 	if(may_canh_kim)return (canhkim && may_canh_kim>2)?may_canh_kim-1:5;
-// 	u8 j = (1+motor_index2)%2+2;
-// 	u8 i = j;
-// 	do{
-// 		if(thoi_gian_doi_doc_cam[i] && (phut[i]!=minute || gio[i]!=hour12)) return i;
-// 		i = 5 - i;
-// 	}while(i != j);
-// 	return 5;
-// }
-
-// void luu_gio_kim(){
-// 	IAP_xoasector(SECTOR2);
-// 	IAP_ghibyte(PHUT1_EEPROM,phut[0]);
-// 	IAP_ghibyte(GIO1_EEPROM,gio[0]);
-// 	IAP_ghibyte(PHUT2_EEPROM,phut[1]);
-// 	IAP_ghibyte(GIO2_EEPROM,gio[1]);
-// 	IAP_ghibyte(PHUT3_EEPROM,phut[2]);
-// 	IAP_ghibyte(GIO3_EEPROM,gio[2]);
-// 	IAP_ghibyte(PHUT4_EEPROM,phut[3]);
-// 	IAP_ghibyte(GIO4_EEPROM,gio[3]);
-// }
 
 u8 motor_run_check() __reentrant {
 	// u8 m,j=0;  
@@ -288,15 +247,5 @@ void cam_phim() __interrupt 1 __using 2 {
 			else if(step_index==8) step_index=0;
 		} else P2 &= 0x0f;
 	}
-	 
-	
-	// if(motor_index){
-	// 		motor1 = motor_index == 1; motor3 = motor_index == 2; 
-	// 		P2=(P2&0x0f)|motor_step[step_index];
-	// 		step_index+= motorDir?1:-1; 
-	// 		if(step_index>8) step_index=7;
-	// 		else if(step_index==8) step_index=0;
-	// } else {motor1 = motor2 = 0; P2 &= 0x0f;}
-	
 
 }

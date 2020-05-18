@@ -50,8 +50,9 @@ void xu_ly_tin_nhan(){
                     //eeprom dh on
                     if(phone_chinh_so_sanh_that_bai)break;
                     IAP_docxoasector1();
-                    eeprom_buf[MOTOR_EEPROM] = 1;
+                    eeprom_buf[MOTOR_EEPROM] &= 0xef;
                     IAP_ghisector1();
+                    motor_dung = 0;
                     mp3_status = mp3_IDLE;
                     mp3_hour= 24;
                     mp3_minute = 60;
@@ -59,8 +60,9 @@ void xu_ly_tin_nhan(){
                     //eeprom dh off
                     if(phone_chinh_so_sanh_that_bai)break;
                     IAP_docxoasector1();
-                    eeprom_buf[MOTOR_EEPROM] = 0;
+                    eeprom_buf[MOTOR_EEPROM] |= 0x10;
                     IAP_ghisector1();
+                    motor_dung = 1;
                     AmplyRelay = 0;
                 }else {
                     //khong lay gio kim
@@ -119,7 +121,7 @@ void xu_ly_tin_nhan(){
                     if(phone_phu_so_sanh_that_bai)
                         baocaosms(CHINH,"\rlenh khong hop le");
                     else{
-                        baocaosms(CHINH,"\rlenh khong hop le\rPhone phu gui lenh");
+                        baocaosms(CHINH,"\rlenh dong ho khong hop le\rPhone phu gui lenh");
                         baocaosms(PHU,"\rlenh khong hop le");
                     }
                         //gui tin nhan lenh DH khong hop le
@@ -136,19 +138,18 @@ void xu_ly_tin_nhan(){
             case 'c':
             case 'C':
                 if(lenh_sms[4]=='e' || lenh_sms[4]=='E'){
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaoden(CHINH,"\rbao cao den thanh cong");
-                    else{
-                        baocaoden(CHINH,"\rbao cao den thanh cong\rPhone phu gui lenh");
-                        baocaoden(PHU,"\rbao cao den thanh cong");
-                    }
+                    if(phone_chinh_so_sanh_that_bai)break;
+                    baocaoden(CHINH,"\rbao cao den thanh cong");
+                   
                     break;
                 }
                 else if(lenh_sms[4]=='n' || lenh_sms[4]=='N'){
+                    if(phone_chinh_so_sanh_that_bai)break;
                     IAP_docxoasector1();
                     eeprom_buf[BAOCAO_EEPROM] = 1;
                     IAP_ghisector1();
                 }else if(lenh_sms[4]=='f' || lenh_sms[4]=='F'){
+                    if(phone_chinh_so_sanh_that_bai)break;
                     IAP_docxoasector1();
                     eeprom_buf[BAOCAO_EEPROM] = 0;
                     IAP_ghisector1();
@@ -156,7 +157,7 @@ void xu_ly_tin_nhan(){
                     if(phone_phu_so_sanh_that_bai)
                         baocaosms(CHINH,"\rlenh khong hop le");
                     else{
-                        baocaosms(CHINH,"\rlenh khong hop le\rPhone phu gui lenh");
+                        baocaosms(CHINH,"\rlenh khong hop le\rPhone phu gui lenh den");
                         baocaosms(PHU,"\rlenh khong hop le");
                     }
                     break;
@@ -171,13 +172,9 @@ void xu_ly_tin_nhan(){
             case 's':
             case 'S':
                 //reset system
+                if(phone_chinh_so_sanh_that_bai)break;
                 if(lenh_sms[4]=='y' || lenh_sms[4]=='Y' || lenh_sms[4]=='D' || lenh_sms[4]=='d'){
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rreset bo dieu khien");
-                    else{
-                        baocaosms(CHINH,"\rreset bo dieu khien\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rreset bo dieu khien");
-                    }
+                    baocaosms(CHINH,"\rreset bo dieu khien");
                     EA=0;
                     gsm_pw = 0;
                     IAP_ghibyte(NORRESET_EEPROM,0);
@@ -196,76 +193,45 @@ void xu_ly_tin_nhan(){
                                 eeprom_buf[GIORESET_EEPROM] = giodelta;
                         }
                         IAP_ghisector1();
-                        if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rdat reset thanh cong");
-                        else{
-                            baocaosms(CHINH,"\rdat reset thanh cong\rPhone phu gui lenh");
-                            baocaosms(PHU,"\rdat ngay gio reset thanh cong");
-                        }
+                        baocaosms(CHINH,"\rdat reset thanh cong");
+                        
                     }else {
-                        if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rdat reset khong hop le");
-                        else{
-                            baocaosms(CHINH,"\rdat reset khong hop le\rPhone phu gui lenh");
-                            baocaosms(PHU,"\rdat reset khong hop le");
-                        }
+                        baocaosms(CHINH,"\rdat reset khong hop le");   
                         break;
                     }
                 }
                 //reset sim
                 else if(lenh_sms[4] == 'i' || lenh_sms[4] == 'I'){
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rreset gsm sau10s");
-                    else{
-                        baocaosms(CHINH,"\rreset gsm sau10s\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rreset gsm sau10s");
-                    }
+                    baocaosms(CHINH,"\rreset gsm sau10s");
                     gsm_pw = 0;
-                }else {
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rlenh reset khong hop le");
-                    else{
-                        baocaosms(CHINH,"\rlenh reset khong hop le\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rlenh reset khong hop le");
-                    }
-                }
+                }else baocaosms(CHINH,"\rlenh reset khong hop le");
+                
                 //reset dalas
                 //reset eeprom
                 
                 break;
-            case 'a':
-            case 'A':
-                if(lenh_sms[4]>48 && lenh_sms[4]<58 && lenh_sms[6]>48 && lenh_sms[6]<58){
-                    IAP_docxoasector1();
-                    eeprom_buf[GIOSACXA_EEPROM] = ((lenh_sms[4]-'0')<<4) | (lenh_sms[6]-'0');
-                    IAP_ghisector1();
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rthay doi gio sac xa acqui thanh cong");
-                    else{
-                        baocaosms(CHINH,"\rthay doi gio sac xa acqui thanh cong\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rthay doi gio sac xa acqui thanh cong");
-                    }
-                } else{
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rLenh sac acqui khong hop le");
-                    else{
-                        baocaosms(CHINH,"\rLenh sac acqui khong hop le\rPhone phu gui lenh");
-                        baocaosms(PHU,"\rLenh sac acqui khong hop le");
-                    }
-                }
-                break;
+            // case 'a':
+            // case 'A':
+            //     if(phone_chinh_so_sanh_that_bai)break;
+            //     if(lenh_sms[4]>48 && lenh_sms[4]<58 && lenh_sms[6]>48 && lenh_sms[6]<58){
+            //         IAP_docxoasector1();
+            //         eeprom_buf[GIOSACXA_EEPROM] = ((lenh_sms[4]-'0')<<4) | (lenh_sms[6]-'0');
+            //         IAP_ghisector1();
+            //         baocaosms(CHINH,"\rthay doi gio sac xa acqui thanh cong");
+                    
+            //     } else baocaosms(CHINH,"\rLenh sac acqui khong hop le");
+                    
+                
+            //     break;
             case 'e':
             case 'E':
+                if(phone_chinh_so_sanh_that_bai)break;
                 if(lenh_sms[4]=='X' || lenh_sms[4]=='x'){
                     IAP_docxoasector1();
                     eeprom_buf[TATMODEN_EEPROM] = 0;
                     IAP_ghisector1();
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaoden(CHINH,"\rxoa gio den thanh cong");
-                    else{
-                        baocaoden(CHINH,"\rxoa gio den thanh cong\rPhone phu gui lenh");
-                        baocaoden(PHU,"\rxoa gio den thanh cong");
-                    }
+                    baocaoden(CHINH,"\rxoa gio den thanh cong");
+                   
                 }else {
                     IAP_docxoasector1();
                     IAP_ghisector1();
@@ -285,19 +251,10 @@ void xu_ly_tin_nhan(){
                     if(eeprom_buf[TATMODEN_EEPROM]){
                         IAP_xoasector(SECTOR1);
                         IAP_ghisector1();
-                        if(phone_phu_so_sanh_that_bai)
-                            baocaoden(CHINH,"\rlenh den thanh cong");
-                        else{
-                            baocaoden(CHINH,"\rlenh den thanh cong\rPhone phu gui lenh");
-                            baocaoden(PHU,"\rlenh den thanh cong");
-                        }
-                    }else
-                        if(phone_phu_so_sanh_that_bai)
-                            baocaosms(CHINH,"\rthong so den khong hop le");
-                        else{
-                            baocaosms(CHINH,"\rthong so den khong hop le\rPhone phu gui lenh");
-                            baocaosms(PHU,"\rthong so den khong hop le");
-                        } 
+                        baocaoden(CHINH,"\rlenh den thanh cong");
+                        
+                    }else baocaosms(CHINH,"\rthong so den khong hop le");
+                         
                 }
                 break;
             case 'p':
@@ -363,7 +320,6 @@ void xu_ly_tin_nhan(){
             case 'T':
                 if(!phone_chinh_so_sanh_that_bai){
                     if(lenh_sms[3]=='G' || lenh_sms[3]=='g' || lenh_sms[3]=='C' || lenh_sms[3]=='c' ){
-                        // gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ");
                         goi_dien_thoai = 1;
                         baocaosms(CHINH,"\rDang goi dien thoai ve ...."); 
                     }
@@ -377,7 +333,7 @@ void xu_ly_tin_nhan(){
                             eeprom_buf[PHONEPHU_EEPROM] = 0;
                             for(i=1;i<10;i++)
                                 eeprom_buf[PHONEPHU_EEPROM+i] = lenh_sms[6+i];
-                            if(eeprom_buf[PHONEPHU_EEPROM+11]==2) eeprom_buf[PHONEPHU_EEPROM+11] = 0;
+                            if(eeprom_buf[PHONEPHU_EEPROM+11]==2) eeprom_buf[PHONEPHU_EEPROM+11] = 1;
                             IAP_ghisector1();
                             baocaosms(CHINH,"\rghi phone phu moi thanh cong");
                         }else baocaosms(CHINH,"\rthay doi phone phu khong thanh cong");
@@ -391,7 +347,7 @@ void xu_ly_tin_nhan(){
                             IAP_docxoasector1();
                             for(i=0;i<10;i++)
                                 eeprom_buf[PHONEPHU_EEPROM+i] = lenh_sms[3+i];
-                            if(eeprom_buf[PHONEPHU_EEPROM+11]==2) eeprom_buf[PHONEPHU_EEPROM+11] = 0;
+                            if(eeprom_buf[PHONEPHU_EEPROM+11]==2) eeprom_buf[PHONEPHU_EEPROM+11] = 1;
                             IAP_ghisector1();
                             baocaosms(CHINH,"\rghi phone phu moi thanh cong");
                         }else baocaosms(CHINH,"\rthay doi phone phu khong thanh cong");

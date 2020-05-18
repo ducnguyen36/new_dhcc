@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.5S";
+u8 __code ver[] = " ASIA GPS 4.1.6S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -72,7 +72,7 @@ void main() {
 	u8 __xdata i;
 	IAP_docxoasector1();
 	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 4;
-	if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
+	// if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
 	if(eeprom_buf[BAOCAO_EEPROM]>1)eeprom_buf[BAOCAO_EEPROM] = 0;
 	if(eeprom_buf[GPSON_EEPROM]>1)eeprom_buf[GPSON_EEPROM] = 1;
 	if(eeprom_buf[NGAYRESET_EEPROM]>9)eeprom_buf[NGAYRESET_EEPROM] = 1;
@@ -114,7 +114,7 @@ void main() {
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
 
-	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:5);
+	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:10);
 
 	switch(so_motor){
 		case 4: thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
@@ -199,8 +199,10 @@ void main() {
 						case 1:sub_mode = (giotemp&96)>>5;break;
 						case 2:sub_mode = (giotemp&16)>>4;break;
 						case 3:IAP_docxoasector1();
-							   eeprom_buf[DEBUG_EEPROM] = giotemp;
+							   eeprom_buf[MOTOR_EEPROM] &= 0xef;
+							   eeprom_buf[DEBUG_EEPROM] =  giotemp;
 							   IAP_ghisector1();
+							   IAP_xoasector(SECTOR2);
 							   IAP_CONTR = 0x60;
 					}
 				}
@@ -248,7 +250,7 @@ void main() {
 						LCD_guichuoi("\300MODE:OK    RS:BO");
 						break;
 					case 4:
-						phuttemp = 0;
+						phuttemp = (i & 0x10);
 						phuttemp += (so_motor-1);
 						phuttemp += (may_dc?4:0); 
 						if(so_motor!=1) phuttemp += (atmel_phat?8:0);
@@ -324,8 +326,11 @@ void main() {
 	gsm_laygio_gps();
 	bat_phone_phu = eep_phonephu[11]&1;
 	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-		baocaosms(CHINH,"\rkhoi dong san sang bo dieu khien");
-		if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang bo dieu khien");
+		if(!eep_norreset)baocaosms(CHINH,"\rkhoi dong phan mem san sang");
+		else{
+			baocaosms(CHINH,"\rkhoi dong san sang");
+			if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang");
+		}
 	}
 
     hour12 = (hour>11)?hour-12:hour;
@@ -355,37 +360,38 @@ void main() {
 
 
 		if(!bao_cao_dien_ap_thap && dien_ap_thap){
-			baocaosms(CHINH,"\r*dien ap thap*");
+			baocaosms(CHINH,"\rdien ap thap");
+			if(bat_phone_phu)baocaosms(PHU,"\rdien ap thap");
 			bao_cao_dien_ap_thap = 1;
 		}
 		if(bao_cao_dien_ap_thap && !dien_ap_thap){
-			baocaosms(CHINH,"\r*dien ap khoi phuc*");
+			baocaosms(CHINH,"\rdien ap khoi phuc");
+			if(bat_phone_phu)baocaosms(PHU,"\rdien ap khoi phuc");
 			bao_cao_dien_ap_thap = 0;
 		}
 		if(!xung_giay_check && !mat_xung_giay){
 			mat_xung_giay = 1;
 			baocaosms(CHINH,"\rmat xung giay");
-			if(bat_phone_phu)baocaosms(PHU,"\rmat xung giay");
 		}
 		//multi motor
 		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
 			loi_cam_motor1 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 1");
+			baocaosms(CHINH,"\rloi doc cam 1");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 1");
 		}
 		if(so_motor>1 && !thoi_gian_doi_doc_cam[1] && !loi_cam_motor2){
 			loi_cam_motor2 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 2");
+			baocaosms(CHINH,"\rloi doc cam 2");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 2");
 		}
 		if(so_motor>2 && !thoi_gian_doi_doc_cam[2] && !loi_cam_motor3){
 			loi_cam_motor3 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 3");
+			baocaosms(CHINH,"\rloi doc cam 3");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 3");
 		}
 		if(so_motor==4 && !thoi_gian_doi_doc_cam[3] && !loi_cam_motor4){
 			loi_cam_motor4 = 1;
-			baocaosms(CHINH,"\rphat hien loi doc cam 4");
+			baocaosms(CHINH,"\rloi doc cam 4");
 			if(bat_phone_phu)baocaosms(PHU,"\rloi doc cam 4");
 		}
 		if(giay_out){
@@ -420,7 +426,8 @@ void main() {
 		
 
 		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
-			if(max_second<60)rtc_settime(eep_gioreset,6,0);	
+			if(max_second<60)rtc_settime(eep_gioreset,6,0);
+			if(so_lan_goi_dien>1) baocaosms(CHINH,"\rChuan bi reset phan mem tu cuoc goi");	
 			EA=0;
 			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
@@ -438,7 +445,6 @@ void main() {
 
 			if(eep_baocao) {
 				baocaosms(CHINH,"\rbao cao dau gio");
-				if(bat_phone_phu)baocaosms(PHU,"\rbao cao dau gio");
 			}
 			da_gui_bao_cao = 1;
 		}
@@ -462,7 +468,6 @@ void main() {
 					hour12=hour%12;
 					if(gsm_thietlapnhantin()){
 						baocaosms(CHINH,"\rgsm reset thanh cong");
-						if(bat_phone_phu)baocaosms(PHU,"\rgsm reset thanh cong");
 					}
 				}
 				if(sms_dang_xu_ly){
@@ -495,10 +500,8 @@ void main() {
 					mp3_status = mp3_IDLE;
 					if(phim_back_nhan) phim_back_nhan = 0;
 					else{
-						if(bat_phone_phu){
-							baocaosms(CHINH,"\rchinh gio bang tay");
-							baocaosms(PHU,"\r*chinh gio bang tay*");
-						}else baocaosms(CHINH,"\r*chinh gio bang tay*");
+						baocaosms(CHINH,"\rchinh gio bang tay");
+						if(bat_phone_phu)baocaosms(PHU,"\r*chinh gio bang tay*");
 					}
 				}
 				break;
@@ -598,6 +601,7 @@ void main() {
 					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
+					else sub_mode = 4*so_motor-1;
 				}
 				
 				if(phim_mode_nhan){
@@ -658,6 +662,7 @@ void main() {
 					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
+					else sub_mode = 3;
 				}
 				
 				if(phim_mode_nhan){
@@ -770,16 +775,12 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			if(dien_ap_nguon<82) ChargeRelay = 0;
 			else if(dien_ap_nguon>110) {
 				dien_ap_thap = 0;
-				// baocaosms(CHINH,"\r*dien ap khoi phuc*");
 			}
 		}else if(dien_ap_nguon<92){
 			dien_ap_thap = 1;
 			motor_index  = motor_index2 = 5;
 			P2 &= 0x0F;
-			// if(eep_phut1!=phut[0] || eep_gio1!=gio[0]){}
-				luu_gio_kim();
-				
-			// baocaosms(CHINH,"\r*dien ap thap*");
+			luu_gio_kim();		
 		}
 	}
 
