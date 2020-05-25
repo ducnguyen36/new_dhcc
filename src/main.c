@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.6S";
+u8 __code ver[] = " ASIA GPS 4.1.7S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -107,6 +107,8 @@ void main() {
 	motorDir = atmel_phat = (eep_motor & 8);
 	motor_dung  = (eep_motor & 16);
 	motor_debug = (eep_motor & 32);
+	if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 64;
+	else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
 	for(i=0;i<11;i++)phone_chinh[i]= (sms_on<2)? phone1[i] : phone2[i];
@@ -175,7 +177,9 @@ void main() {
 		LCD_guichuoi("\300MAY:");
 		LCD_guidulieu(so_motor+'0');
 		LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-		LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+		LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
+		LCD_guichuoi("\313 S:");
+		LCD_guidulieu(toc_do_motor_step+'0');
 		LCD_blinkXY(DUOI,4);
 		sub_mode = so_motor-1;
 		mode = 0;
@@ -242,18 +246,27 @@ void main() {
 						sub_mode = atmel_phat;
 						if(lcd_update_chop){
 							lcd_update_chop = 0;
-							LCD_guichuoi(chop?"\311_____":(atmel_phat?"\311ATMEL  ":"\311STC15  "));
+							LCD_guichuoi(chop?"\309___":(atmel_phat?"\309C55 ":"\309STC "));
 						}
 						break;
 					case 3:
+						sub_mode = toc_do_motor_step;
+						if(lcd_update_chop){
+							lcd_update_chop = 0;
+							LCD_guichuoi("\313 S:");
+							LCD_guidulieu(chop?'_':(toc_do_motor_step+'0'));
+						}
+						break;
+					case 4:
 						LCD_guichuoi("\200      SAVE      ");
 						LCD_guichuoi("\300MODE:OK    RS:BO");
 						break;
-					case 4:
+					case 5:
 						phuttemp = (i & 0x10);
 						phuttemp += (so_motor-1);
 						phuttemp += (may_dc?4:0); 
 						if(so_motor!=1) phuttemp += (atmel_phat?8:0);
+						if(!may_dc && !atmel_phat) phuttemp += (toc_do_motor_step<<6);
 						IAP_xoasector(SECTOR1);
 						IAP_xoasector(SECTOR2);
 						IAP_ghibyte(MOTOR_EEPROM,phuttemp);
@@ -274,6 +287,9 @@ void main() {
 							break;
 						case 2:
 							atmel_phat = sub_mode = 1 - sub_mode;
+						case 3:
+							sub_mode = sub_mode<3?sub_mode+1:0;
+							toc_do_motor_step = sub_mode;
 							break;
 					}
 					
@@ -284,7 +300,8 @@ void main() {
 					mode++;
 					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
 					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-					LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+					LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
+					LCD_guichuoi("\313 S:");LCD_guidulieu(toc_do_motor_step+'0');
 					LCD_noblink();
 				}
 				if(phim_back_nhan){
@@ -293,7 +310,8 @@ void main() {
 					LCD_guichuoi("\200 NHA PHAT TRIEN"); 
 					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
 					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-					LCD_guichuoi(atmel_phat?"\311ATMEL  ":"\311STC15  ");
+					LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
+					LCD_guichuoi("\313 S:");LCD_guidulieu(toc_do_motor_step+'0');
 					if(!mode){ 
 						if(debug_dem++>8){
 							debug = 1;

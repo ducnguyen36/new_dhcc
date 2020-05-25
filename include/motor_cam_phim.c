@@ -89,9 +89,12 @@ void motor_step_int_init(){
 	TMOD = 0;		//Set timer work mode
 	// TL0 = 0x24;		//Initial timer value
 	// TH0 = 0xFA;		//Initial timer value
-	TL0 = 0x30;		//Initial timer value
-	TH0 = 0xF8;		//Initial timer value
-
+	// TL0 = 0x30;		//Initial timer value
+	// TH0 = 0xF8;		//Initial timer value
+	// TL0 = 0x60;		//Initial timer value
+	// TH0 = 0xF0;		//Initial timer value
+	TH0 = (63536 - (toc_do_motor_step * 2000)) >> 8;
+	TL0 = (63536 - (toc_do_motor_step * 2000));
 	TF0 = 0;
 	TR0 = 1;
 	ET0 = 1;
