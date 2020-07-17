@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.6S";
+u8 __code ver[] = " ASIA GPS 4.1.7S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -780,7 +780,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			dien_ap_thap = 1;
 			motor_index  = motor_index2 = 5;
 			P2 &= 0x0F;
-			luu_gio_kim();		
+			// luu_gio_kim();		
 		}
 	}
 
