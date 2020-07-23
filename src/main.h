@@ -72,6 +72,7 @@ u8  __xdata xung_giay_check;
 u8  __xdata thoi_gian_doi_doc_cam[4];
 u8  __xdata thoi_gian_doi_cam_chuan;
 u8  __code     motor_step[]={128,144,16,48,32,96,64,192};
+u8  __xdata    toc_do_motor_step;
 u8  __data     step_index;
 u8  __data     motor_index;
 u8  __data     motor_index2;
