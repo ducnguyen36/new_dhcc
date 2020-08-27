@@ -84,6 +84,10 @@ void send_thong_so(__bit chinh){
     if(chinh){
         send_gsm_cmd(" DH=");
         send_gsm_byte(motor_dung?'0':'1');
+        if(!may_dc && !atmel_phat){
+            send_gsm_cmd(" SP=");
+            send_gsm_byte(toc_do_motor_step+'0');
+        }
         send_gsm_cmd(" BC=");
         send_gsm_byte(eep_baocao+'0');
         send_gsm_cmd(" XG=");
