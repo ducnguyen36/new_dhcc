@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 
-u8 __code ver[] = " ASIA GPS 4.1.8S";
+u8 __code ver[] = " ASIA GPS 4.1.9S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -177,8 +177,8 @@ void main() {
 		LCD_guichuoi("\300MAY:");
 		LCD_guidulieu(so_motor+'0');
 		LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-		LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
-		LCD_guichuoi("\313 S:");
+		LCD_guichuoi(atmel_phat?"\311C55 ":"\311STC ");
+		LCD_guichuoi("\315S:");
 		LCD_guidulieu(toc_do_motor_step+'0');
 		LCD_blinkXY(DUOI,4);
 		sub_mode = so_motor-1;
@@ -246,14 +246,14 @@ void main() {
 						sub_mode = atmel_phat;
 						if(lcd_update_chop){
 							lcd_update_chop = 0;
-							LCD_guichuoi(chop?"\309___":(atmel_phat?"\309C55 ":"\309STC "));
+							LCD_guichuoi(chop?"\311___":(atmel_phat?"\311C55 ":"\311STC "));
 						}
 						break;
 					case 3:
 						sub_mode = toc_do_motor_step;
 						if(lcd_update_chop){
 							lcd_update_chop = 0;
-							LCD_guichuoi("\313 S:");
+							LCD_guichuoi("\315S:");
 							LCD_guidulieu(chop?'_':(toc_do_motor_step+'0'));
 						}
 						break;
@@ -300,8 +300,8 @@ void main() {
 					mode++;
 					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
 					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-					LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
-					LCD_guichuoi("\313 S:");LCD_guidulieu(toc_do_motor_step+'0');
+					LCD_guichuoi(atmel_phat?"\311C55 ":"\311STC ");
+					LCD_guichuoi("\315S:");LCD_guidulieu(toc_do_motor_step+'0');
 					LCD_noblink();
 				}
 				if(phim_back_nhan){
@@ -310,8 +310,8 @@ void main() {
 					LCD_guichuoi("\200 NHA PHAT TRIEN"); 
 					LCD_guichuoi("\300MAY:");LCD_guidulieu(so_motor+'0');
 					LCD_guichuoi(may_dc?"\305 DC ":"\305 ST ");
-					LCD_guichuoi(atmel_phat?"\309C55 ":"\309STC ");
-					LCD_guichuoi("\313 S:");LCD_guidulieu(toc_do_motor_step+'0');
+					LCD_guichuoi(atmel_phat?"\311C55 ":"\311STC ");
+					LCD_guichuoi("\315S:");LCD_guidulieu(toc_do_motor_step+'0');
 					if(!mode){ 
 						if(debug_dem++>8){
 							debug = 1;
