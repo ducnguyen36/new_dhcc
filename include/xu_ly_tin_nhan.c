@@ -11,7 +11,25 @@ void xu_ly_tin_nhan(){
         switch(lenh_sms[1]){
             case 'h':
             case 'H':
-                if(lenh_sms[3]=='+'){
+                if(lenh_sms[3]>48 && lenh_sms[3]<53 && !lenh_sms[6]){
+                    if(lenh_sms[4] =='D' || lenh_sms[4] =='d') phutdelta = 4;
+                    else if(lenh_sms[4] != 'S' && lenh_sms[4] !='s' ) lenh_khong_hop_le = 1;
+                    if(!lenh_khong_hop_le && (lenh_sms[5] == 'A' || lenh_sms[5] == 'a' || lenh_sms[3]>50)) phutdelta += 8;
+                    else if(!lenh_khong_hop_le && lenh_sms[5] != 'S' || lenh_sms[5] != 's') lenh_khong_hop_le = 1;
+                    phutdelta += lenh_sms[3]-48;
+                    IAP_docxoasector1();
+                    eeprom_buf[MOTOR_EEPROM] = phutdelta;
+                    IAP_ghisector1();
+                    baocaosms(CHINH,"\rthay doi may va reset bo dieu khien");
+                    EA=0;
+                    IAP_xoasector(SECTOR2);
+                    gsm_pw = 0;
+                    IAP_ghibyte(NORRESET_EEPROM,0);
+                    RingRelay = 1;
+                    delay_ms(4000);
+                    IAP_CONTR = 0x60;
+                }
+                else if(lenh_sms[3]=='+'){
                     if (lenh_sms[4]>47 && lenh_sms[4]<51 && lenh_sms[5]>47 && lenh_sms[5]<58 &&
                         lenh_sms[6]>47 && lenh_sms[6]<54 && lenh_sms[7]>47 && lenh_sms[7]<58 &&
                         lenh_sms[9]>47 && lenh_sms[9]<51 && lenh_sms[10]>47 && lenh_sms[10]<58 &&
