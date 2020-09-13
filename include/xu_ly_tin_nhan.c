@@ -42,8 +42,6 @@ void xu_ly_tin_nhan(){
                             phutdelta = minute+120-phutdelta;
                             phut[0] = phutdelta%60;
                             luu_gio_kim();
-                            
-                            
                     }else if(lenh_sms[4]>47 && lenh_sms[4]<54 && lenh_sms[5]>47 && lenh_sms[5]<58){
                         phutdelta = (lenh_sms[4] - '0')*10 +lenh_sms[5]-'0';
                         giodelta = 12 + gio[0] - (phut[0]<phutdelta);

@@ -72,6 +72,19 @@ void main() {
 	u8 __xdata i;
 	IAP_docxoasector1();
 	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 15;
+	/*
+		atmel dc so may -1
+		 0	  0    00		0
+		 0    0    01		1
+		 0    1    00		4
+		 0    1    01		5
+		 1    0    01		9
+		 1    0    10		10
+		 1    0    11		11
+		 1    1    01		13
+		 1    1    10		14
+		 1    1    11		15
+	*/
 	// if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
 	if(eeprom_buf[BAOCAO_EEPROM]>1)eeprom_buf[BAOCAO_EEPROM] = 0;
 	if(eeprom_buf[GPSON_EEPROM]>1)eeprom_buf[GPSON_EEPROM] = 1;
