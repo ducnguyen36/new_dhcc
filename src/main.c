@@ -2,8 +2,8 @@
 #include "main.h"
 // _IAP_CONTR = 0x60 //reset to ISP
 
-
-u8 __code ver[] = " ASIA GPS 4.1.9S";
+//checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
+u8 __code ver[] = " ASIA GPS 4.2.4S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -62,28 +62,29 @@ void main() {
 	xung_giay_check=250;
 	so_lan_goi_dien = 0;
 	motor_index = motor_index2 = 5;
+	phone[0]='0';
 	
 
 	gsm_delay_reset=10;
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
-	mode = 5; sub_mode = 1;
+	mode = SELECT; sub_mode = GIOKIM;
 	motor_step_int_init();
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 15;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 4;
 	/*
 		atmel dc so may -1
-		 0	  0    00		0
-		 0    0    01		1
-		 0    1    00		4
-		 0    1    01		5
-		 1    0    01		9
-		 1    0    10		10
-		 1    0    11		11
-		 1    1    01		13
-		 1    1    10		14
-		 1    1    11		15
+		 0	  0    00		0  1 ST Truc Tiep
+		 0    0    01		1  2 ST Truc TIep
+		 0    1    00		4  1 DC Truc Tiep
+		 0    1    01		5  2 DC Truc Tiep
+		 1    0    01		9  2 ST Driver  
+		 1    0    10		10 3 ST Driver
+		 1    0    11		11 4 ST Driver
+		 1    1    01		13 2 DC Driver
+		 1    1    10		14 3 DC Driver
+		 1    1    11		15 4 DC Driver
 	*/
 	// if(!(eeprom_buf[MOTOR_EEPROM] & 3))eeprom_buf[MOTOR_EEPROM] &= 0xF4;
 	if(eeprom_buf[BAOCAO_EEPROM]>1)eeprom_buf[BAOCAO_EEPROM] = 0;
@@ -153,7 +154,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-	
+	delay_ms(5000);
 	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
 	gsm_init();
 
@@ -353,16 +354,21 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
-
-	gsm_laygio_gps();
 	bat_phone_phu = eep_phonephu[11]&1;
-	if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
-		if(!eep_norreset)baocaosms(CHINH,"\rkhoi dong phan mem san sang");
-		else{
-			baocaosms(CHINH,"\rkhoi dong san sang");
-			if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang");
+	if(!nosim && gsm_thietlapsim800()){
+		gsm_thietlapngaygiothuc();
+		gsm_thietlapgoidien();
+		// gsm_thietlapnhantin();
+		if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
+			if(!eep_norreset)baocaosms(CHINH,"\rkhoi dong phan mem san sang");
+			else{
+				baocaosms(CHINH,"\rkhoi dong san sang");
+				if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang");
+			}
+			kiemtrasodienthoai();
 		}
 	}
+	// gsm_laygio_gps();
 
     hour12 = (hour>11)?hour-12:hour;
 	if(!eep_norreset){
@@ -374,8 +380,8 @@ void main() {
 	
 	WDT_CONTR = EN_WDT | CLR_WDT | WDT_SCALE_64; // Enable watchdog, clear watchdog, pre scale = 64, watchdog idle mode = NO
 	
-	
-	
+	// sub_mode = 1;
+	// LCD_guichuoi(mode_select[mode]);
 	while(1){
 		
 		if(so_motor==4 && (eep_phut4!=phut[3] || eep_gio4!=gio[3])) luu_gio_kim();
@@ -470,8 +476,12 @@ void main() {
 
 		if(!da_gui_bao_cao && minute<5 ) {
 			if(!GPS_time && eep_gpson) {
-				gsm_laygio_gps();
+				// gsm_laygio_gps();
+				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
+			}else{
+				rtc_gettime(&hour,&minute,&second);
+				rtc_getdate(&day,&month,&year);
 			}
 
 			if(eep_baocao) {
@@ -495,7 +505,8 @@ void main() {
 					ADC_CONTR = 0x8b;
 					gsm_reset = 0;
 					gsm_serial_cmd = NORMAL;
-					gsm_laygio_gps();
+					// gsm_laygio_gps();
+					gsm_thietlapngaygiothuc();
 					hour12=hour%12;
 					if(gsm_thietlapnhantin()){
 						baocaosms(CHINH,"\rgsm reset thanh cong");
@@ -524,8 +535,8 @@ void main() {
 					phim_mode_nhan=0;
 					mode_wait = TIME_MODE_WAIT;
 					delay_ve_kim = canhkim = may_canh_kim = 0;
-					mode = 5;
-					sub_mode = 1;
+					mode = SELECT;
+					sub_mode = GIOKIM;
 					motor_index = motor_index2 = 5;
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
@@ -574,6 +585,19 @@ void main() {
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
 							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,0,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;break;
+							case DIENTHOAI: if(nosim) LCD_guichuoi("\300  KHONG CO SIM  ");
+											else if(!gsm_pw) LCD_guichuoi("\300  GSM TAT NGUON ");
+											else{
+												kiemtratinhieu();kiemtrataikhoan();
+												LCD_xoa(DUOI);LCD_guilenh(0xc0);LCD_guichuoi(lenh_sms);
+												LCD_guilenh(0x80);phone[10]=0;LCD_guichuoi(phone);
+												LCD_guilenh(0x8e);LCD_guidulieu(signal/10+'0');LCD_guidulieu(signal%10+'0');
+											}
+											break;
+							case DATE:  LCD_guichuoi("\300  ");LCD_guidulieu(day/10+'0');LCD_guidulieu(day%10+'0');
+										LCD_guichuoi(" - ");LCD_guidulieu(month/10+'0');LCD_guidulieu(month%10+'0');
+										LCD_guichuoi(" - ");LCD_guidulieu(year/10+'0');LCD_guidulieu(year%10+'0');LCD_guichuoi("  ");
+										break;
 						}
 					}
 					break;
@@ -660,7 +684,7 @@ void main() {
 					mode = SELECT;
 					mp3_hour = 24;
 					mp3_minute = 60;
-					if(eep_gpson) gsm_laygio_gps();
+					if(eep_gpson) gsm_thietlapngaygiothuc();//gsm_laygio_gps();
 					// else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
@@ -777,6 +801,15 @@ void main() {
 					if(++sub_mode>so_motor-1) sub_mode = 0;
 					LCD_guidulieu(sub_mode+'1');
 					LCD_guilenh(0xc4);
+				}
+				break;
+			case DIENTHOAI:
+			case DATE:
+				//2 SUBMODE : KT TAI KHOAN, KT SDT & SONG
+				if(phim_mode_nhan){
+					phim_mode_nhan=0;
+					sub_mode = mode;
+					mode = SELECT;
 				}
 				break;
 			default: mode = sub_mode = 0;

@@ -16,17 +16,18 @@ void rtc_init(){
 	i2c_stop();
 }
 
-u8 rtc_getdate(){
-	u8 __data day;
+void rtc_getdate(u8 *pday, u8 *pmonth, u8 *pyear){
+	// u8 __data day;
 	i2c_start();
 	i2c_write(DS1307WRITE);
 	i2c_write(DS1307DATEADDRESS);
 	i2c_stop();
 	i2c_start();
 	i2c_write(DS1307READ);
-	day = bcd2hex(i2c_read(NACK));
+	*pday 	= bcd2hex(i2c_read(ACK));
+	*pmonth = bcd2hex(i2c_read(ACK));
+	*pyear 	= bcd2hex(i2c_read(NACK));
 	i2c_stop();
-	return day;
 }
 void rtc_gettime(u8 *phour, u8 *pminute, u8 *psecond){
 	i2c_start();
@@ -47,6 +48,15 @@ void rtc_settime(u8 hour, u8 minute, u8 second){
 	i2c_write(hex2bcd(second));
 	i2c_write(hex2bcd(minute));
 	i2c_write(hex2bcd(hour));
+	i2c_stop();
+}
+void rtc_setdate(u8 day, u8 month, u8 year){
+	i2c_start();
+	i2c_write(DS1307WRITE);
+	i2c_write(DS1307DATEADDRESS);
+	i2c_write(hex2bcd(day));
+	i2c_write(hex2bcd(month));
+	i2c_write(hex2bcd(year));
 	i2c_stop();
 }
 

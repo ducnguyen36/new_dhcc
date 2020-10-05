@@ -13,12 +13,13 @@ __bit dien_ap_thap;
 u8 __idata mp3_status;
 u8 __idata mp3_hour;
 u8 __idata mp3_minute;
-u8 __data  mp3_doi_start;
+u8 __idata  mp3_doi_start;
 
 //GSM
 #define PHONE_LENGTH 10
 
 u8  __xdata  phone_chinh[11] ;
+u8  __xdata phone[11];
 u8  __code  phone1[] = "0949847098";
 u8  __code  phone2[] = "0988888901";
 
@@ -29,8 +30,8 @@ __bit da_gui_bao_cao_thang;
 __bit gsm_reset;
 u8 __xdata gsm_delay_reset;
 
-u8 __data so_lan_goi_dien;
-u8 __data delay_cuoc_goi_ke_tiep;
+u8 __xdata so_lan_goi_dien;
+u8 __xdata delay_cuoc_goi_ke_tiep;
 __bit co_cuoc_goi_toi;
 __bit goi_dien_thoai;
 __bit phone_chinh_so_sanh_that_bai;
@@ -46,8 +47,8 @@ __bit sms_dang_xu_ly;
 __bit have_cusd;
 __bit lenh_khong_hop_le;
 __bit have_quote;
-u8  __data  sms_index;
-u8  __data message_index;
+u8  __xdata  sms_index;
+u8  __xdata message_index;
 
 
 //EEPROM
@@ -58,7 +59,7 @@ u8	__data  second;
 u8	__data  minute;
 u8	__data  hour;
 u8	__data  hour12;
-u8	__data  date;
+u8	__xdata  date,day,month,year;
 
 u8	__data	gio[4];
 u8	__data	phut[4];
@@ -111,17 +112,19 @@ u8 __xdata phim_cong_doi;
 
 u8 __xdata mode;
 u8 __xdata sub_mode;
-__bit chop;
-__code u8 mode_select[][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    "};
 u8 __xdata mode_wait;
+__bit chop;
+#define MAX_MODE 6
+__code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    ","   DIEN THOAI   "," NGAY THANG NAM "};
 #define TIME_MODE_WAIT  60
-#define MAX_MODE 4
-#define EXIT    0
-#define GIOKIM  1
-#define GIOTHUC 2
-#define CANHKIM 3
-#define MP3TEST 4
-#define SELECT  5
+#define EXIT        0
+#define GIOKIM      1
+#define GIOTHUC     2
+#define CANHKIM     3
+#define MP3TEST     4
+#define DIENTHOAI   5
+#define DATE        6
+#define SELECT      7
 
 #define GIOCHUC     0
 #define GIODVI      1
@@ -142,7 +145,13 @@ u8 __xdata mode_wait;
 //GSM MODULE
 __bit   gui_lenh_thanh_cong;
 __bit   have_not;
-__bit   new_message;
+// __bit   new_message;
+__bit   nosim;
+__bit   error;
+__bit   skip_gsm_cmd;
+
+u8 __xdata   nha_mang;
+u8 __xdata   signal;
 
 u8 __xdata   connect;
 u8 __xdata   connect_time_out;

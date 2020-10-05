@@ -28,6 +28,16 @@ extern u8 __xdata    gsm_serial_cmd;
 #define     CFUN1       6
 #define     CUSD        7
 #define     CMGS        8
+#define     CSPN        10
+#define     CALR        11
+#define     COPS        12
+#define     SDT         13
+#define     CSQ         14
+
+#define     VIETTEL     't'
+#define     MOBIFONE    'f'
+#define     VINAPHONE   'P'
+#define     VIETNAM     'n'
 
 #define     CHOXULY     1
 #define     DANGXULY    2

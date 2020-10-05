@@ -8,6 +8,8 @@
 
 void rtc_init();
 
-u8 rtc_getdate();
+// u8 rtc_getdate();
+void rtc_getdate(u8 *pday, u8 *pmonth, u8 *pyear);
+void rtc_setdate(u8 day, u8 month, u8 year);
 void rtc_gettime(u8 *phour, u8 *pminute, u8 *psecond);
 void rtc_settime(u8 hour, u8 minute, u8 second);

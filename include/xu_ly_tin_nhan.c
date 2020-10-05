@@ -97,7 +97,8 @@ void xu_ly_tin_nhan(){
                             
                             AmplyRelay=0;
                             mp3_status = mp3_IDLE;
-                            gsm_laygio_gps();
+                            // gsm_laygio_gps();
+                            gsm_thietlapngaygiothuc();
                             hour12 = hour%12;
                             mp3_hour = 24;
                             mp3_minute = 60;
@@ -320,7 +321,8 @@ void xu_ly_tin_nhan(){
                         IAP_docxoasector1();
                         eeprom_buf[GPSON_EEPROM] = 1;
                         IAP_ghisector1();
-                        gsm_laygio_gps();
+                        // gsm_laygio_gps();
+                        gsm_thietlapngaygiothuc();
                         baocaosms(CHINH,"\rBat GPS");
                     }
                     else if(lenh_sms[4]=='T' || lenh_sms[4]=='t' || lenh_sms[5]=='B' || lenh_sms[5]=='b' ){
