@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.2.4S";
+u8 __code ver[] = " ASIA GPS 4.2.5S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -29,6 +29,9 @@ u8 __code ver[] = " ASIA GPS 4.2.4S";
 	- dien ap phuc hoi motor giam xuong con 12V6-> 12V
 3.0.45
 	-lay gio moi 1g dong ho
+*/
+/*
+	4.2.5 sua loi mp3
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -72,7 +75,7 @@ void main() {
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 4;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 0;
 	/*
 		atmel dc so may -1
 		 0	  0    00		0  1 ST Truc Tiep
@@ -459,7 +462,8 @@ void main() {
 		}
 
 		kiem_tra_den();
-		if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
+		// if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
+		if(!mode && eep_mp3==2) kiem_tra_nhac();
 		
 
 		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
