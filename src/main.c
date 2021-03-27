@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.2.5S";
+u8 __code ver[] = " ASIA GPS 4.2.6S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -117,6 +117,7 @@ void main() {
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
 	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2;
 	if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x3b; 	
+	if(eeprom_buf[CAM_EEPROM]>1)eeprom_buf[CAM_EEPROM] = 1;
 //multi motor
 	IAP_ghisector1();
 	so_motor = (eep_motor & 3) + 1;
@@ -157,7 +158,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-	delay_ms(5000);
+	// delay_ms(5000);????
 	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
 	gsm_init();
 
@@ -185,8 +186,10 @@ void main() {
 	// rtc_settime(0,0,0);
 	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
 		u8 debug_dem = 0;
+		u8 cam_temp = 0;
 		__bit debug = 0;
 		giotemp = eep_debug;
+		cam_temp = eep_cam;
 		i = eep_motor;
 		
 		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
@@ -208,10 +211,12 @@ void main() {
 					phuttemp = (giotemp & 15) < 6?(giotemp & 15)+1:(60/(12-(giotemp & 15)));
 					LCD_guidulieu((mode==0&&chop)?'_':phuttemp/10+'0');
 					LCD_guidulieu((mode==0&&chop)?'_':phuttemp%10+'0');
-					LCD_guichuoi(" TN:");
+					LCD_guichuoi(" T:");
 					LCD_guidulieu((mode==1&&chop)?'_':(((giotemp&96)>>5)+'0'));
-					LCD_guichuoi(" GPS:");
+					LCD_guichuoi(" G:");
 					LCD_guidulieu((mode==2&&chop)?'_':(((giotemp&16)>>4)+'0'));
+					LCD_guichuoi(" C:");
+					LCD_guidulieu((mode==3&&chop)?'_':(cam_temp?'T':'N'));
 				}
 				if(phim_mode_nhan){
 					phim_mode_nhan = 0;
@@ -219,9 +224,11 @@ void main() {
 					switch(mode){
 						case 1:sub_mode = (giotemp&96)>>5;break;
 						case 2:sub_mode = (giotemp&16)>>4;break;
-						case 3:IAP_docxoasector1();
+						case 3:sub_mode = cam_temp;break;
+						case 4:IAP_docxoasector1();
 							   eeprom_buf[MOTOR_EEPROM] &= 0xef;
 							   eeprom_buf[DEBUG_EEPROM] =  giotemp;
+							   eeprom_buf[CAM_EEPROM] =  cam_temp;
 							   IAP_ghisector1();
 							   IAP_xoasector(SECTOR2);
 							   IAP_CONTR = 0x60;
@@ -233,6 +240,7 @@ void main() {
 					switch(mode){
 						case 0:sub_mode = giotemp & 15;break;
 						case 1:sub_mode = (giotemp&96)>>5;break;
+						case 2:sub_mode = (giotemp&16)>>4;break;
 					}
 				}
 				if(phim_cong_nhan){
@@ -242,6 +250,7 @@ void main() {
 						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
 						case 1:if(sub_mode>2) sub_mode = 0;giotemp = giotemp & 0x1f | (sub_mode<<5); break;
 						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
+						case 3:if(sub_mode>1) sub_mode = 0;cam_temp = sub_mode; break;
 					}
 				}
 			}

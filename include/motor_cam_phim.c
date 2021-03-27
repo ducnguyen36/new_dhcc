@@ -10,7 +10,9 @@ u8 motor_run_check() __reentrant {
 	if(so_motor<3){
 		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
 			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
+			// send_gsm_byte('B');
 			return 0;
+
 		}else {motorDir1 = 0; return 5;}
 	}
 	
@@ -32,6 +34,7 @@ u8 motor_run_check() __reentrant {
 	}
 	
 	motorDir1 = 0;
+	// send_gsm_byte('S');
 	return 5;
 }
 u8 motor_run_check2(){
@@ -148,14 +151,25 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
-		trang_thai_cam = !cam_che;
-		trang_thai_cam2 = !cam_che2;
+		if(eep_cam){
+			trang_thai_cam = !cam_che;
+			trang_thai_cam2 = !cam_che2;
+		}else{
+			trang_thai_cam = cam_che;
+			trang_thai_cam2 = cam_che2;
+		}
 		if(so_motor == 1){
-			if(may_dc) trang_thai_cam = !trang_thai_cam && !trang_thai_cam2;  
-			else trang_thai_cam = trang_thai_cam || trang_thai_cam2;
+			if(eep_cam){
+				if(may_dc) trang_thai_cam = !trang_thai_cam && !trang_thai_cam2;  
+				else trang_thai_cam = trang_thai_cam || trang_thai_cam2;
+			}else{
+				if(may_dc) trang_thai_cam = !trang_thai_cam || !trang_thai_cam2;  
+				else trang_thai_cam = trang_thai_cam && trang_thai_cam2;
+			}
 		}
 
 		if(motor_index!=5){
+			// send_gsm_byte(trang_thai_cam+'0');
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;
@@ -171,13 +185,14 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				}
 				cam_ra = cam_vao = cam_vao_han = 0;
 				motor_index = motor_run_check();
+				// if(motor_index == 5) send_gsm_byte('S');
 				luu_gio_kim();				
 			}else if(cam_vao_han) cam_ra = 1;
 			else if(cam_vao) cam_vao = 0;
 			
 		}
 		if(motor_index2!=5){
-			if(!cam_che2)
+			if(trang_thai_cam2)
 				if(cam_vao2) cam_vao_han2 = 1;				
 				else cam_vao2 = 1;
 			else if(cam_ra2){
