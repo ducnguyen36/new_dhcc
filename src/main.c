@@ -158,7 +158,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-	// delay_ms(5000);????
+	delay_ms(5000);
 	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
 	gsm_init();
 
