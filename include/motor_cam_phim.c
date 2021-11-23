@@ -10,6 +10,7 @@ u8 motor_run_check() __reentrant {
 	if(so_motor<3){
 		if(thoi_gian_doi_doc_cam[0] && (phut[0]!=minute || gio[0]!=hour12)){
 			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
+			// send_gsm_byte('\r');
 			// send_gsm_byte('B');
 			return 0;
 
@@ -167,9 +168,9 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 				else trang_thai_cam = trang_thai_cam && trang_thai_cam2;
 			}
 		}
-
+		// send_gsm_byte(trang_thai_cam+'0');
 		if(motor_index!=5){
-			// send_gsm_byte(trang_thai_cam+'0');
+			
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
 				else cam_vao = 1;

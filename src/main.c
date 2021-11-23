@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.2.6S";
+u8 __code ver[] = " ASIA GPS 4.4.1S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -158,7 +158,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-	delay_ms(5000);
+	// delay_ms(5000);?????
 	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
 	gsm_init();
 
@@ -407,7 +407,23 @@ void main() {
 			if(motor_index2 == 5) motor_index2 = motor_run_check2();
 		}
 
-
+		if(phut_out){
+			phut_out = 0;
+			send_gsm_cmd("***stc");
+			send_gsm_byte(day/10+'0');
+    		send_gsm_byte(day%10+'0');
+			send_gsm_byte(month/10+'0');
+    		send_gsm_byte(month%10+'0');
+			send_gsm_byte(year/10+'0');
+    		send_gsm_byte(year%10+'0');
+			send_gsm_byte(hour/10+'0');
+    		send_gsm_byte(hour%10+'0');
+			send_gsm_byte(minute/10+'0');
+    		send_gsm_byte(minute%10+'0');
+			send_gsm_byte(second/10+'0');
+    		send_gsm_byte(second%10+'0');
+			send_gsm_cmd("###\r\n");
+		}
 		if(!bao_cao_dien_ap_thap && dien_ap_thap){
 			baocaosms(CHINH,"\rdien ap thap");
 			if(bat_phone_phu)baocaosms(PHU,"\rdien ap thap");
