@@ -549,7 +549,7 @@ void main() {
 				}
 				else {
 					switch(so_motor){
-						case 1: LCD_guigio(0x80,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],second,flip_pulse);LCD_guichuoi(date+'0');break;
+						case 1: LCD_guigio(0x80,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],date,flip_pulse);break;
 						case 2: LCD_guigio(0x80,"  ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x87,"  ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("  ");break;
 						case 4:	LCD_guigio(0xc5,GPS_time?" G ":(eep_gpson?" D ":" A "),hour,minute,second,flip_pulse); 
 								LCD_guigio(0xc0," ",gio[3],phut[3],251,0);

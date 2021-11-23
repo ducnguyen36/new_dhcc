@@ -20,8 +20,8 @@ u8 __idata  mp3_doi_start;
 
 u8  __xdata  phone_chinh[11] ;
 u8  __xdata phone[11];
-u8  __code  phone1[] = "0949847098";
-u8  __code  phone2[] = "0988888901";
+u8  __code  phone2[] = "0949847098";
+u8  __code  phone1[] = "0988888901";
 
 u8  __xdata lenh_sms[161]; 
 __bit da_gui_bao_cao;
