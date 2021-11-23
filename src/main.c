@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.4.1S";
+u8 __code ver[] = " ASIA GPS 4.5.0S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -510,7 +510,7 @@ void main() {
 				hour12 = (hour>11)?hour-12:hour;
 			}else{
 				rtc_gettime(&hour,&minute,&second);
-				rtc_getdate(&day,&month,&year);
+				rtc_getdate(&date,&day,&month,&year);
 			}
 
 			if(eep_baocao) {
@@ -549,7 +549,7 @@ void main() {
 				}
 				else {
 					switch(so_motor){
-						case 1: LCD_guigio(0x80,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],second,flip_pulse);break;
+						case 1: LCD_guigio(0x80,may_dc? "  MDC  " : "  MST  ",gio[0],phut[0],second,flip_pulse);LCD_guichuoi(date+'0');break;
 						case 2: LCD_guigio(0x80,"  ",gio[0],phut[0],253,flip_pulse);LCD_guigio(0x87,"  ",gio[1],phut[1],253,flip_pulse);LCD_guichuoi("  ");break;
 						case 4:	LCD_guigio(0xc5,GPS_time?" G ":(eep_gpson?" D ":" A "),hour,minute,second,flip_pulse); 
 								LCD_guigio(0xc0," ",gio[3],phut[3],251,0);

@@ -246,7 +246,7 @@ __bit gsm_thietlapsim800(){
         clear_sms_buffer(0);
         sms_index = 0;
         gsm_serial_cmd = CSPN;
-        if(gsm_sendandcheck("AT+CSPN?\r",15,1," TEN MANG ")){
+        if(gsm_sendandcheck("AT+CSPN?\r",15,1," TEN TONG DAI  ")){
             nha_mang = lenh_sms[4];
         }
         return 1;
@@ -257,14 +257,14 @@ __bit gsm_thietlapsim800(){
 void gsm_thietlapngaygiothuc(){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
-    if(gsm_sendandcheck("AT+CLTS=1\r",15,1," BAT LAY GIO ")){
-        if(gsm_sendandcheck("AT+COPS=2\r",15,1,"   NGAT MANG    ")){
+    if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
+        if(gsm_sendandcheck("AT+COPS=2\r",15,1," KHOI DONG GPS ")){
             gsm_serial_cmd = COPS;
-            if(gsm_sendandcheck("AT+COPS=0\r",10,60,"    TIM MANG    ")){
+            if(gsm_sendandcheck("AT+COPS=0\r",10,60,"  KET NOI GPS  ")){
                 clear_sms_buffer(0);
                 sms_index = 0;
                 gsm_serial_cmd = CLK;
-                if(gsm_sendandcheck("AT+CCLK?\r",15,1," LAY GIO GPS ")){
+                if(gsm_sendandcheck("AT+CCLK?\r",15,1," LAY TIME GPS  ")){
                     year   = (lenh_sms[3] -48)*10 + lenh_sms[4]  - 48;
                     month  = (lenh_sms[6] -48)*10 + lenh_sms[7]  - 48;
                     day    = (lenh_sms[9] -48)*10 + lenh_sms[10] - 48;
@@ -272,7 +272,9 @@ void gsm_thietlapngaygiothuc(){
                     minute = (lenh_sms[15]-48)*10 + lenh_sms[16] - 48;
                     second = (lenh_sms[18]-48)*10 + lenh_sms[19] - 48;
                     rtc_settime(hour,minute,second);
-                    rtc_setdate(day,month,year);
+                    u16 check = (23*thang/9 + ngay + (thang>2?!(nam%4):2) + nam + (nam+3)/4 + 1) ;
+                    date = check%7+1;
+                    rtc_setdate(date,day,month,year);
                     GPS_time_temp = 1;
                 }
             }
