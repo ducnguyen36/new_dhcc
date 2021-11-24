@@ -32,7 +32,8 @@ u8 __code ver[] = " ASIA GPS 4.5.0S";
 */
 /*
 	4.2.5 sua loi mp3
-	4.5.0
+	4.5.0 chuyen sang choi nhac dang theo tuan
+	4.5.1 thay doi test mp3 thanh ngay thang
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
