@@ -10,8 +10,10 @@ void mp3_serial_init(){
     IE2 = 0x01;
 }
 
-void mp3_play(u8 hour, u8 minute){
-    u16 song = hour*100+minute; //13:47 => 1347
+void mp3_play(u8 date, u8 hour, u8 minute){
+    
+    // u16 song = hour*100+minute; //13:47 => 1347 //hour*12 + minute/5 + date*1000
+    u16 song = hour*12 + minute/5 + date*1000; //13:47 => 1347 //hour*12 + minute/5 + date*1000
     u16 checksum = 65257-((u8)song)-(song>>8);
     u8 __xdata mp3_buf[] = {126,255,6,0x12,0,song>>8,song,checksum>>8,checksum,239};
     u8 __data i;

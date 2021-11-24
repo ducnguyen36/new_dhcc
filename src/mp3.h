@@ -15,4 +15,4 @@
 
 
 void mp3_serial_init();
-void mp3_play(u8 hour, u8 minute);
+void mp3_play(u8 date, u8 hour, u8 minute);

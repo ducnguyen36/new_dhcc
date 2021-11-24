@@ -11,6 +11,7 @@ __bit dien_ap_thap;
 
 //MP3
 u8 __idata mp3_status;
+u8 __idata mp3_date;
 u8 __idata mp3_hour;
 u8 __idata mp3_minute;
 u8 __idata  mp3_doi_start;
@@ -130,6 +131,7 @@ __code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GI
 #define GIODVI      1
 #define PHUTCHUC    2
 #define PHUTDVI     3
+#define THUCHUC     4
 #define GIO2CHUC    4
 #define GIO2DVI     5
 #define PHUT2CHUC   6

@@ -32,6 +32,7 @@ u8 __code ver[] = " ASIA GPS 4.5.0S";
 */
 /*
 	4.2.5 sua loi mp3
+	4.5.0
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -39,7 +40,7 @@ u8 __code ver[] = " ASIA GPS 4.5.0S";
 #include "xu_ly_tin_nhan.c"
 
 void main() {
-	u8 __data giotemp=0,phuttemp=0;
+	u8 __data giotemp=0,phuttemp=0,thutemp = 1;
 	
 	/*PORT IO INIT*/
 	P0M1 = 0; P0M0 = 0xff; //port LCD -- chân xuất với điện trở kéo lên nhỏ, dòng lớn -> 20mA
@@ -613,7 +614,7 @@ void main() {
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
-							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,0,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;break;
+							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,10,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;thutemp = 1;break;
 							case DIENTHOAI: if(nosim) LCD_guichuoi("\300  KHONG CO SIM  ");
 											else if(!gsm_pw) LCD_guichuoi("\300  GSM TAT NGUON ");
 											else{
@@ -791,10 +792,15 @@ void main() {
 							else phuttemp+=10;
 						break;
 						case PHUTDVI  :
-							if(!(++phuttemp%10)) phuttemp-=10;
+							phuttemp+=5;
+							if(!(phuttemp%10)) phuttemp-=10;
 						break;
+						case THUCHUC  :
+							if(++thutemp>7) thutemp=1;
+						break;
+						
 					}
-					LCD_guigio(0xc0,"  MP3  ",giotemp,phuttemp,0,flip_pulse);
+					LCD_guigio(0xc0,"  MP3  ",giotemp,phuttemp,thutemp*10,flip_pulse);
 				}
 				if(phim_back_nhan){
 					phim_back_nhan = 0;
@@ -806,11 +812,11 @@ void main() {
 
 					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode>3){
+					if(++sub_mode>4){
 						sub_mode = 0;
-						mp3_play(giotemp,phuttemp);
+						mp3_play(thutemp,giotemp,phuttemp);
 						delay_ms(100);
-						LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,0,flip_pulse);
+						LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,thutemp*10,flip_pulse);
 						LCD_noblink();
 					}
 				}
