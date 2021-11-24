@@ -21,8 +21,8 @@ u8 __idata  mp3_doi_start;
 
 u8  __xdata  phone_chinh[11] ;
 u8  __xdata phone[11];
-u8  __code  phone2[] = "0949847098";
-u8  __code  phone1[] = "0988888901";
+u8  __code  phone1[] = "0949847098";
+u8  __code  phone2[] = "0988888901";
 
 u8  __xdata lenh_sms[161]; 
 __bit da_gui_bao_cao;
@@ -131,13 +131,18 @@ __code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GI
 #define GIODVI      1
 #define PHUTCHUC    2
 #define PHUTDVI     3
-#define THUCHUC     4
 #define GIO2CHUC    4
 #define GIO2DVI     5
 #define PHUT2CHUC   6
 #define PHUT2DVI    7
 #define GIO3CHUC    8
 #define GIO3DVI     9
+#define NGAYCHUC    4
+#define NGAYDVI     5
+#define THANGCHUC  6
+#define THANGDVI   7
+#define NAMCHUC     8
+#define NAMDVI      9
 #define PHUT3CHUC   10
 #define PHUT3DVI    11
 #define GIO4CHUC    12

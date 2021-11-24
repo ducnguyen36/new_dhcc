@@ -127,7 +127,7 @@ void LCD_Init(){
 }
 
 void LCD_guigio(u8 vitri, u8 *chuoi, u8 gio, u8 phut, u8 giay,__bit haicham){
-	if(gio>23) return;
+	// if(gio>23) return;
 	if(giay>250){
 		LCD_guilenh(vitri);
 		LCD_guichuoi(chuoi);
@@ -141,11 +141,11 @@ void LCD_guigio(u8 vitri, u8 *chuoi, u8 gio, u8 phut, u8 giay,__bit haicham){
 		LCD_guichuoi(chuoi);
 		LCD_guidulieu(gio<10?' ':(gio/10+'0'));
 		LCD_guidulieu(gio%10+'0');
-		LCD_guidulieu(haicham?':':' ');
+		if(giay<100)LCD_guidulieu(haicham?':':' ');
 		LCD_guidulieu(phut/10+'0');
 		LCD_guidulieu(phut%10+'0');
-		LCD_guidulieu(haicham?':':' ');
-		LCD_guidulieu(giay/10+'0');
+		if(giay<100)LCD_guidulieu(haicham?':':' ');
+		LCD_guidulieu((giay%100)/10+'0');
 		LCD_guidulieu(giay%10+'0');
 		LCD_guidulieu(' ');
 	}

@@ -3,7 +3,7 @@
 // _IAP_CONTR = 0x60 //reset to ISP
 
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.5.0S";
+u8 __code ver[] = " ASIA GPS 4.5.1S";
 // u8 __code ver[] = " ASIA NOR 3.0.4 ";
 /*Change log
 3.0.1
@@ -41,7 +41,9 @@ u8 __code ver[] = " ASIA GPS 4.5.0S";
 #include "xu_ly_tin_nhan.c"
 
 void main() {
-	u8 __data giotemp=0,phuttemp=0,thutemp = 1;
+	u8 __data giotemp=0,phuttemp=0;
+	u8 __xdata  ngaytemp = 1, thangtemp=1, namtemp = 21, thutemp = 1;
+	u16 __xdata check;
 	
 	/*PORT IO INIT*/
 	P0M1 = 0; P0M0 = 0xff; //port LCD -- chân xuất với điện trở kéo lên nhỏ, dòng lớn -> 20mA
@@ -160,8 +162,8 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-	// delay_ms(5000);?????
-	/*Khoi tao serial baudrate 57600 cho gsm sim900*/
+	delay_ms(5000);
+	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
 	gsm_init();
 
 	
@@ -615,7 +617,11 @@ void main() {
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
-							case MP3TEST: LCD_guigio(0xc0,"  MP3  ",0,0,10,flip_pulse); AmplyRelay = 1;giotemp=phuttemp=0;thutemp = 1;break;
+							case MP3TEST: LCD_guigio(0xc0,"MP3 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1); AmplyRelay = 1;giotemp=phuttemp=0;
+										thutemp = date;ngaytemp = day;thangtemp = month; namtemp = year;
+										LCD_guilenh(0xcf);
+										LCD_guidulieu(thutemp+'0');
+										break;
 							case DIENTHOAI: if(nosim) LCD_guichuoi("\300  KHONG CO SIM  ");
 											else if(!gsm_pw) LCD_guichuoi("\300  GSM TAT NGUON ");
 											else{
@@ -769,7 +775,7 @@ void main() {
 				}
 				break;
 			case MP3TEST:
-				LCD_blinkXY(DUOI,7+sub_mode+sub_mode/2);
+				LCD_blinkXY(DUOI,4+sub_mode+(sub_mode>3));
 				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
@@ -796,12 +802,42 @@ void main() {
 							phuttemp+=5;
 							if(!(phuttemp%10)) phuttemp-=10;
 						break;
-						case THUCHUC  :
-							if(++thutemp>7) thutemp=1;
+						case NGAYCHUC :
+							if(ngaytemp>21) ngaytemp%=10;
+							else ngaytemp+=10;
+							if(!ngaytemp) ngaytemp = 10;
+						break;
+						case NGAYDVI  :
+							if(ngaytemp>30) ngaytemp = 30;
+							else if(ngaytemp%10==9) ngaytemp-=9;
+							else ngaytemp++;
+						break;
+						case THANGCHUC :
+							if(thangtemp<3) thangtemp+=10;
+							else if(thangtemp>10) thangtemp-=10;
+						break;
+						case THANGDVI  :
+							if(thangtemp==9) thangtemp = 1;
+							else if(thangtemp>11) thangtemp = 10;
+							else thangtemp++;
+						break;
+						case NAMCHUC :
+							if(namtemp>89) namtemp-=90;
+							else namtemp+=10;
+						break;
+						case NAMDVI  :
+							if(!(++namtemp%10)) namtemp-=10;
 						break;
 						
 					}
-					LCD_guigio(0xc0,"  MP3  ",giotemp,phuttemp,thutemp*10,flip_pulse);
+					LCD_guigio(0xc0,"MP3 ",giotemp,phuttemp,251,1);
+					LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
+					check = (23*thangtemp/9 + ngaytemp + (thangtemp>2?!(namtemp%4):2) + namtemp + (namtemp+3)/4 + 1);
+					thutemp = check%7+1; 
+					LCD_guilenh(0xcf);
+					LCD_guidulieu(thutemp+'0');
+					// LCD_guigio(0xc0,"  MP3  ",giotemp,phuttemp,thutemp*10,flip_pulse);
+
 				}
 				if(phim_back_nhan){
 					phim_back_nhan = 0;
@@ -813,11 +849,15 @@ void main() {
 
 					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode>4){
+					if(++sub_mode>9){
 						sub_mode = 0;
 						mp3_play(thutemp,giotemp,phuttemp);
 						delay_ms(100);
-						LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,thutemp*10,flip_pulse);
+						LCD_guigio(0xc0,mp3_playing?" OK ":" NO ",giotemp,phuttemp,251,1);
+						LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
+						LCD_guilenh(0xcf);
+						LCD_guidulieu(thutemp+'0');
+						// LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,thutemp*10,flip_pulse);
 						LCD_noblink();
 					}
 				}

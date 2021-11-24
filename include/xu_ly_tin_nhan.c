@@ -303,10 +303,16 @@ void xu_ly_tin_nhan(){
                         }
                         baocaosms(CHINH,"\rTat mp3");
                     }else if(lenh_sms[4]>47 && lenh_sms[4]<51 && lenh_sms[5]>47 && lenh_sms[5]<58 &&
-                        lenh_sms[6]>47 && lenh_sms[6]<54 && (lenh_sms[7]==48 || lenh_sms[7]==53) && lenh_sms[9]>48 && lenh_sms[9]<56){
+                        lenh_sms[6]>47 && lenh_sms[6]<54 && (lenh_sms[7]==48 || lenh_sms[7]==53) &&
+                        lenh_sms[9]>47 && lenh_sms[9]<52 && lenh_sms[10]>47 && lenh_sms[10]<58 &&
+                        lenh_sms[11]>47 && lenh_sms[11]<50 && lenh_sms[12]>47 && lenh_sms[12]<58 &&
+                        lenh_sms[13]>47 && lenh_sms[13]<58 && lenh_sms[14]>47 && lenh_sms[14]<58){
                             if(!mp3_playing){
                                 AmplyRelay = 1;
-                                mp3_play(lenh_sms[9]-'0',(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
+                                u8 nam = (lenh_sms[13]-'0')*10+lenh_sms[14]-'0';
+                                u16 check = (23*((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')/9 + ((lenh_sms[9]-'0')*10+lenh_sms[10]-'0') + 
+                                            (((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')>2?!(nam%4):2) + nam + (nam+3)/4 + 1);
+                                mp3_play(check%7+1,(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
                                 delay_ms(1500);
                                 if(mp3_playing) baocaosms(CHINH,"\rTest mp3 thanh cong");
                                 else baocaosms(CHINH,"\rkhong dung gio phat hoac mp3 loi");
