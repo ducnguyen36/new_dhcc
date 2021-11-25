@@ -190,3 +190,28 @@ __bit      bao_cao_dien_ap_thap;
 
 //CHARGE SAC ACQUI
 u8  __xdata     phut_sac_xa_acqui_con_lai;
+
+/*
+		atmel dc so may -1
+		 0	  0    00		0  1 ST Truc Tiep
+		 0    0    01		1  2 ST Truc TIep
+		 0    1    00		4  1 DC Truc Tiep
+		 0    1    01		5  2 DC Truc Tiep
+		 1    0    01		9  2 ST Driver  
+		 1    0    10		10 3 ST Driver
+		 1    0    11		11 4 ST Driver
+		 1    1    01		13 2 DC Driver
+		 1    1    10		14 3 DC Driver
+		 1    1    11		15 4 DC Driver
+	*/
+//mac dinh motor eeprom
+#define TT1ST 0
+#define TT2ST 1
+#define TT1DC 4
+#define TT2DC 5
+#define DR2ST 9
+#define DR3ST 10
+#define DR4ST 11
+#define DR2DC 13
+#define DR3DC 14
+#define DR4DC 15

@@ -1,35 +1,11 @@
 #include "true.h"
 #include "main.h"
-// _IAP_CONTR = 0x60 //reset to ISP
 
+// _IAP_CONTR = 0x60 //reset to ISP
 //checksum line 24 col 32(758A) low ; col34 (758D) high ; checksum (04+low+high) -> 2 compliment
-u8 __code ver[] = " ASIA GPS 4.5.1S";
-// u8 __code ver[] = " ASIA NOR 3.0.4 ";
-/*Change log
-3.0.1
-	Chinh Loi Khong Nhan mp3 lai khi mp3 bi mat ket noi
-3.0.2
-	Them tinh nang nhan tin theo thang vao ngay mung 1 tren dalas
-3.0.3
-	Thay doi chuc nang sac xa
-3.0.31
-	fix bug sac xa
-3.3.
-	tat lay lai gio lien tuc chi lay lai gio dau gio
-3.0.4
-	- acqui <10V tat motor <9V tat charge relay
-	- bo kiem tra sim 24h
-3.0.41
-	-bo kiem tra gio dau gio
-3.0.42
-	- motor tu dong hoat dong tro lai khi dien ap tren 12V6
-3.0.43
-	- thoi_gian_doi_doc_cam = 20 -> 50
-3.0.44
-	- dien ap phuc hoi motor giam xuong con 12V6-> 12V
-3.0.45
-	-lay gio moi 1g dong ho
-*/
+u8 __code ver[] = VERSION;
+
+
 /*
 	4.2.5 sua loi mp3
 	4.5.0 chuyen sang choi nhac dang theo tuan
@@ -40,11 +16,12 @@ u8 __code ver[] = " ASIA GPS 4.5.1S";
 #include "gsm_serial.c"
 #include "xu_ly_tin_nhan.c"
 
+
+
 void main() {
 	u8 __data giotemp=0,phuttemp=0;
 	u8 __xdata  ngaytemp = 1, thangtemp=1, namtemp = 21, thutemp = 1;
 	u16 __xdata check;
-	
 	/*PORT IO INIT*/
 	P0M1 = 0; P0M0 = 0xff; //port LCD -- chân xuất với điện trở kéo lên nhỏ, dòng lớn -> 20mA
 	P1M1 = P1M0 = 0;
@@ -79,7 +56,7 @@ void main() {
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = 0;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT;
 	/*
 		atmel dc so may -1
 		 0	  0    00		0  1 ST Truc Tiep
