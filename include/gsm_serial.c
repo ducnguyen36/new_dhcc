@@ -111,6 +111,21 @@ void send_gio_thuc(__bit chinh){
     send_gsm_byte(':');
     send_gsm_byte(minute/10+'0');
     send_gsm_byte(minute%10+'0');
+    if(date == 1) send_gsm_cmd(" CN,");
+    else{
+        send_gsm_cmd(" T");
+        send_gsm_byte(date+'0');
+        send_gsm_byte(',');
+    }
+    send_gsm_byte(day/10+'0');
+    send_gsm_byte(day%10+'0');
+    send_gsm_byte('/');
+    send_gsm_byte(month/10+'0');
+    send_gsm_byte(month%10+'0');
+    send_gsm_byte('/');
+    send_gsm_byte(year/10+'0');
+    send_gsm_byte(year%10+'0');
+
     if(chinh){
         send_gsm_cmd(" GPS=");
         send_gsm_byte((GPS_time?'1':'0')+eep_gpson);

@@ -10,6 +10,7 @@ u8 __code ver[] = VERSION;
 	4.2.5 sua loi mp3
 	4.5.0 chuyen sang choi nhac dang theo tuan
 	4.5.1 thay doi test mp3 thanh ngay thang
+	4.5.2 them thu vao tin nhan
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -139,7 +140,9 @@ void main() {
 	}
 
 	ChargeRelay = 1;
+#if !TEST
 	delay_ms(5000);
+#endif
 	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
 	gsm_init();
 
