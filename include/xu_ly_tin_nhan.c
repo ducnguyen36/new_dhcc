@@ -79,6 +79,7 @@ void xu_ly_tin_nhan(){
                     eeprom_buf[MOTOR_EEPROM] |= 0x10;
                     IAP_ghisector1();
                     motor_dung = 1;
+                    if(mp3_playing) mp3_play(0,0,1);
                     AmplyRelay = 0;
                 }else {
                     //khong lay gio kim
@@ -95,6 +96,7 @@ void xu_ly_tin_nhan(){
                         else if(lenh_sms[i]<48) i = !kim_index?101:202;
                         else if(!kim_index && (lenh_sms[i]=='g' || lenh_sms[i]=='G' || lenh_sms[i]=='a' || lenh_sms[i]=='A')){
                             
+                            if(mp3_playing) mp3_play(0,0,1);
                             AmplyRelay=0;
                             mp3_status = mp3_IDLE;
                             // gsm_laygio_gps();
@@ -113,6 +115,7 @@ void xu_ly_tin_nhan(){
                                     kim_index = (kim_index+1)%(so_motor+1);
                                     i+=5;
                                 }else{
+                                    if(mp3_playing) mp3_play(0,0,1);
                                     AmplyRelay=0;
                                     mp3_status = mp3_IDLE;
                                     hour = ((lenh_sms[i]-'0')*10 + lenh_sms[i+1] - '0')%24;
@@ -281,6 +284,7 @@ void xu_ly_tin_nhan(){
                         baocaosms(CHINH,"\rKhong Co Module Mp3");
                     }
                     else if(lenh_sms[5]=='T' || lenh_sms[5]=='t'){
+                        if(mp3_playing) mp3_play(0,0,1);
                         AmplyRelay = 0;
                         baocaosms(CHINH,"\rDung Mp3");    
                     }
@@ -296,6 +300,7 @@ void xu_ly_tin_nhan(){
                         baocaosms(CHINH,"\rBat mp3");
                     }else if(lenh_sms[5]=='F' || lenh_sms[5]=='f'){
                         if(eep_mp3==2){
+                            if(mp3_playing) mp3_play(0,0,1);
                             AmplyRelay = 0;
                             IAP_docxoasector1();
                             eeprom_buf[MP3_EEPROM] = 1;
@@ -307,6 +312,7 @@ void xu_ly_tin_nhan(){
                         lenh_sms[9]>47 && lenh_sms[9]<52 && lenh_sms[10]>47 && lenh_sms[10]<58 &&
                         lenh_sms[11]>47 && lenh_sms[11]<50 && lenh_sms[12]>47 && lenh_sms[12]<58 &&
                         lenh_sms[13]>47 && lenh_sms[13]<58 && lenh_sms[14]>47 && lenh_sms[14]<58){
+                            if(mp3_playing) mp3_play(0,0,1);
                             if(!mp3_playing){
                                 AmplyRelay = 1;
                                 u8 nam = (lenh_sms[13]-'0')*10+lenh_sms[14]-'0';
