@@ -17,6 +17,7 @@ void kiem_tra_nhac(){
             if(!minute%5 && (mp3_hour != hour || mp3_minute!=minute || mp3_date != date)){
                 mp3_hour = hour;
                 mp3_minute = minute;
+                mp3_date = date;
                 mp3_play(date, mp3_hour,mp3_minute);
                 mp3_doi_start = 90;
                 mp3_status = mp3_START;
