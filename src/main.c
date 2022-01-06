@@ -54,6 +54,11 @@ void main() {
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
 	mode = SELECT; sub_mode = GIOKIM;
 	motor_step_int_init();
+
+#if !TEST
+	delay_ms(5000);
+#endif
+
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
@@ -140,9 +145,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-#if !TEST
-	delay_ms(5000);
-#endif
+
 	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
 	gsm_init();
 
@@ -472,7 +475,7 @@ void main() {
 
 		kiem_tra_den();
 		// if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
-		if(!mode && mp3_playing &&eep_mp3==2) kiem_tra_nhac();
+		if(!mode && eep_mp3==2) kiem_tra_nhac();
 		
 
 		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
@@ -757,6 +760,7 @@ void main() {
 				break;
 			case MP3TEST:
 				LCD_blinkXY(DUOI,4+sub_mode+(sub_mode>3));
+				AmplyRelay = mp3_playing;
 				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
@@ -844,7 +848,7 @@ void main() {
 						LCD_noblink();
 					}
 				}
-				AmplyRelay = mp3_playing;
+				
 				break;
 			case CANHKIM:
 				if(phim_mode_nhan){
