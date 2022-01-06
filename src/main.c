@@ -54,6 +54,11 @@ void main() {
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
 	mode = SELECT; sub_mode = GIOKIM;
 	motor_step_int_init();
+
+#if !TEST
+	delay_ms(5000);
+#endif
+
 	/*validate eeprom*/
 	u8 __xdata i;
 	IAP_docxoasector1();
@@ -140,9 +145,7 @@ void main() {
 	}
 
 	ChargeRelay = 1;
-#if !TEST
-	delay_ms(5000);
-#endif
+
 	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
 	gsm_init();
 
@@ -551,6 +554,7 @@ void main() {
 					mode = SELECT;
 					sub_mode = GIOKIM;
 					motor_index = motor_index2 = 5;
+					if(mp3_playing) mp3_play(0,0,1);
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(phim_back_nhan) phim_back_nhan = 0;
@@ -597,7 +601,7 @@ void main() {
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
-							case MP3TEST: LCD_guigio(0xc0,"MP3 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1); AmplyRelay = 1;giotemp=phuttemp=0;
+							case MP3TEST: LCD_guigio(0xc0,"MP3 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1);giotemp=phuttemp=0;
 										thutemp = date;ngaytemp = day;thangtemp = month; namtemp = year;
 										LCD_guilenh(0xcf);
 										LCD_guidulieu(thutemp+'0');
@@ -756,9 +760,11 @@ void main() {
 				break;
 			case MP3TEST:
 				LCD_blinkXY(DUOI,4+sub_mode+(sub_mode>3));
+				AmplyRelay = mp3_playing;
 				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
+					if(mp3_playing) mp3_play(0,0,1);
 					AmplyRelay = 0;
 				}
 				if(phim_cong_nhan){
@@ -834,6 +840,7 @@ void main() {
 						mp3_play(thutemp,giotemp,phuttemp);
 						delay_ms(100);
 						LCD_guigio(0xc0,mp3_playing?" OK ":" NO ",giotemp,phuttemp,251,1);
+						AmplyRelay = mp3_playing;
 						LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
 						LCD_guilenh(0xcf);
 						LCD_guidulieu(thutemp+'0');
@@ -841,6 +848,7 @@ void main() {
 						LCD_noblink();
 					}
 				}
+				
 				break;
 			case CANHKIM:
 				if(phim_mode_nhan){
