@@ -554,7 +554,7 @@ void main() {
 					mode = SELECT;
 					sub_mode = GIOKIM;
 					motor_index = motor_index2 = 5;
-					if(mp3_playing) mp3_play(0,0,1);
+					if(mp3_playing) mp3_play(9,0,0);
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(phim_back_nhan) phim_back_nhan = 0;
@@ -601,7 +601,7 @@ void main() {
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
-							case MP3TEST: LCD_guigio(0xc0,"MP3 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1);giotemp=phuttemp=0;
+							case MP3TEST: LCD_guigio(0xc0,"000 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1);giotemp=phuttemp=song_name=0;
 										thutemp = date;ngaytemp = day;thangtemp = month; namtemp = year;
 										LCD_guilenh(0xcf);
 										LCD_guidulieu(thutemp+'0');
@@ -759,64 +759,78 @@ void main() {
 				}
 				break;
 			case MP3TEST:
-				LCD_blinkXY(DUOI,4+sub_mode+(sub_mode>3));
+				
+				LCD_blinkXY(DUOI,sub_mode+(sub_mode>2)+(sub_mode>6));
 				AmplyRelay = mp3_playing;
 				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
-					if(mp3_playing) mp3_play(0,0,1);
+					if(mp3_playing) mp3_play(9,0,0);
 					AmplyRelay = 0;
 				}
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					switch(sub_mode){
-						case GIOCHUC  :
+						case MP3SONGTRAM  :
+							song_name = (song_name+100)%1000;
+						break;
+						case MP3SONGCHUC  :
+							song_name = (song_name/100*100) + (song_name-song_name/100*100+10)%100;
+						break;
+						case MP3SONGDVI  :
+							song_name = (song_name/10*10) + (song_name-song_name/10*10+1)%10;
+						break;
+						case MP3GIOCHUC  :
 							if(giotemp>13)giotemp%=10;
 							else giotemp +=10;
 						break;
-						case GIODVI   :
+						case MP3GIODVI   :
 							if(giotemp>22) giotemp = 20;
 							else if(giotemp%10==9) giotemp-=9;
 							else giotemp++;
 						break;
-						case PHUTCHUC :
+						case MP3PHUTCHUC :
 							if(phuttemp>49) phuttemp-=50;
 							else phuttemp+=10;
 						break;
-						case PHUTDVI  :
+						case MP3PHUTDVI  :
 							phuttemp+=5;
 							if(!(phuttemp%10)) phuttemp-=10;
 						break;
-						case NGAYCHUC :
+						case MP3NGAYCHUC :
 							if(ngaytemp>21) ngaytemp%=10;
 							else ngaytemp+=10;
 							if(!ngaytemp) ngaytemp = 10;
 						break;
-						case NGAYDVI  :
+						case MP3NGAYDVI  :
 							if(ngaytemp>30) ngaytemp = 30;
 							else if(ngaytemp%10==9) ngaytemp-=9;
 							else ngaytemp++;
 						break;
-						case THANGCHUC :
+						case MP3THANGCHUC :
 							if(thangtemp<3) thangtemp+=10;
 							else if(thangtemp>10) thangtemp-=10;
 						break;
-						case THANGDVI  :
+						case MP3THANGDVI  :
 							if(thangtemp==9) thangtemp = 1;
 							else if(thangtemp>11) thangtemp = 10;
 							else thangtemp++;
 						break;
-						case NAMCHUC :
+						case MP3NAMCHUC :
 							if(namtemp>89) namtemp-=90;
 							else namtemp+=10;
 						break;
-						case NAMDVI  :
+						case MP3NAMDVI  :
 							if(!(++namtemp%10)) namtemp-=10;
 						break;
 						
 					}
-					LCD_guigio(0xc0,"MP3 ",giotemp,phuttemp,251,1);
+					LCD_guigio(0xc0,"    ",giotemp,phuttemp,251,1);
+					LCD_guilenh(0xc0);
+					LCD_guidulieu(song_name/100+'0');
+					LCD_guidulieu(song_name/10%10+'0');
+					LCD_guidulieu(song_name%10 + '0');
 					LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
 					check = (23*thangtemp/9 + ngaytemp + (thangtemp>2?!(namtemp%4):2) + namtemp + (namtemp+3)/4 + 1);
 					thutemp = check%7+1; 
@@ -829,23 +843,39 @@ void main() {
 					phim_back_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
 					if(sub_mode)sub_mode--;
+					else{
+						song_name = 0;
+						LCD_guilenh(0xc0);
+						LCD_guichuoi("000 ");
+						mp3_play(9,0,0);
+					} 
+
 				}
 				
 				if(phim_mode_nhan){
 
 					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode>9){
+					if(++sub_mode>12){
 						sub_mode = 0;
 						mp3_play(thutemp,giotemp,phuttemp);
 						delay_ms(100);
-						LCD_guigio(0xc0,mp3_playing?" OK ":" NO ",giotemp,phuttemp,251,1);
 						AmplyRelay = mp3_playing;
-						LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
-						LCD_guilenh(0xcf);
-						LCD_guidulieu(thutemp+'0');
+						LCD_guilenh(0xc3);
+						LCD_guidulieu(mp3_playing?'O':'X');
+						// LCD_guigio(0xc0,mp3_playing?" OK ":" NO ",giotemp,phuttemp,251,1);
+						// LCD_guigio(0xc8," ",ngaytemp,thangtemp,100+namtemp,1);
+						// LCD_guilenh(0xcf);
+						// LCD_guidulieu(thutemp+'0');
 						// LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,thutemp*10,flip_pulse);
-						LCD_noblink();
+						// LCD_noblink();
+					}else if(song_name && sub_mode > 2){
+						sub_mode = 0;
+						mp3_play(0,song_name/12,(song_name-song_name/12*12)*5);
+						delay_ms(100);
+						AmplyRelay = mp3_playing;
+						LCD_guilenh(0xc3);
+						LCD_guidulieu(mp3_playing?'M':'X');
 					}
 				}
 				
