@@ -143,8 +143,8 @@ __code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GI
 #define GIO3DVI     9
 #define NGAYCHUC    4
 #define NGAYDVI     5
-#define THANGCHUC  6
-#define THANGDVI   7
+#define THANGCHUC  	6
+#define THANGDVI   	7
 #define NAMCHUC     8
 #define NAMDVI      9
 #define PHUT3CHUC   10
@@ -153,6 +153,24 @@ __code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GI
 #define GIO4DVI     13
 #define PHUT4CHUC   14
 #define PHUT4DVI    15
+//define test MP3
+
+#define MP3SONGTRAM    0
+#define MP3SONGCHUC    1
+#define MP3SONGDVI     2
+#define MP3GIOCHUC     3
+#define MP3GIODVI      4
+#define MP3PHUTCHUC    5
+#define MP3PHUTDVI     6
+#define MP3NGAYCHUC    7
+#define MP3NGAYDVI     8
+#define MP3THANGCHUC   9
+#define MP3THANGDVI    10
+#define MP3NAMCHUC     11
+#define MP3NAMDVI      12
+
+u16 __xdata 	song_name;
+
 //GSM MODULE
 __bit   gui_lenh_thanh_cong;
 __bit   have_not;
@@ -210,6 +228,7 @@ u8  __xdata     phut_sac_xa_acqui_con_lai;
 	*/
 //mac dinh motor eeprom
 #define TT1ST 0
+#define QTEST 0
 #define TT2ST 1
 #define TT1DC 4
 #define TT2DC 5
