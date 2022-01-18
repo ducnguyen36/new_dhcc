@@ -108,7 +108,8 @@ void xunggiay(){
 	WATCHDOG;
 	flip_pulse^=1;
 	over_cur_led = flip_pulse;
-	giay_out=1;	
+	giay_out=1;
+	if(dien_ap_thap) dien_ap_thap_reset_so_giay_con_lai--;
 	if(connect) connect--;
 	if(total_try_time_out) total_try_time_out--;
 	

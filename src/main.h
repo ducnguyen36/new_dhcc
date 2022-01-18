@@ -210,6 +210,9 @@ __bit      loi_cam_motor4;
 __bit      loi_eeprom_tat_mo_den;
 __bit      bao_cao_dien_ap_thap;
 
+//THOI GIAN DIEN AP THAP DUY TRI
+u8  __xdata     dien_ap_thap_reset_so_giay_con_lai;
+
 //CHARGE SAC ACQUI
 u8  __xdata     phut_sac_xa_acqui_con_lai;
 
