@@ -228,6 +228,7 @@ u8  __xdata     phut_sac_xa_acqui_con_lai;
 	*/
 //mac dinh motor eeprom
 #define TT1ST 0
+#define QTEST 0
 #define TT2ST 1
 #define TT1DC 4
 #define TT2DC 5
