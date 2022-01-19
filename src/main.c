@@ -49,7 +49,7 @@ void main() {
 	motor_index = motor_index2 = 5;
 	phone[0]='0';
 	
-
+	dien_ap_thap_reset_so_giay_con_lai = 180;
 	gsm_delay_reset=10;
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
 	mode = SELECT; sub_mode = GIOKIM;
@@ -929,10 +929,12 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 	//91 = 10V	
 	dien_ap_nguon = ADC_RES;
 	if(motor_index==5 && motor_index2==5){
+		
 		if(dien_ap_thap){
 			if(dien_ap_nguon<82) ChargeRelay = 0;
 			else if(dien_ap_nguon>110) {
 				dien_ap_thap = 0;
+				dien_ap_thap_reset_so_giay_con_lai = 180;
 			}
 		}else if(dien_ap_nguon<92){
 			dien_ap_thap = 1;
@@ -940,6 +942,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 			P2 &= 0x0F;
 			// luu_gio_kim();		
 		}
+		if(!dien_ap_thap_reset_so_giay_con_lai) ChargeRelay = 0;
 	}
 
 	ADC_CONTR = 0x8b;
