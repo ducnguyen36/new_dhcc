@@ -6,8 +6,9 @@
 
 // #define     MOTORST_EEPROM      MOTOR_EEPROM+1
 #define     MOTOR_EEPROM        SECTOR1 // mac dinh: 00000000
-            /* 1  1     1     1     1     1     1    1
-                SP     MDB   STO  ST-55 ST-DC  [SO_MAY]  */
+            /* 1  1       1      1     1     1     1    1
+              SPEED     MOTOR   STO  ST-55 ST-DC  [SO_MAY]  
+              STEP      DEBUG                               */
 #define     BAOCAO_EEPROM       MOTOR_EEPROM+1
 #define     GPSON_EEPROM        BAOCAO_EEPROM+1
 #define     NGAYRESET_EEPROM    GPSON_EEPROM+1

@@ -280,18 +280,18 @@ void xu_ly_tin_nhan(){
             case 'p':
             case 'P':
                 if(!phone_chinh_so_sanh_that_bai){
-                    if(!eep_mp3){
+                    if(!(eep_mp3%4)){
                         baocaosms(CHINH,"\rKhong Co Module Mp3");
                     }
                     else if(lenh_sms[5]=='T' || lenh_sms[5]=='t'){
-                        if(mp3_playing) mp3_play(9,0,0);
+                        if(mp3_playing) mp3_play(9,0,0); //mp3_stop() TODO
                         AmplyRelay = 0;
                         baocaosms(CHINH,"\rDung Mp3");    
                     }
                     else if(lenh_sms[5]=='N' || lenh_sms[5]=='n'){
-                        if(eep_mp3==1){
+                        if(eep_mp3%4==1){
                             IAP_docxoasector1();
-                            eeprom_buf[MP3_EEPROM] = 2;
+                            eeprom_buf[MP3_EEPROM] += 1;
                             IAP_ghisector1();
                             mp3_status = mp3_IDLE;
                             mp3_hour= 24;
@@ -299,11 +299,11 @@ void xu_ly_tin_nhan(){
                         }
                         baocaosms(CHINH,"\rBat mp3");
                     }else if(lenh_sms[5]=='F' || lenh_sms[5]=='f'){
-                        if(eep_mp3==2){
+                        if(eep_mp3%4==2){
                             if(mp3_playing) mp3_play(9,0,0);
                             AmplyRelay = 0;
                             IAP_docxoasector1();
-                            eeprom_buf[MP3_EEPROM] = 1;
+                            eeprom_buf[MP3_EEPROM] -= 1;
                             IAP_ghisector1();
                         }
                         baocaosms(CHINH,"\rTat mp3");
@@ -318,7 +318,7 @@ void xu_ly_tin_nhan(){
                                 u8 nam = (lenh_sms[13]-'0')*10+lenh_sms[14]-'0';
                                 u16 check = (23*((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')/9 + ((lenh_sms[9]-'0')*10+lenh_sms[10]-'0') + 
                                             (((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')>2?!(nam%4):2) + nam + (nam+3)/4 + 1);
-                                mp3_play(check%7+1,(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
+                                mp3_play(eep_mp3>3?check%7+1:10,(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
                                 delay_ms(1500);
                                 if(mp3_playing) baocaosms(CHINH,"\rTest mp3 thanh cong");
                                 else baocaosms(CHINH,"\rkhong dung gio phat hoac mp3 loi");

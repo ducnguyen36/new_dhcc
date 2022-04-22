@@ -88,6 +88,43 @@ void kiemtratinhieu(){
     }
 }
 
+//8Dehhmmehhmmehhmmehhmm[dDG]hhmm[DATE] MOTOR/XG/DEN/MP3/VOL/SIGNAL
+void send_thong_so_rut_gon(__bit chinh){
+    u8 i = 0;
+    u8 dien_ap = dien_ap_nguon*28/256;
+    send_gsm_byte(atmel_phat?'8':'S');
+    send_gsm_byte((may_dc?'D':'S'));
+    do{
+        if(!thoi_gian_doi_doc_cam[i])send_gsm_byte('E');
+        send_gsm_byte(gio[i]/10+'0');
+        send_gsm_byte(gio[i]%10+'0');
+        send_gsm_byte(phut[i]/10+'0');
+        send_gsm_byte(phut[i]%10+'0');
+    }while(++i!=so_motor);
+    if(chinh){
+        send_gsm_byte((GPS_time?(eep_gpson?'G':'D'):'d'));
+    }
+    send_gsm_byte(hour/10+'0');
+    send_gsm_byte(hour%10+'0');
+    send_gsm_byte(minute/10+'0');
+    send_gsm_byte(minute%10+'0');
+    send_gsm_byte(date+'0');
+    send_gsm_byte(' ');
+    send_gsm_byte(motor_dung?'0':'1');
+    send_gsm_byte(xung_giay_check?'1':'0');
+    send_gsm_byte(DenRelay?'1':'0');
+    if((eep_mp3%4) || chinh){
+        send_gsm_byte(eep_mp3+(mp3_playing?'0':47));
+    }
+    send_gsm_byte(' ');
+    send_gsm_byte(dien_ap/10+'0');
+    send_gsm_byte(dien_ap%10+'0');
+    if(!chinh) return;
+    //send signal
+    send_gsm_byte(signal/10+'0');
+    send_gsm_byte(signal%10+'0');
+}
+
 void send_gio_kim(){
     u8 i = 0;
     send_gsm_cmd(atmel_phat?"\r89C55":"\rSTC15");
@@ -155,7 +192,7 @@ void send_thong_so(__bit chinh){
     send_gsm_cmd(" VOL=");
     send_gsm_byte(dien_ap/10+'0');
     send_gsm_byte(dien_ap%10+'0');
-    if(eep_mp3 || chinh){
+    if((eep_mp3%4) || chinh){
         send_gsm_cmd(" MP3=");
         send_gsm_byte(eep_mp3+(mp3_playing?'0':47));
     }
@@ -173,29 +210,34 @@ void send_thong_so(__bit chinh){
 }
 
 
+
 void baocaosms(__bit chinh, u8  *noidung){
     if(!sms_on) return;
-    gsm_sendandcheck("AT\r", 15, 1,ver);
+    gsm_sendandcheck("AT\r", 15, 1,"BAT DAU BAO CAO ");
     kiemtratinhieu();    
     if(*(noidung+1)!='*') kiemtrataikhoan();
     else lenh_sms[0]=0;
 
     if(!send_sms(chinh)) return;
     
-    send_gsm_cmd(ver);
+    if(sms_on>2){
+        send_thong_so_rut_gon(chinh);
+    }else{
+        send_gsm_cmd(ver);
 
-    send_gio_kim();
-    send_gio_thuc(chinh);
-    send_thong_so(chinh);
+        send_gio_kim();
+        send_gio_thuc(chinh);
+        send_thong_so(chinh);
 
-  
-    if(*(noidung+1)!='*' && lenh_sms[0]){
-        send_gsm_cmd("\rTK Chinh=");
-        send_gsm_cmd(lenh_sms);
-        if(chinh && !lenh_sms[4]) send_gsm_cmd("\rTai khoan con duoi 10000");
-        lenh_sms[1] = lenh_sms[2] = lenh_sms[3] = lenh_sms[4] = 0;
+    
+        if(*(noidung+1)!='*' && lenh_sms[0]){
+            send_gsm_cmd("\rTK Chinh=");
+            send_gsm_cmd(lenh_sms);
+            if(chinh && !lenh_sms[4]) send_gsm_cmd("\rTai khoan con duoi 10000");
+            lenh_sms[1] = lenh_sms[2] = lenh_sms[3] = lenh_sms[4] = 0;
+        }
+        send_gsm_cmd(noidung);
     }
-    send_gsm_cmd(noidung);
 
     if(*(noidung+1)=='*') send_gsm_cmd("\032");
     else gsm_sendandcheck("\032",50,1,"DANG GUI BAO CAO");
@@ -240,7 +282,7 @@ void send_thong_so_den(){
 
 void baocaoden(__bit chinh, u8 *noidung){
     if(!sms_on) return;
-    gsm_sendandcheck("AT\r", 15, 1,ver);
+    gsm_sendandcheck("AT\r", 15, 1,"BAT DAU BAO CAO ");
     if(!send_sms(chinh)) return;
     send_gio_thuc(chinh);
     send_thong_so(chinh);
@@ -257,7 +299,7 @@ void gui_huong_dan(){
 }
 
 __bit gsm_thietlapsim800(){
-    if(gsm_sendandcheck("AT\r", 15, 1,ver)){      
+    if(gsm_sendandcheck("AT\r", 15, 1,"THIET LAP SIM800")){      
         clear_sms_buffer(0);
         sms_index = 0;
         gsm_serial_cmd = CSPN;
@@ -328,7 +370,7 @@ __bit gsm_thietlapnhantin(){
 
 __bit gsm_thietlapnhantin1(){
     if(!gsm_pw || !sms_on) return 0;
-    if(!gsm_sendandcheck("AT\r", 15, 1,ver)) return 0;
+    if(!gsm_sendandcheck("AT\r", 15, 1,"THIET LAP TNHAN ")) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 2,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
             if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 20, 3,"  SENDING CMGDA  ")){
@@ -343,7 +385,7 @@ __bit gsm_thietlapnhantin1(){
 void gsm_laygio_gps(){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
-    if(gsm_sendandcheck("AT\r", 15, 1,ver)){
+    if(gsm_sendandcheck("AT\r", 15, 1,"LAY GIO VE TINH ")){
 		if(gsm_sendandcheck("AT+IPR=0\r", 15, 1,"  SENDING IPR   ")){
 		    gsm_sendandcheck("AT+CLIP=1\r", 15, 1,"  SENDING CLIP  ");
 			if(eep_gpson){

@@ -53,14 +53,22 @@ void main() {
 	gsm_delay_reset=10;
 	phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
 	mode = SELECT; sub_mode = GIOKIM;
-	motor_step_int_init();
+	
+
+	// /*Khoi tao man hinh LCD*/
+	LCD_Init();
+	LCD_guilenh(0x80);
+	LCD_guichuoi(ver);
 
 #if !TEST
 	delay_ms(5000);
 #endif
 
+
 	/*validate eeprom*/
 	u8 __xdata i;
+	LCD_guilenh(0x80);
+	LCD_guichuoi("THIET LAP EEPROM");
 	IAP_docxoasector1();
 	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT;
 	/*
@@ -101,8 +109,9 @@ void main() {
 	}
 
 	if(eeprom_buf[LOITHESIM_EEPROM]>24)eeprom_buf[LOITHESIM_EEPROM] = 0;
-	if(mp3_playing) eeprom_buf[MP3_EEPROM] = 0;
-	else if(!eeprom_buf[MP3_EEPROM] || eeprom_buf[MP3_EEPROM]>2)eeprom_buf[MP3_EEPROM] = 2;
+	if(mp3_playing) eeprom_buf[MP3_EEPROM] &= 4;
+	else if(eeprom_buf[MP3_EEPROM]>6)eeprom_buf[MP3_EEPROM] = 2;
+	else if(!(eeprom_buf[MP3_EEPROM]&3))eeprom_buf[MP3_EEPROM] += 2;
 	if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x3b; 	
 	if(eeprom_buf[CAM_EEPROM]>1)eeprom_buf[CAM_EEPROM] = 1;
 //multi motor
@@ -116,7 +125,8 @@ void main() {
 	else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
-	for(i=0;i<11;i++)phone_chinh[i]= (sms_on<2)? phone1[i] : phone2[i];
+	if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
+	else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
 	sim_test_sec = 0;
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
@@ -147,11 +157,15 @@ void main() {
 	ChargeRelay = 1;
 
 	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
+	LCD_guilenh(0x80);
+	LCD_guichuoi("POWER ON SIM800 ");
 	gsm_init();
 
 	
 	/*Khoi tao serial baudrate 9600 cho dfplayer module*/
-	if(eep_mp3){
+	LCD_guilenh(0x80);
+	LCD_guichuoi("  KHOI TAO MP3  ");
+	if(eep_mp3%4==2){
 		mp3_serial_init();
 		mp3_status= mp3_IDLE;
 		mp3_hour = 24;
@@ -167,16 +181,16 @@ void main() {
 	/******** Initial watdog ****WDT**/	
 	
 	
-  	// /*Khoi tao man hinh LCD*/
-	LCD_Init();
+  	
 
 	// rtc_settime(0,0,0);
 	if(phim_mode_nhan && phim_back_nhan && phim_cong_nhan){
 		u8 debug_dem = 0;
-		u8 cam_temp = 0;
+		// u8 cam_temp = 0;
+		u8 mp3temp = eep_mp3;
 		__bit debug = 0;
 		giotemp = eep_debug;
-		cam_temp = eep_cam;
+		// cam_temp = eep_cam;
 		i = eep_motor;
 		
 		phim_mode_nhan = phim_back_nhan = phim_cong_nhan = 0;
@@ -202,8 +216,8 @@ void main() {
 					LCD_guidulieu((mode==1&&chop)?'_':(((giotemp&96)>>5)+'0'));
 					LCD_guichuoi(" G:");
 					LCD_guidulieu((mode==2&&chop)?'_':(((giotemp&16)>>4)+'0'));
-					LCD_guichuoi(" C:");
-					LCD_guidulieu((mode==3&&chop)?'_':(cam_temp?'T':'N'));
+					LCD_guichuoi(" M:");
+					LCD_guidulieu((mode==3&&chop)?'_':((mp3temp&4)>>2)+'0');
 				}
 				if(phim_mode_nhan){
 					phim_mode_nhan = 0;
@@ -211,11 +225,12 @@ void main() {
 					switch(mode){
 						case 1:sub_mode = (giotemp&96)>>5;break;
 						case 2:sub_mode = (giotemp&16)>>4;break;
-						case 3:sub_mode = cam_temp;break;
+						case 3:sub_mode = (mp3temp&4)>>2;break;
 						case 4:IAP_docxoasector1();
 							   eeprom_buf[MOTOR_EEPROM] &= 0xef;
 							   eeprom_buf[DEBUG_EEPROM] =  giotemp;
-							   eeprom_buf[CAM_EEPROM] =  cam_temp;
+							   eeprom_buf[MP3_EEPROM] =  mp3temp;
+							//    eeprom_buf[CAM_EEPROM] =  cam_temp;
 							   IAP_ghisector1();
 							   IAP_xoasector(SECTOR2);
 							   IAP_CONTR = 0x60;
@@ -235,9 +250,9 @@ void main() {
 					sub_mode++;
 					switch(mode){
 						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
-						case 1:if(sub_mode>2) sub_mode = 0;giotemp = giotemp & 0x1f | (sub_mode<<5); break;
+						case 1:if(sub_mode>3) sub_mode = 0;giotemp = giotemp & 0x9f | (sub_mode<<5); break;
 						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
-						case 3:if(sub_mode>1) sub_mode = 0;cam_temp = sub_mode; break;
+						case 3:if(sub_mode>1) sub_mode = 0;mp3temp = mp3temp & 0x03 | (sub_mode<<3); break;
 					}
 				}
 			}
@@ -299,7 +314,8 @@ void main() {
 							may_dc = sub_mode = 1 - sub_mode;
 							break;
 						case 2:
-							atmel_phat = sub_mode = 1 - sub_mode;
+							if(so_motor>2) atmel_phat = sub_mode = 1;
+							else atmel_phat = sub_mode = 1 - sub_mode;
 						case 3:
 							sub_mode = sub_mode<3?sub_mode+1:0;
 							toc_do_motor_step = sub_mode;
@@ -344,6 +360,8 @@ void main() {
 	ADC_CONTR = 0x8b;
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
+	LCD_guilenh(0x80);
+	LCD_guichuoi("KIEM TRA GIO RTC");
 	rtc_gettime(&hour, &minute, &second);
 	if(hour>23 || minute > 59 || second >59)	
 		rtc_settime(0,0,0);
@@ -353,6 +371,49 @@ void main() {
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	rtc_gettime(&hour, &minute, &second);
+
+	// nhich motor 1 va 3 den khi cam tat
+	LCD_guilenh(0x80);
+	LCD_guichuoi("KIEM MOTOR 1 - 3");
+	if(so_motor>2){
+		u8 retry = 20;
+		while(!cam_che && retry--){
+			LCD_guilenh(0xc0);
+			LCD_guidulieu(retry/10+'0');
+			LCD_guidulieu(retry%10+'0');
+			motor1 = 1;
+			delay_ms(may_dc?1000:250);
+			motor1 = 0;
+			if(!cam_che){
+				motor3 = 1;
+				delay_ms(may_dc?1000:250);
+				motor3 = 0;
+			}
+		}
+	}
+	LCD_guilenh(0x80);
+	LCD_guichuoi("KIEM MOTOR 2 - 4");
+	if(so_motor>3){
+		u8 retry = 5;
+		while(!cam_che2 && retry--){
+			LCD_guilenh(0xc0);
+			LCD_guidulieu(retry/10+'0');
+			LCD_guidulieu(retry%10+'0');
+			motor2 = 1;
+			delay_ms(may_dc?1000:250);
+			motor2 = 0;
+			if(!cam_che2){
+				motor4 = 1;
+				delay_ms(may_dc?1000:250);
+				motor4 = 0;
+			}
+		}
+	}
+	LCD_guilenh(0x80);
+	LCD_guichuoi("THIET LAP MOTOR ");
+	motor_step_int_init();
+
+
 	bat_phone_phu = eep_phonephu[11]&1;
 	if(!nosim && gsm_thietlapsim800()){
 		gsm_thietlapngaygiothuc();
@@ -465,7 +526,7 @@ void main() {
 			if(motor_index!=5 && thoi_gian_doi_doc_cam[motor_index] && !--thoi_gian_doi_doc_cam[motor_index]){ cam_vao = cam_vao_han = 0;motor_index = 5;}
 			if((motor_index2!=5)  && thoi_gian_doi_doc_cam[motor_index2] && !--thoi_gian_doi_doc_cam[motor_index2]){ cam_vao2 = cam_vao_han2 = 0;motor_index2 = 5;}
 			
-			if(mode_wait && (!eep_mp3 || !mp3_playing)) mode_wait--;
+			if(mode_wait && (!(eep_mp3%4) || !mp3_playing)) mode_wait--;
 			
 			if(phim_mode_doi && phim_mode_giu){
 				phim_mode_doi--;
@@ -475,10 +536,10 @@ void main() {
 
 		kiem_tra_den();
 		// if(!mode && eep_motor && eep_mp3==2) kiem_tra_nhac();
-		if(!mode && eep_mp3==2) kiem_tra_nhac();
+		if(!mode && (eep_mp3%4)==2) kiem_tra_nhac();
 		
 
-		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!eep_mp3 || !mp3_playing)){
+		if(((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset==hour && minute>5) || so_lan_goi_dien > 1)  && motor_index==5 && motor_index2==5 && (!(eep_mp3%4) || !mp3_playing)){
 			if(max_second<60)rtc_settime(eep_gioreset,6,0);
 			if(so_lan_goi_dien>1) baocaosms(CHINH,"\rChuan bi reset phan mem tu cuoc goi");	
 			EA=0;
@@ -507,7 +568,7 @@ void main() {
 		}
 		if(co_tin_nhan_moi){
 			co_tin_nhan_moi = 0;
-			gsm_sendandcheck("AT\r", 15, 1,ver);
+			gsm_sendandcheck("AT\r", 15, 1,"CO TIN NHAN MOI ");
 			send_gsm_cmd("AT+CMGL=\"ALL\"\r");
 		}
 		if(goi_dien_thoai){
@@ -569,7 +630,7 @@ void main() {
 				if(phim_mode_nhan){
 					phim_mode_nhan = 0;
 					mode_wait = TIME_MODE_WAIT;
-					if(++sub_mode==MP3TEST && !eep_mp3) sub_mode++;
+					if(++sub_mode==MP3TEST && !(eep_mp3%4)) sub_mode++;
 					if(sub_mode>MAX_MODE)sub_mode = 0;
 					chop=0;
 				}
@@ -858,7 +919,7 @@ void main() {
 					mode_wait = TIME_MODE_WAIT;
 					if(++sub_mode>12){
 						sub_mode = 0;
-						mp3_play(thutemp,giotemp,phuttemp);
+						mp3_play(eep_mp3>3?thutemp:10,giotemp,phuttemp);
 						delay_ms(100);
 						AmplyRelay = mp3_playing;
 						LCD_guilenh(0xc3);
@@ -869,7 +930,7 @@ void main() {
 						// LCD_guidulieu(thutemp+'0');
 						// LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO   ",giotemp,phuttemp,thutemp*10,flip_pulse);
 						// LCD_noblink();
-					}else if(song_name && sub_mode > 2){
+					}else if(song_name && sub_mode > 2 && eep_mp3>3){
 						sub_mode = 0;
 						mp3_play(0,song_name/12,(song_name-song_name/12*12)*5);
 						delay_ms(100);
