@@ -252,7 +252,7 @@ void main() {
 						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
 						case 1:if(sub_mode>3) sub_mode = 0;giotemp = giotemp & 0x9f | (sub_mode<<5); break;
 						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
-						case 3:if(sub_mode>1) sub_mode = 0;mp3temp = mp3temp & 0x03 | (sub_mode<<3); break;
+						case 3:if(sub_mode>1) sub_mode = 0;mp3temp = mp3temp & 0x03 | (sub_mode<<2); break;
 					}
 				}
 			}
@@ -856,7 +856,7 @@ void main() {
 							else phuttemp+=10;
 						break;
 						case MP3PHUTDVI  :
-							phuttemp+=5;
+							phuttemp=phuttemp+(eep_mp3>3?5:1);
 							if(!(phuttemp%10)) phuttemp-=10;
 						break;
 						case MP3NGAYCHUC :
