@@ -623,7 +623,7 @@ void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
                         (nha_mang == VIETTEL && gsm_receive_buf[gsm_receive_pointer]==' ' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':' &&
                                     gsm_receive_buf[(gsm_receive_pointer+11)%13] =='G' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='K' &&
                                     gsm_receive_buf[(gsm_receive_pointer+9)%13] =='T' && gsm_receive_buf[(gsm_receive_pointer+8)%13] ==' ') ||
-                        (nha_mang == MOBIFONE && gsm_receive_buf[gsm_receive_pointer]==':' && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='C' &&
+                        (nha_mang == MOBIFONE && (gsm_receive_buf[gsm_receive_pointer]==':' || gsm_receive_buf[gsm_receive_pointer]==' ') && gsm_receive_buf[(gsm_receive_pointer+12)%13] =='C' &&
                                     gsm_receive_buf[(gsm_receive_pointer+11)%13] =='K' && gsm_receive_buf[(gsm_receive_pointer+10)%13] =='T' &&
                                     gsm_receive_buf[(gsm_receive_pointer+9)%13] ==' ' && gsm_receive_buf[(gsm_receive_pointer+8)%13] =='.') ||
                         (nha_mang == VIETNAM && gsm_receive_buf[gsm_receive_pointer]==' ' && gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':' &&
