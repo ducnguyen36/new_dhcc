@@ -615,7 +615,7 @@ void main() {
 					mode = SELECT;
 					sub_mode = GIOKIM;
 					motor_index = motor_index2 = 5;
-					if(mp3_playing) mp3_play(9,0,0);
+					if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
 					AmplyRelay = 0;
 					mp3_status = mp3_IDLE;
 					if(phim_back_nhan) phim_back_nhan = 0;
