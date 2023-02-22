@@ -18,7 +18,8 @@ void kiem_tra_nhac(){
                 mp3_hour = hour;
                 mp3_minute = minute;
                 // mp3_date = date;
-                if(!(mp3_minute%5))mp3_play(eep_mp3?date:10, mp3_hour,mp3_minute);
+                if(eep_mp3==2)mp3_play(10, mp3_hour,mp3_minute);
+                else if(!(mp3_minute%5))mp3_play(date, mp3_hour,mp3_minute);
                 mp3_doi_start = 90;
                 mp3_status = mp3_START;
             }
