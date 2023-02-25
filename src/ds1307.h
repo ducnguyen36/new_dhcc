@@ -1,8 +1,8 @@
 #define		DS1307WRITE			0xd0
 #define		DS1307READ			0xd1
-#define     DS1307CONTROLADDRESS    0x07
-#define     DS1307TIMEADDRESS    0x00
-#define     DS1307DATEADDRESS    0x03
+#define     DS1307CONTROLADDRESS    0x0e //ds3231 0x0e ds1307 0x07
+#define     DS1307TIMEADDRESS    0x00 //ds3231 0x00 ds1307 0x00
+#define     DS1307DATEADDRESS    0x03 //ds3231 0x03 ds1307 0x03
 #define     ACK                 1
 #define     NACK                0
 

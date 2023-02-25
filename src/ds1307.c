@@ -12,7 +12,7 @@ void rtc_init(){
 	i2c_start();
 	i2c_write(DS1307WRITE);
 	i2c_write(DS1307CONTROLADDRESS);
-	i2c_write(0x10);
+	i2c_write(0x18);//ds3231 0x18 ds1307 0x10
 	i2c_stop();
 }
 
