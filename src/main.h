@@ -1,5 +1,5 @@
 #include "common.h"
-#include "ds1307.h"
+#include "dsrtc.h"
 #include "lcd.h"
 #include "eeprom.h"
 #include "gsm.h"
