@@ -79,7 +79,7 @@ void xu_ly_tin_nhan(){
                     eeprom_buf[MOTOR_EEPROM] |= 0x10;
                     IAP_ghisector1();
                     motor_dung = 1;
-                    if(mp3_playing) mp3_play(9,0,0);
+                    if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
                     AmplyRelay = 0;
                 }else {
                     //khong lay gio kim

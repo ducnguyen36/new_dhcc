@@ -1,0 +1,27 @@
+-muwx
+-i .pio\build\DR2ST\DHCC__4.7D__DR2ST.hex
+-M
+-I 0x0100
+-X 0x0700
+-C 0xf000
+-b HOME = 0x0000
+-b XSEG = 0x0001
+-b PSEG = 0x0001
+-b ISEG = 0x0000
+-b BSEG = 0x0000
+-k .pio\build\DR2ST
+-k C:\Users\Neyugn Cud\.platformio\packages\toolchain-sdcc\bin\..\lib\small
+-l mcs51
+-l libsdcc
+-l libint
+-l liblong
+-l libfloat
+.pio\build\DR2ST\src\dsrtc.rel
+.pio\build\DR2ST\src\eeprom.rel
+.pio\build\DR2ST\src\gsm.rel
+.pio\build\DR2ST\src\i2c.rel
+.pio\build\DR2ST\src\lcd.rel
+.pio\build\DR2ST\src\main.rel
+.pio\build\DR2ST\src\mp3_serial.rel
+
+-e
