@@ -370,7 +370,7 @@ void main() {
 	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
-	rtc_gettime(&hour, &minute, &second);
+	// rtc_gettime(&hour, &minute, &second);
 
 	// nhich motor 1 va 3 den khi cam tat
 	LCD_guilenh(0x80);
