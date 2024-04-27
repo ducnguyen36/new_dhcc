@@ -367,7 +367,7 @@ void main() {
 		rtc_settime(0,0,0);
 	
 	// /* Interrupt Ngoai 0 xung giay*/
-	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
+	// rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	// rtc_gettime(&hour, &minute, &second);
@@ -557,8 +557,8 @@ void main() {
 				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
 			}else{
-				rtc_gettime(&hour,&minute,&second);
-				rtc_getdate(&date,&day,&month,&year);
+				// rtc_gettime(&hour,&minute,&second);
+				// rtc_getdate(&date,&day,&month,&year);
 			}
 
 			if(eep_baocao) {
@@ -811,7 +811,7 @@ void main() {
 						mode = SELECT;
 						hour = giotemp;
 						minute = phuttemp;
-						rtc_settime(hour,minute,second);
+						// rtc_settime(hour,minute,second);
 						hour12 = hour % 12;
 						GPS_time = 0;
 						mp3_hour = 24;
