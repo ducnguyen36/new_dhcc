@@ -132,13 +132,13 @@ void xunggiay(){
 		}
 }
 
-void clock_servide () __interrupt INT_DONG_HO __using MEM_DONG_HO {
-	WATCHDOG;
-	xung_giay_check=250;
-	mat_xung_giay=0;
-	xunggiay();
+// void clock_servide () __interrupt INT_DONG_HO __using MEM_DONG_HO {
+// 	WATCHDOG;
+// 	xung_giay_check=250;
+// 	mat_xung_giay=0;
+// 	xunggiay();
 	
-}
+// }
 
 
 u8 __xdata cnt = 20;

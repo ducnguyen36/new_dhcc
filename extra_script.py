@@ -1,4 +1,4 @@
-import json
+import os
 Import("env")
 
 
@@ -13,4 +13,5 @@ verStr = defines.get("VERSION")
 # print(verStr[10:-1])
 verStr = verStr[10:-1]
 env.Replace(PROGNAME="DHCC%s_%s" % (verStr,defines.get("MOTOR_DEFAULT")))
+env["PROJECT_BUILD_DIR"] = os.path.join(env["PROJECT_BUILD_DIR"],os.path.normpath(verStr[2:]))
 # print(env["PROGNAME"])

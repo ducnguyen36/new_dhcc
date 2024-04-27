@@ -44,7 +44,7 @@ void main() {
 	EA = 1; //bat tat ca interupt
 	/****************/
 	
-	xung_giay_check=250;
+	xung_giay_check=0;
 	so_lan_goi_dien = 0;
 	motor_index = motor_index2 = 5;
 	phone[0]='0';
@@ -484,7 +484,7 @@ void main() {
 		}
 		if(!xung_giay_check && !mat_xung_giay){
 			mat_xung_giay = 1;
-			baocaosms(CHINH,"\rmat xung giay");
+			// baocaosms(CHINH,"\rmat xung giay");
 		}
 		//multi motor
 		if(!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1){
