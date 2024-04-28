@@ -11,6 +11,7 @@ u8 __code ver[] = VERSION;
 	4.5.0 chuyen sang choi nhac dang theo tuan
 	4.5.1 thay doi test mp3 thanh ngay thang
 	4.5.2 them thu vao tin nhan
+	4.8 them tinh nang dung khi khong co sim
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -20,7 +21,7 @@ u8 __code ver[] = VERSION;
 
 
 void main() {
-	u8 __data giotemp=0,phuttemp=0;
+	u8 __data giotemp=0,phuttemp=0, so_gio_mat_gps=0;
 	u8 __xdata  ngaytemp = 1, thangtemp=1, namtemp = 21, thutemp = 1;
 	u16 __xdata check;
 	/*PORT IO INIT*/
@@ -362,9 +363,9 @@ void main() {
 	//TODO validate dalas time
 	LCD_guilenh(0x80);
 	LCD_guichuoi("KIEM TRA GIO RTC");
-	rtc_gettime(&hour, &minute, &second);
-	if(hour>23 || minute > 59 || second >59)	
-		rtc_settime(0,0,0);
+	// rtc_gettime(&hour, &minute, &second);
+	// if(hour>23 || minute > 59 || second >59)	
+	// 	rtc_settime(0,0,0);
 	
 	// /* Interrupt Ngoai 0 xung giay*/
 	// rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
@@ -556,10 +557,22 @@ void main() {
 				// gsm_laygio_gps();
 				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
+				
+				if(so_gio_mat_gps>15){
+					IAP_docxoasector1();
+                    eeprom_buf[MOTOR_EEPROM] |= 0x10;
+                    IAP_ghisector1();
+                    motor_dung = 1;
+                    if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
+                    AmplyRelay = 0;			
+				}else if(!GPS_time)
+					so_gio_mat_gps++;
 			}else{
+				
 				// rtc_gettime(&hour,&minute,&second);
 				// rtc_getdate(&date,&day,&month,&year);
 			}
+
 
 			if(eep_baocao) {
 				baocaosms(CHINH,"\rbao cao dau gio");
