@@ -362,7 +362,7 @@ void main() {
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
 	LCD_guilenh(0x80);
-	LCD_guichuoi("KIEM TRA GIO RTC");
+	// LCD_guichuoi("KIEM TRA GIO RTC");
 	// rtc_gettime(&hour, &minute, &second);
 	// if(hour>23 || minute > 59 || second >59)	
 	// 	rtc_settime(0,0,0);
@@ -416,8 +416,10 @@ void main() {
 
 
 	bat_phone_phu = eep_phonephu[11]&1;
+	GPS_time = 0;
 	if(!nosim && gsm_thietlapsim800()){
 		gsm_thietlapngaygiothuc();
+		
 		gsm_thietlapgoidien();
 		// gsm_thietlapnhantin();
 		if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
@@ -430,7 +432,7 @@ void main() {
 		}
 	}
 	// gsm_laygio_gps();
-
+	if(!GPS_time) so_gio_mat_gps++;
     hour12 = (hour>11)?hour-12:hour;
 	if(!eep_norreset){
 		mode_wait = 5;
@@ -552,13 +554,16 @@ void main() {
 		}
 
 
-		if(!da_gui_bao_cao && minute<5 ) {
-			if(!GPS_time && eep_gpson) {
+		if(!da_gui_bao_cao && minute<5) {
+			if(eep_gpson) {
 				// gsm_laygio_gps();
+				motor_index = motor_index2 = 5;
+				delay_ms(3000);
+				gsm_serial_cmd = NORMAL;
 				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
 				
-				if(so_gio_mat_gps>15){
+				if(so_gio_mat_gps>4 && !motor_dung){
 					IAP_docxoasector1();
                     eeprom_buf[MOTOR_EEPROM] |= 0x10;
                     IAP_ghisector1();
@@ -567,6 +572,7 @@ void main() {
                     AmplyRelay = 0;			
 				}else if(!GPS_time)
 					so_gio_mat_gps++;
+				else so_gio_mat_gps = 0;
 			}else{
 				
 				// rtc_gettime(&hour,&minute,&second);
@@ -578,7 +584,19 @@ void main() {
 				baocaosms(CHINH,"\rbao cao dau gio");
 			}
 			da_gui_bao_cao = 1;
+			motor_index = motor_run_check();
+			motor_index2 = motor_run_check2();
 		}
+
+		if(so_gio_mat_gps>4 && !motor_dung){
+			IAP_docxoasector1();
+			eeprom_buf[MOTOR_EEPROM] |= 0x10;
+			IAP_ghisector1();
+			motor_dung = 1;
+			if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
+			AmplyRelay = 0;			
+		}
+
 		if(co_tin_nhan_moi){
 			co_tin_nhan_moi = 0;
 			gsm_sendandcheck("AT\r", 15, 1,"CO TIN NHAN MOI ");
@@ -618,7 +636,7 @@ void main() {
 								LCD_guigio(0x8a," ",gio[2],phut[2],251,0);LCD_guidulieu(' ');
 					}
 					if(so_motor!=4){
-						LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse);
+						LCD_guigio(0xc0,GPS_time?"  GPS  ":((eep_motor&16)?"   DS  ":" ASIA  "),hour,minute,second,flip_pulse);
 					} 
 				}
 				if(!phim_mode_doi && !cam_vao){
@@ -779,7 +797,13 @@ void main() {
 					mode = SELECT;
 					mp3_hour = 24;
 					mp3_minute = 60;
-					if(eep_gpson) gsm_thietlapngaygiothuc();//gsm_laygio_gps();
+					if(eep_gpson){
+						
+						gsm_thietlapngaygiothuc();//gsm_laygio_gps();
+						if(!GPS_time) so_gio_mat_gps++;
+						else so_gio_mat_gps = 0;
+					}
+					
 					// else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
