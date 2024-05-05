@@ -44,6 +44,11 @@ __bit phone_phu_so_sanh_that_bai;
 __bit bat_phone_phu;
 
 
+//TEST MOTOR
+__bit dc_run;
+__bit step_run;
+u16 __xdata so_vong_motor_quay;	
+
 
 __bit phone_header;
 __bit co_tin_nhan_moi;
