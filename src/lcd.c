@@ -14,17 +14,8 @@ void delay_ms(unsigned int t)
 			
 }
 
-void LCD_blinkXY(u8 hang, u8 cot){
-	LCD_guilenh(hang|cot);
-	LCD_guilenh(0x0d);
-	
-}
-void LCD_chop(u8 hang,u8 *vanban){
-	if(chop){
-		LCD_guilenh(hang);
-		LCD_guichuoi(vanban);
-	}else LCD_xoa(hang);
-}
+
+
 
 void LCD_guidulieu(u8 dulieu){
 	
@@ -69,9 +60,7 @@ void LCD_guilenh(u8 lenh){
 	delay_us(100);
 }
 
-void LCD_noblink(){
-	LCD_guilenh(0x0c);
-}
+
 
 void LCD_xoa(u8 hang){
 	if(hang){
@@ -123,42 +112,5 @@ void LCD_Init(){
 	LCD_en=0;_nop_();
 	P0=0x18;_nop_();
 	LCD_en=0;delay_us(1000);
-	
-}
-
-void LCD_guigio(u8 vitri, u8 *chuoi, u8 gio, u8 phut, u8 giay,__bit haicham){
-	// if(gio>23) return;
-	if(giay>250){
-		LCD_guilenh(vitri);
-		LCD_guichuoi(chuoi);
-		LCD_guidulieu(gio<10?' ':(gio/10+'0'));
-		LCD_guidulieu(gio%10+'0');
-		if(giay>252) LCD_guidulieu(haicham?':':' ');
-		LCD_guidulieu(phut/10+'0');
-		LCD_guidulieu(phut%10+'0');
-	}else{
-		LCD_guilenh(vitri);
-		LCD_guichuoi(chuoi);
-		LCD_guidulieu(gio<10?' ':(gio/10+'0'));
-		LCD_guidulieu(gio%10+'0');
-		if(giay<100)LCD_guidulieu(haicham?':':' ');
-		LCD_guidulieu(phut/10+'0');
-		LCD_guidulieu(phut%10+'0');
-		if(giay<100)LCD_guidulieu(haicham?':':' ');
-		LCD_guidulieu((giay%100)/10+'0');
-		LCD_guidulieu(giay%10+'0');
-		LCD_guidulieu(' ');
-	}
-	// if(giay>250){
-	// 	u8 time[] = {gio/10+'0',gio%10+'0',phut/10+'0',phut%10+'0',0};
-	// 	LCD_guilenh(vitri);
-	// 	LCD_guichuoi(chuoi);
-	// 	LCD_guichuoi(time);
-	// }else{
-	// 	u8 time[] = {gio/10+'0',gio%10+'0',haicham?':':' ',phut/10+'0',phut%10+'0',haicham?':':' ',giay/10+'0',giay%10+'0',' ',0};
-	// 	LCD_guilenh(vitri);
-	// 	LCD_guichuoi(chuoi);
-	// 	if(gio<24) LCD_guichuoi(time);
-	// }
 	
 }
