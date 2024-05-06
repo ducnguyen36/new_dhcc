@@ -114,6 +114,11 @@ void main() {
 				so_vong_motor_quay = 0;
 			}
 		}
+		if(phim_mode_nhan){
+			phim_mode_nhan = 0;
+			RingRelay = !RingRelay;
+
+		}
 		WATCHDOG;
 	}
 }
