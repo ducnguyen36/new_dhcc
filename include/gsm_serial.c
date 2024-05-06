@@ -215,11 +215,12 @@ void baocaosms(__bit chinh, u8  *noidung){
     if(!sms_on) return;
     gsm_sendandcheck("AT\r", 15, 1,"BAT DAU BAO CAO ");
     kiemtratinhieu();    
-    if(*(noidung+1)!='*') kiemtrataikhoan();
+    if(*(noidung+1)!='*' && sms_on!=4) kiemtrataikhoan();
     else lenh_sms[0]=0;
+    // lenh_sms[0] = 0;
     if(!send_sms(chinh)) return;
     
-    if(sms_on>2){
+    if(sms_on==3){
         send_thong_so_rut_gon(chinh);
     }else{
         send_gsm_cmd(ver);

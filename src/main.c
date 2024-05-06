@@ -12,6 +12,7 @@ u8 __code ver[] = VERSION;
 	4.5.1 thay doi test mp3 thanh ngay thang
 	4.5.2 them thu vao tin nhan
 	4.8 them tinh nang dung khi khong co sim
+	4.8C them tinh nang bo qua kiem tra tai khoan
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -125,7 +126,7 @@ void main() {
 	if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 64;
 	else toc_do_motor_step = 0;
 
-	sms_on = (eep_debug & 96)>>5;
+	sms_on = (eep_debug & 224)>>5;
 	if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
 	else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
 	sim_test_sec = 0;
@@ -214,7 +215,7 @@ void main() {
 					LCD_guidulieu((mode==0&&chop)?'_':phuttemp/10+'0');
 					LCD_guidulieu((mode==0&&chop)?'_':phuttemp%10+'0');
 					LCD_guichuoi(" T:");
-					LCD_guidulieu((mode==1&&chop)?'_':(((giotemp&96)>>5)+'0'));
+					LCD_guidulieu((mode==1&&chop)?'_':(((giotemp&224)>>5)+'0'));
 					LCD_guichuoi(" G:");
 					LCD_guidulieu((mode==2&&chop)?'_':(((giotemp&16)>>4)+'0'));
 					LCD_guichuoi(" M:");
@@ -224,7 +225,7 @@ void main() {
 					phim_mode_nhan = 0;
 					mode++;
 					switch(mode){
-						case 1:sub_mode = (giotemp&96)>>5;break;
+						case 1:sub_mode = (giotemp&224)>>5;break;
 						case 2:sub_mode = (giotemp&16)>>4;break;
 						case 3:sub_mode = (mp3temp&4)>>2;break;
 						case 4:IAP_docxoasector1();
@@ -251,7 +252,7 @@ void main() {
 					sub_mode++;
 					switch(mode){
 						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
-						case 1:if(sub_mode>3) sub_mode = 0;giotemp = giotemp & 0x9f | (sub_mode<<5); break;
+						case 1:if(sub_mode>4) sub_mode = 0;giotemp = giotemp & 0x1f | (sub_mode<<5); break;
 						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
 						case 3:if(sub_mode>1) sub_mode = 0;mp3temp = mp3temp & 0x03 | (sub_mode<<2); break;
 					}
@@ -361,7 +362,7 @@ void main() {
 	ADC_CONTR = 0x8b;
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
-	LCD_guilenh(0x80);
+	// LCD_guilenh(0x80);
 	// LCD_guichuoi("KIEM TRA GIO RTC");
 	// rtc_gettime(&hour, &minute, &second);
 	// if(hour>23 || minute > 59 || second >59)	
