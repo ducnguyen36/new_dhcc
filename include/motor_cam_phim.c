@@ -45,10 +45,19 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 		CCAP0H = PCA_Timer0 >> 8;
 		PCA_Timer0 += 25000; //tang bien nap vao len 25ms
 		
+
+		
+			trang_thai_cam = !cam_che;
+			trang_thai_cam2 = !cam_che2;
+		
+			if(dc_run) trang_thai_cam = !trang_thai_cam && !trang_thai_cam2;  
+			else trang_thai_cam = trang_thai_cam || trang_thai_cam2;
+		
+		
 		
 			
-			trang_thai_cam = !cam_che2;
-			if(dc_run) trang_thai_cam = !trang_thai_cam;  
+			// trang_thai_cam = !cam_che2;
+			// if(dc_run) trang_thai_cam = !trang_thai_cam;  
 
 		if(dc_run || step_run){
 			

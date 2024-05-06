@@ -31,7 +31,7 @@ u8  __xdata    toc_do_motor_step;
 u8  __data     step_index;
 
 __bit     motorDir;
-__bit      trang_thai_cam;
+__bit      trang_thai_cam, trang_thai_cam2;
 __bit      cam_vao;
 __bit      cam_vao_han;
 __bit      cam_ra;
