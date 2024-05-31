@@ -20,7 +20,7 @@ u8 __code ver[] = VERSION;
 
 
 void main() {
-	
+	u8 __xdata dien_ap;
 	/*PORT IO INIT*/
 	P0M1 = 0; P0M0 = 0xff; //port LCD -- chân xuất với điện trở kéo lên nhỏ, dòng lớn -> 20mA
 	P1M1 = P1M0 = 0;
@@ -63,59 +63,66 @@ void main() {
 			
 		if(giay_out){
 			
-			if((dc_run || step_run) && thoi_gian_doi_doc_cam[0] && !--thoi_gian_doi_doc_cam[0]){
+			if((dc_run==1 || (step_run%2)) && thoi_gian_doi_doc_cam[0] && !--thoi_gian_doi_doc_cam[0]){
 				LCD_guilenh(0xc0);
 				LCD_guichuoi("LOI CAM MOTOR ");
-				LCD_guichuoi(dc_run?"DC":"ST");
+				LCD_guichuoi(dc_run?"DC":"AC");
 				dc_run = step_run = 0;
 				cam_vao = cam_vao_han = 0;
 			}
 			if((dc_run || step_run) && thoi_gian_doi_doc_cam[0]) LCD_xoa(DUOI);
 			
+
 			giay_out=0;
 		}
 					
 		
 		LCD_guilenh(0x84);
-		if(!dc_run && !step_run)LCD_guichuoi("STOP");
+		if(!dc_run && !step_run){
+			LCD_guichuoi("STOP");
+			so_vong_motor_quay = 0;	
+		}
 		else{
-			LCD_guichuoi(dc_run?"DC":"ST");
+			LCD_guichuoi(dc_run?"DC":"AC");
 			LCD_guidulieu(motorDir?'>':'<');
-			LCD_guidulieu(' ');
+			if((dc_run==2) || (step_run && !(step_run%2)))LCD_guidulieu(motorDir?'>':'<');
+			else LCD_guidulieu(' ');
 		}
 		LCD_guidulieu(' ');
 		LCD_guidulieu(so_vong_motor_quay/100+'0');
 		LCD_guidulieu((so_vong_motor_quay%100)/10+'0');
 		LCD_guidulieu(so_vong_motor_quay%10+'0');
+		dien_ap = (u8)((u16)dien_ap_nguon*28/256);
+		LCD_guidulieu(' ');
+		LCD_guidulieu(dien_ap/10+'0');
+		LCD_guidulieu(dien_ap%10+'0');
+
+		
 
 		if(phim_back_nhan){
 			phim_back_nhan = 0;
+			
 			thoi_gian_doi_doc_cam[0] = thoi_gian_doi_cam_chuan = 30;
 			step_run = 0;
-			so_vong_motor_quay = 0;
-			dc_run = !dc_run;
+			if(++dc_run>2) dc_run = 0;
+
 			motorDir = 1;
+			so_vong_motor_quay = 0;
 			
 		}
 		if(phim_cong_nhan){
 			phim_cong_nhan = 0;
+			so_vong_motor_quay = 0;
 			thoi_gian_doi_doc_cam[0] = thoi_gian_doi_cam_chuan = 10;
 			dc_run = 0;
-			if(!step_run){
-				so_vong_motor_quay = 0;
-				step_run = 1;
-				motorDir = 1;
-
-			}else if(step_run && motorDir){
-				motorDir = 0;
-			}else if(step_run && !motorDir){
-				step_run = 0;
-				motorDir = 1;
-				so_vong_motor_quay = 0;
-			}
+			if(++step_run>4) step_run = 0;
+			if(step_run) motorDir = (4-step_run)/2;
 		}
 		if(phim_mode_nhan){
 			phim_mode_nhan = 0;
+			DenRelay = !DenRelay;
+			AmpliRelay = !AmpliRelay;
+			ChargeRelay = !ChargeRelay;
 			RingRelay = !RingRelay;
 
 		}

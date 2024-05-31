@@ -59,7 +59,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 			// trang_thai_cam = !cam_che2;
 			// if(dc_run) trang_thai_cam = !trang_thai_cam;  
 
-		if(dc_run || step_run){
+		if(dc_run==1 || (step_run%2)){
 			
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				

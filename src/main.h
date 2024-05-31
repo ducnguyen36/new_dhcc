@@ -11,8 +11,9 @@ u8 __idata dien_ap_nguon;
 
 
 //TEST MOTOR
-__bit dc_run;
-__bit step_run;
+u8  __xdata dc_run;
+u8  __xdata step_run;
+__bit test_run;
 u16 __xdata so_vong_motor_quay;	
 
 
@@ -51,15 +52,18 @@ __bit      phim_mode_xuong;
 __bit      phim_mode_nhan;
 __bit      phim_mode_cu;
 __bit      phim_mode_giu;
+__bit      phim_mode_tha;
 u8 __xdata phim_mode_doi;
 __bit      phim_back_xuong;
 __bit      phim_back_nhan;
 __bit      phim_back_cu;
 __bit      phim_back_giu;
+__bit      phim_back_tha;
 u8 __xdata phim_back_doi;
 __bit      phim_cong_xuong;
 __bit      phim_cong_nhan;
 __bit      phim_cong_cu;
 __bit      phim_cong_giu;
+__bit      phim_cong_tha;
 u8 __xdata phim_cong_doi;
 

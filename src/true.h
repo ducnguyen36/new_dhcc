@@ -50,5 +50,6 @@
 #define		DenRelay		P21
 #define		ChargeRelay		P22
 #define		RingRelay		P23
+#define     AmpliRelay      P42
 
 #endif
