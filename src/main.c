@@ -554,7 +554,7 @@ void main() {
 		}
 
 
-		if(!da_gui_bao_cao && minute<5) {
+		if(!da_gui_bao_cao && minute>12 && motor_index == 5 && motor_index2 == 5 && (!(eep_mp3%4) || !mp3_playing)) {
 			if(eep_gpson) {
 				// gsm_laygio_gps();
 				motor_index = motor_index2 = 5;
