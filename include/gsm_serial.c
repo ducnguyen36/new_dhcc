@@ -300,6 +300,7 @@ void gui_huong_dan(){
 }
 
 __bit gsm_thietlapsim800(){
+    if(sim_test_sec==61 && !sms_on) return 0;
     if(gsm_sendandcheck("AT\r", 15, 1,"THIET LAP SIM800")){      
         clear_sms_buffer(0);
         sms_index = 0;

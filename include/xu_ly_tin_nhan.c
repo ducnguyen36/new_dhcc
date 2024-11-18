@@ -25,7 +25,7 @@ void xu_ly_tin_nhan(){
                     IAP_xoasector(SECTOR2);
                     gsm_pw = 0;
                     IAP_ghibyte(NORRESET_EEPROM,0);
-                    RingRelay = 1;
+                    // RingRelay = 1;
                     delay_ms(4000);
                     IAP_CONTR = 0x60;
                 }
@@ -198,7 +198,7 @@ void xu_ly_tin_nhan(){
                     EA=0;
                     gsm_pw = 0;
                     IAP_ghibyte(NORRESET_EEPROM,0);
-                    RingRelay = 1;
+                    // RingRelay = 1;
                     delay_ms(4000);
                     IAP_CONTR = 0x60;
                 }

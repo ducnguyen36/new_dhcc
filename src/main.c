@@ -12,6 +12,10 @@ u8 __code ver[] = VERSION;
 	4.5.1 thay doi test mp3 thanh ngay thang
 	4.5.2 them thu vao tin nhan
 	4.8 them tinh nang dung khi khong co sim
+	4.9 them tinh nang ho tro dong motor tu relay ring
+	va tinh nang tat sim khi khong co gps off va sms off
+	bo tinh nang reset bang phan mem khi cuoc goi hoac tin nhan toi
+	vi su dung chung relay ring
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -548,7 +552,7 @@ void main() {
 			EA=0;
 			gsm_pw = 0;
 			IAP_ghibyte(NORRESET_EEPROM,0);
-			RingRelay = 1;
+			// RingRelay = 1;
 			delay_ms(4000);
 			IAP_CONTR = 0x60;
 		}
