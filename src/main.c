@@ -117,7 +117,7 @@ void main() {
 	if(mp3_playing) eeprom_buf[MP3_EEPROM] &= 4;
 	else if(eeprom_buf[MP3_EEPROM]>6)eeprom_buf[MP3_EEPROM] = 2;
 	else if(!(eeprom_buf[MP3_EEPROM]&3))eeprom_buf[MP3_EEPROM] += 2;
-	if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x3b; 	
+	if((eeprom_buf[DEBUG_EEPROM]&15) -1 > 10)eeprom_buf[DEBUG_EEPROM] = 0x0b; 	
 	if(eeprom_buf[CAM_EEPROM]>1)eeprom_buf[CAM_EEPROM] = 1;
 //multi motor
 	IAP_ghisector1();
@@ -129,7 +129,7 @@ void main() {
 	if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 64;
 	else toc_do_motor_step = 0;
 
-	sms_on = (eep_debug & 96)>>5;
+	sms_on = 0;
 	if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
 	else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
 	sim_test_sec = 0;
@@ -162,9 +162,9 @@ void main() {
 	ChargeRelay = 1;
 
 	/*Khoi tao serial baudrate 38400 cho gsm sim900*/
-	LCD_guilenh(0x80);
-	LCD_guichuoi("POWER ON SIM800 ");
-	gsm_init();
+	// LCD_guilenh(0x80);
+	// LCD_guichuoi("POWER ON SIM800 ");
+	// gsm_init();
 
 	
 	/*Khoi tao serial baudrate 9600 cho dfplayer module*/
@@ -256,7 +256,7 @@ void main() {
 					switch(mode){
 						case 0:if(sub_mode>11) sub_mode = 0;giotemp = giotemp & 0xf0 | sub_mode; break;
 						case 1:if(sub_mode>3) sub_mode = 0;giotemp = giotemp & 0x9f | (sub_mode<<5); break;
-						case 2:if(sub_mode>1) sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
+						case 2: sub_mode = 0;giotemp = giotemp & 0xef | (sub_mode<<4); break;
 						case 3:if(sub_mode>1) sub_mode = 0;mp3temp = mp3temp & 0x03 | (sub_mode<<2); break;
 					}
 				}
@@ -561,26 +561,26 @@ void main() {
 		if(!da_gui_bao_cao && minute>12 && motor_index == 5 && motor_index2 == 5 && (!(eep_mp3%4) || !mp3_playing)) {
 			if(eep_gpson) {
 				// gsm_laygio_gps();
-				motor_index = motor_index2 = 5;
-				delay_ms(3000);
-				gsm_serial_cmd = NORMAL;
-				gsm_thietlapngaygiothuc();
-				hour12 = (hour>11)?hour-12:hour;
+				// motor_index = motor_index2 = 5;
+				// delay_ms(3000);
+				// gsm_serial_cmd = NORMAL;
+				// gsm_thietlapngaygiothuc();
+				// hour12 = (hour>11)?hour-12:hour;
 				
-				if(so_gio_mat_gps>4 && !motor_dung){
-					IAP_docxoasector1();
-                    eeprom_buf[MOTOR_EEPROM] |= 0x10;
-                    IAP_ghisector1();
-                    motor_dung = 1;
-                    if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
-                    AmplyRelay = 0;			
-				}else if(!GPS_time)
-					so_gio_mat_gps++;
-				else so_gio_mat_gps = 0;
+				// if(so_gio_mat_gps>4 && !motor_dung){
+				// 	IAP_docxoasector1();
+                //     eeprom_buf[MOTOR_EEPROM] |= 0x10;
+                //     IAP_ghisector1();
+                //     motor_dung = 1;
+                //     if(eep_mp3%4==2 && mp3_playing) mp3_play(9,0,0);
+                //     AmplyRelay = 0;			
+				// }else if(!GPS_time)
+				// 	so_gio_mat_gps++;
+				// else so_gio_mat_gps = 0;
 			}else{
 				
-				// rtc_gettime(&hour,&minute,&second);
-				// rtc_getdate(&date,&day,&month,&year);
+				rtc_gettime(&hour,&minute,&second);
+				rtc_getdate(&date,&day,&month,&year);
 			}
 
 
@@ -618,7 +618,7 @@ void main() {
 					gsm_reset = 0;
 					gsm_serial_cmd = NORMAL;
 					// gsm_laygio_gps();
-					gsm_thietlapngaygiothuc();
+					// gsm_thietlapngaygiothuc();
 					hour12=hour%12;
 					if(gsm_thietlapnhantin()){
 						baocaosms(CHINH,"\rgsm reset thanh cong");
@@ -803,7 +803,7 @@ void main() {
 					mp3_minute = 60;
 					if(eep_gpson){
 						
-						gsm_thietlapngaygiothuc();//gsm_laygio_gps();
+						// gsm_thietlapngaygiothuc();//gsm_laygio_gps();
 						if(!GPS_time) so_gio_mat_gps++;
 						else so_gio_mat_gps = 0;
 					}

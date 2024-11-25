@@ -314,6 +314,7 @@ __bit gsm_thietlapsim800(){
 }
 
 void gsm_thietlapngaygiothuc(){
+    if(!sms_on) return;
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
     if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
