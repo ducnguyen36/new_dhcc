@@ -16,6 +16,8 @@ u8 __code ver[] = VERSION;
 	va tinh nang tat sim khi khong co gps off va sms off
 	bo tinh nang reset bang phan mem khi cuoc goi hoac tin nhan toi
 	vi su dung chung relay ring
+	4.9B thay doi sms eeprom 1,3,4 binh thuong 2 nhan tin nhung ko
+	kiem tra tai khoan. va ha dien ap hoat dong xuong 8V5
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -130,8 +132,9 @@ void main() {
 	else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
-	if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
-	else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
+	for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
+	// if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
+	// else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
 	sim_test_sec = 0;
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
@@ -1032,7 +1035,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 	dien_ap_nguon = ADC_RES;
 	if(motor_index==5 && motor_index2==5){
 		if(dien_ap_thap){
-			if(dien_ap_nguon<82) ChargeRelay = 0;
+			if(dien_ap_nguon<78) ChargeRelay = 0;
 			else if(dien_ap_nguon>110) {
 				dien_ap_thap = 0;
 			}
