@@ -18,6 +18,7 @@ u8 __code ver[] = VERSION;
 	vi su dung chung relay ring
 	4.9B thay doi sms eeprom 1,3,4 binh thuong 2 nhan tin nhung ko
 	kiem tra tai khoan. va ha dien ap hoat dong xuong 8V5
+	4.9C fix bug sms_on 2 khong kiem tra tien
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"

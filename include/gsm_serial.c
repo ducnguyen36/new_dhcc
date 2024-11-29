@@ -217,8 +217,8 @@ void baocaosms(__bit chinh, u8  *noidung){
     kiemtratinhieu();    
     //IMPORTANT: BO KIEM TRA TAI KHOAN TAM THOI
     if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
-    // else lenh_sms[0]=0;
-    lenh_sms[0]=0;
+    else lenh_sms[0]=0;
+    // lenh_sms[0]=0;
     if(!send_sms(chinh)) return;
     
     if(sms_on>2){
@@ -301,6 +301,7 @@ void gui_huong_dan(){
 
 __bit gsm_thietlapsim800(){
     if(sim_test_sec==61 && !sms_on) return 0;
+    // if(!sms_on && !eep_gpson) return 0;
     if(gsm_sendandcheck("AT\r", 15, 1,"CALLIBRATING GPS")){      
         clear_sms_buffer(0);
         sms_index = 0;
