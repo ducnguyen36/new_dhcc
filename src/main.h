@@ -115,12 +115,14 @@ __bit      phim_cong_cu;
 __bit      phim_cong_giu;
 u8 __xdata phim_cong_doi;
 
+u8 __xdata thoi_gian_giu_motor;
+u8 __xdata thoi_gian_giu_motor_con_lai;
+
 u8 __xdata mode;
 u8 __xdata sub_mode;
 u8 __xdata mode_wait;
 __bit chop;
-#define MAX_MODE 6
-__code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    ","   DIEN THOAI   "," NGAY THANG NAM "};
+__code u8 mode_select[8][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    ","   DIEN THOAI   "," NGAY THANG NAM ","  THOI GIAN DC  "};
 #define TIME_MODE_WAIT  60
 #define EXIT        0
 #define GIOKIM      1
@@ -129,7 +131,9 @@ __code u8 mode_select[7][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GI
 #define MP3TEST     4
 #define DIENTHOAI   5
 #define DATE        6
-#define SELECT      7
+#define DCTIMER	 	7	
+#define SELECT      8
+#define MAX_MODE SELECT-1
 
 #define GIOCHUC     0
 #define GIODVI      1

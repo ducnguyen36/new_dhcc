@@ -12,6 +12,8 @@ u8 motor_run_check() __reentrant {
 			motorDir1 = (720 + gio[0]*60 + phut[0] - hour12*60 - minute) % 720 > 360;
 			// send_gsm_byte('\r');
 			// send_gsm_byte('B');
+			if(!atmel_phat && may_dc && so_motor==1)
+				thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor;
 			return 0;
 
 		}else {motorDir1 = 0; return 5;}
@@ -111,7 +113,11 @@ void xunggiay(){
 	giay_out=1;	
 	if(connect) connect--;
 	if(total_try_time_out) total_try_time_out--;
-	
+	if(!atmel_phat && motorS1 && may_dc && so_motor==1){
+		if(thoi_gian_giu_motor_con_lai) thoi_gian_giu_motor_con_lai--;
+		else motorS1 = RingRelay = 0;
+		
+	}
 	if(mode!=2 && ++second>max_second-1){
 			second=0;
 			if(so_lan_goi_dien && !--delay_cuoc_goi_ke_tiep) so_lan_goi_dien = 0;
@@ -257,8 +263,12 @@ void cam_phim() __interrupt 1 __using 2 {
 		motor1 = motor_index == 0; motor2 = motor_index2 == 1;
 		motor3 = motor_index == 2; motor4 = motor_index2 == 3;
 	}else{
-		motorS1 = !motor_index && (eep_motor & 7) ; motorS2 = motor_index2 == 1;
-		if(may_dc && so_motor==1) RingRelay = motorS1;
+			motorS1 = !motor_index && (eep_motor & 7) && thoi_gian_giu_motor_con_lai; motorS2 = motor_index2 == 1;
+		if(may_dc && so_motor==1){
+			RingRelay = motorS1;
+		}
+		 
+		
 		motorDir = may_dc || may_canh_kim || motorDir1 || motorDir2;
 		if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
 			P2=(P2&0x0f)|motor_step[step_index];

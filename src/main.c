@@ -78,7 +78,8 @@ void main() {
 	LCD_guilenh(0x80);
 	LCD_guichuoi("THIET LAP EEPROM");
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT & 0b00011111;
+	
 	/*
 		atmel dc so may -1
 		 0	  0    00		0  1 ST Truc Tiep
@@ -128,8 +129,10 @@ void main() {
 	may_dc   = (eep_motor & 4);
 	motorDir = atmel_phat = (eep_motor & 8);
 	motor_dung  = (eep_motor & 16);
-	motor_debug = (eep_motor & 32);
-	if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 64;
+	// motor_debug = (eep_motor & 32);
+	//get the first 3 bit of eep_motor
+	thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = (eep_motor & 192) >> 5 + 2;
+	// if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 5;
 	else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
@@ -303,7 +306,9 @@ void main() {
 						phuttemp += (so_motor-1);
 						phuttemp += (may_dc?4:0); 
 						if(so_motor!=1) phuttemp += (atmel_phat?8:0);
-						if(!may_dc && !atmel_phat) phuttemp += (toc_do_motor_step<<6);
+						// if(!may_dc && !atmel_phat) phuttemp += (toc_do_motor_step<<6);
+						//make the first 3 bit of phuttemp to 0
+						phuttemp &= 0x1f;
 						IAP_xoasector(SECTOR1);
 						IAP_xoasector(SECTOR2);
 						IAP_ghibyte(MOTOR_EEPROM,phuttemp);
@@ -719,6 +724,9 @@ void main() {
 										LCD_guichuoi(" - ");LCD_guidulieu(month/10+'0');LCD_guidulieu(month%10+'0');
 										LCD_guichuoi(" - ");LCD_guidulieu(year/10+'0');LCD_guidulieu(year%10+'0');LCD_guichuoi("  ");
 										break;
+							case DCTIMER: LCD_guichuoi("\300 ");LCD_guidulieu(thoi_gian_giu_motor+'0');LCD_guichuoi("S             ");
+										sub_mode = thoi_gian_giu_motor - 2;
+										break;
 						}
 					}
 					break;
@@ -1012,6 +1020,24 @@ void main() {
 					mode = SELECT;
 				}
 				break;
+			case DCTIMER:
+				if(phim_mode_nhan){
+					phim_mode_nhan=0;
+					IAP_docxoasector1();
+					//replace the 3 most significant bit (the first 3 bit) of MOTOR_EEPROM with thoi_gian_giu_motor - 2
+                    eeprom_buf[MOTOR_EEPROM] = (eeprom_buf[MOTOR_EEPROM] & 0x1f) | ((sub_mode)<<5);
+                    IAP_ghisector1();
+					thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = sub_mode + 2;
+					
+					sub_mode = mode;
+					mode = SELECT;
+				}
+				if(phim_cong_nhan){
+					phim_cong_nhan = 0;
+					if(++sub_mode>6) sub_mode = 0;
+					LCD_guidulieu(' ');
+					LCD_guidulieu(sub_mode+'2');
+				}
 			default: mode = sub_mode = 0;
 		}
 		
