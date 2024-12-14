@@ -131,9 +131,9 @@ void main() {
 	motor_dung  = (eep_motor & 16);
 	// motor_debug = (eep_motor & 32);
 	//get the first 3 bit of eep_motor
-	thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = (eep_motor & 192) >> 5 + 2;
+	thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = ((eep_motor & 192) >> 5) + 2;
 	// if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 5;
-	else toc_do_motor_step = 0;
+	// else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
 	for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
