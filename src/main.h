@@ -122,7 +122,7 @@ u8 __xdata mode;
 u8 __xdata sub_mode;
 u8 __xdata mode_wait;
 __bit chop;
-__code u8 mode_select[8][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    ","   DIEN THOAI   "," NGAY THANG NAM ","  THOI GIAN DC  "};
+__code u8 mode_select[8][17] = {"      EXIT      ","  CHINH GIO KIM "," CHINH GIO THUC ","    CANH KIM    ","    TEST MP3    ","   DIEN THOAI   "," NGAY THANG NAM ","   CAM DELAY   "};
 #define TIME_MODE_WAIT  60
 #define EXIT        0
 #define GIOKIM      1

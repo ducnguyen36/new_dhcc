@@ -115,7 +115,6 @@ void xunggiay(){
 	if(total_try_time_out) total_try_time_out--;
 	if(!atmel_phat && motorS1 && may_dc && so_motor==1){
 		if(thoi_gian_giu_motor_con_lai) thoi_gian_giu_motor_con_lai--;
-		else motorS1 = RingRelay = 0;
 		
 	}
 	if(mode!=2 && ++second>max_second-1){
@@ -175,7 +174,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 			}
 		}
 		// send_gsm_byte(trang_thai_cam+'0');
-		if(motor_index!=5){
+		if(motor_index!=5 || !thoi_gian_giu_motor_con_lai){
 			
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
