@@ -137,6 +137,11 @@ void main() {
 
 	sms_on = (eep_debug & 96)>>5;
 	for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
+	if(!sms_on && !(eep_debug&16>>4)){
+		IAP_docxoasector1();
+		eeprom_buf[GPSON_EEPROM] = 0;
+		IAP_ghisector1();
+	}
 	// if(sms_on==2) for(i=0;i<11;i++)phone_chinh[i]= phone2[i];
 	// else for(i=0;i<11;i++)phone_chinh[i]= phone1[i];
 	sim_test_sec = 0;
@@ -375,13 +380,14 @@ void main() {
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
 	LCD_guilenh(0x80);
-	// LCD_guichuoi("KIEM TRA GIO RTC");
-	// rtc_gettime(&hour, &minute, &second);
-	// if(hour>23 || minute > 59 || second >59)	
-	// 	rtc_settime(0,0,0);
+	LCD_guichuoi("KIEM TRA GIO RTC");
+	rtc_gettime(&hour, &minute, &second);
+	// rtc_getdate(&date,&day,&month,&year);
+	if(hour>23 || minute > 59 || second >59)	
+		rtc_settime(0,0,0);
 	
-	// /* Interrupt Ngoai 0 xung giay*/
-	// rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
+	/* Interrupt Ngoai 0 xung giay*/
+	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	// rtc_gettime(&hour, &minute, &second);
@@ -588,7 +594,7 @@ void main() {
 				else so_gio_mat_gps = 0;
 			}else{
 				
-				// rtc_gettime(&hour,&minute,&second);
+				rtc_gettime(&hour,&minute,&second);
 				// rtc_getdate(&date,&day,&month,&year);
 			}
 
@@ -725,7 +731,7 @@ void main() {
 										LCD_guichuoi(" - ");LCD_guidulieu(year/10+'0');LCD_guidulieu(year%10+'0');LCD_guichuoi("  ");
 										break;
 							case DCTIMER: LCD_guichuoi("\300 ");LCD_guidulieu(thoi_gian_giu_motor+'0');LCD_guichuoi("S             ");
-										sub_mode = thoi_gian_giu_motor - 2;
+										LCD_blinkXY(DUOI,2);
 										break;
 						}
 					}
@@ -820,7 +826,7 @@ void main() {
 						else so_gio_mat_gps = 0;
 					}
 					
-					// else rtc_gettime(&hour,&minute,&second);
+					else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
 				if(phim_cong_nhan){
@@ -1025,19 +1031,27 @@ void main() {
 					phim_mode_nhan=0;
 					IAP_docxoasector1();
 					//replace the 3 most significant bit (the first 3 bit) of MOTOR_EEPROM with thoi_gian_giu_motor - 2
-                    eeprom_buf[MOTOR_EEPROM] = (eeprom_buf[MOTOR_EEPROM] & 0x1f) | ((sub_mode)<<5);
+                    eeprom_buf[MOTOR_EEPROM] = (eeprom_buf[MOTOR_EEPROM] & 0x1f) | ((thoi_gian_giu_motor-2)<<5);
                     IAP_ghisector1();
-					thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = sub_mode + 2;
+					
 					
 					sub_mode = mode;
 					mode = SELECT;
+					LCD_noblink(); 
 				}
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
-					if(++sub_mode>6) sub_mode = 0;
-					LCD_guidulieu(' ');
-					LCD_guidulieu(sub_mode+'2');
+					if(thoi_gian_giu_motor>8) thoi_gian_giu_motor=2;
+					else thoi_gian_giu_motor++;
 				}
+				if(phim_back_nhan){
+					phim_back_nhan = 0;
+					if(thoi_gian_giu_motor>2) thoi_gian_giu_motor--;
+					else thoi_gian_giu_motor=8;
+				}
+				LCD_guidulieu(' ');
+				LCD_guidulieu(thoi_gian_giu_motor+'0');
+				break;
 			default: mode = sub_mode = 0;
 		}
 		
