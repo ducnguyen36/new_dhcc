@@ -262,7 +262,7 @@ void cam_phim() __interrupt 1 __using 2 {
 		motor1 = motor_index == 0; motor2 = motor_index2 == 1;
 		motor3 = motor_index == 2; motor4 = motor_index2 == 3;
 	}else{
-			motorS1 = !motor_index && (eep_motor & 7) && thoi_gian_giu_motor_con_lai; motorS2 = motor_index2 == 1;
+			motorS1 = !motor_index && (eep_motor & 7); motorS2 = motor_index2 == 1;
 		if(may_dc && so_motor==1){
 			RingRelay = motorS1;
 		}
