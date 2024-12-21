@@ -174,7 +174,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 			}
 		}
 		// send_gsm_byte(trang_thai_cam+'0');
-		if(motor_index!=5 || !thoi_gian_giu_motor_con_lai){
+		if(motor_index!=5 && !thoi_gian_giu_motor_con_lai){
 			
 			if(trang_thai_cam)
 				if(cam_vao) cam_vao_han = 1;				
