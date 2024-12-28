@@ -78,7 +78,7 @@ void main() {
 	LCD_guilenh(0x80);
 	LCD_guichuoi("THIET LAP EEPROM");
 	IAP_docxoasector1();
-	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT & 0b00011111;
+	if(eeprom_buf[MOTOR_EEPROM]==0xff)eeprom_buf[MOTOR_EEPROM] = MOTOR_DEFAULT;
 	
 	/*
 		atmel dc so may -1
@@ -582,7 +582,7 @@ void main() {
 				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
 				
-				if(so_gio_mat_gps>4 && !motor_dung){
+				if(so_gio_mat_gps>34 && !motor_dung){
 					IAP_docxoasector1();
                     eeprom_buf[MOTOR_EEPROM] |= 0x10;
                     IAP_ghisector1();
@@ -607,7 +607,7 @@ void main() {
 			motor_index2 = motor_run_check2();
 		}
 
-		if(so_gio_mat_gps>4 && !motor_dung){
+		if(so_gio_mat_gps>34 && !motor_dung){
 			IAP_docxoasector1();
 			eeprom_buf[MOTOR_EEPROM] |= 0x10;
 			IAP_ghisector1();
