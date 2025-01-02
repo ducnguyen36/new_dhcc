@@ -1077,7 +1077,7 @@ void adc_isr() __interrupt ADC_VECTOR __using 0
 	if(motor_index==5 && motor_index2==5){
 		if(dien_ap_thap){
 			if(dien_ap_nguon<78) ChargeRelay = 0;
-			else if(dien_ap_nguon>110) {
+			else if(dien_ap_nguon>100) {//110
 				dien_ap_thap = 0;
 			}
 		}else if(dien_ap_nguon<92){
