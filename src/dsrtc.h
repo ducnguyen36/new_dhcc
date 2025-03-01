@@ -7,7 +7,7 @@
 #define     ACK                 1
 #define     NACK                0
 
-void rtc_init();
+void rtc_init(void);
 
 // u8 rtc_getdate();
 void rtc_getdate(u8 *pdate, u8 *pday, u8 *pmonth, u8 *pyear);

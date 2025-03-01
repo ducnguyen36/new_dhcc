@@ -148,7 +148,8 @@ void main() {
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
 
-	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:10);
+	// thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:10);
+	thoi_gian_doi_cam_chuan = 40;
 
 	switch(so_motor){
 		case 4: thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
@@ -1059,7 +1060,7 @@ void main() {
 	}
 }
 
-void mp3_serial_interupt() __interrupt 8 __using 1 {
+void mp3_serial_interupt() __interrupt (8) __using (1) {
 	WATCHDOG;
 	if(mp3_RI)
 		S2CON &= 0xFE;
@@ -1068,7 +1069,7 @@ void mp3_serial_interupt() __interrupt 8 __using 1 {
 //---------------------------
 //ADC interrupt service routine
 //----------------------------
-void adc_isr() __interrupt ADC_VECTOR __using 0
+void adc_isr() __interrupt (ADC_VECTOR) __using (0)
 {
 	ADC_CONTR = 0x83; //Clear ADC interrupt flag
 	//82 = 9V

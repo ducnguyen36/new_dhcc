@@ -9,56 +9,56 @@
             /* 1  1       1      1     1     1     1    1
               SPEED     MOTOR   STO  ST-55 ST-DC  [SO_MAY]  
               STEP      DEBUG                               */
-#define     BAOCAO_EEPROM       MOTOR_EEPROM+1
-#define     GPSON_EEPROM        BAOCAO_EEPROM+1
-#define     NGAYRESET_EEPROM    GPSON_EEPROM+1
-#define     GIORESET_EEPROM     NGAYRESET_EEPROM+1
-#define     NORRESET_EEPROM     GIORESET_EEPROM+1
-#define     GIOSACXA_EEPROM     NORRESET_EEPROM+1
-#define     TATMODEN_EEPROM     GIOSACXA_EEPROM+1
-#define     MP3_EEPROM          TATMODEN_EEPROM+9
-#define     PHONEPHU_EEPROM     MP3_EEPROM+1
-#define     LOITHESIM_EEPROM    PHONEPHU_EEPROM+12
-#define     DEBUG_EEPROM        LOITHESIM_EEPROM+1//default 00100000 0x20
+#define     BAOCAO_EEPROM       (MOTOR_EEPROM+1)
+#define     GPSON_EEPROM        (BAOCAO_EEPROM+1)
+#define     NGAYRESET_EEPROM    (GPSON_EEPROM+1)
+#define     GIORESET_EEPROM     (NGAYRESET_EEPROM+1)
+#define     NORRESET_EEPROM     (GIORESET_EEPROM+1)
+#define     GIOSACXA_EEPROM     (NORRESET_EEPROM+1)
+#define     TATMODEN_EEPROM     (GIOSACXA_EEPROM+1)
+#define     MP3_EEPROM          (TATMODEN_EEPROM+9)
+#define     PHONEPHU_EEPROM     (MP3_EEPROM+1)
+#define     LOITHESIM_EEPROM    (PHONEPHU_EEPROM+12)
+#define     DEBUG_EEPROM        (LOITHESIM_EEPROM+1)//default 00100000 0x20
             /* 1   1 1     1        1 0 1 1
               C4P  SMS  GPS-MOTOR  [SO_GIAY]  */
-#define     CAM_EEPROM          DEBUG_EEPROM+1
+#define     CAM_EEPROM          (DEBUG_EEPROM+1)
 
-#define     SECTOR1_LENGTH      CAM_EEPROM+1
+#define     SECTOR1_LENGTH      (CAM_EEPROM+1)
 
-#define		PHUT1_EEPROM		SECTOR2
-#define		GIO1_EEPROM		   SECTOR2+1
-#define		PHUT2_EEPROM		SECTOR2+2
-#define		GIO2_EEPROM		   SECTOR2+3
-#define		PHUT3_EEPROM		SECTOR2+4
-#define		GIO3_EEPROM		   SECTOR2+5
-#define		PHUT4_EEPROM		SECTOR2+6
-#define		GIO4_EEPROM		   SECTOR2+7
+#define		PHUT1_EEPROM		(SECTOR2)
+#define		GIO1_EEPROM		  ( SECTOR2+1)
+#define		PHUT2_EEPROM		(SECTOR2+2)
+#define		GIO2_EEPROM		  ( SECTOR2+3)
+#define		PHUT3_EEPROM		(SECTOR2+4)
+#define		GIO3_EEPROM		  ( SECTOR2+5)
+#define		PHUT4_EEPROM		(SECTOR2+6)
+#define		GIO4_EEPROM		  ( SECTOR2+7)
 
 
 // #define motorSTEEprom               MOTORST_EEPROM+MOVC_START_ADDRESS
-#define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
-#define baocaoEEprom                BAOCAO_EEPROM+MOVC_START_ADDRESS
-#define gpsonEEprom                 GPSON_EEPROM+MOVC_START_ADDRESS
-#define ngayresetEEprom             NGAYRESET_EEPROM+MOVC_START_ADDRESS
-#define gioresetEEprom              GIORESET_EEPROM+MOVC_START_ADDRESS
-#define norresetEEprom              NORRESET_EEPROM+MOVC_START_ADDRESS
-#define giosacxaEEprom              GIOSACXA_EEPROM+MOVC_START_ADDRESS
-#define tatmodenEEprom              TATMODEN_EEPROM+MOVC_START_ADDRESS
-#define mp3EEprom                   MP3_EEPROM+MOVC_START_ADDRESS
-#define phonephuEEprom              PHONEPHU_EEPROM+MOVC_START_ADDRESS
-#define loithesimEEprom             LOITHESIM_EEPROM+MOVC_START_ADDRESS
-#define debugEEprom                 DEBUG_EEPROM+MOVC_START_ADDRESS
-#define camEEprom                   CAM_EEPROM+MOVC_START_ADDRESS
+#define motorEEprom                 (MOTOR_EEPROM+MOVC_START_ADDRESS)
+#define baocaoEEprom                (BAOCAO_EEPROM+MOVC_START_ADDRESS)
+#define gpsonEEprom                 (GPSON_EEPROM+MOVC_START_ADDRESS)
+#define ngayresetEEprom             (NGAYRESET_EEPROM+MOVC_START_ADDRESS)
+#define gioresetEEprom              (GIORESET_EEPROM+MOVC_START_ADDRESS)
+#define norresetEEprom              (NORRESET_EEPROM+MOVC_START_ADDRESS)
+#define giosacxaEEprom              (GIOSACXA_EEPROM+MOVC_START_ADDRESS)
+#define tatmodenEEprom              (TATMODEN_EEPROM+MOVC_START_ADDRESS)
+#define mp3EEprom                   (MP3_EEPROM+MOVC_START_ADDRESS)
+#define phonephuEEprom              (PHONEPHU_EEPROM+MOVC_START_ADDRESS)
+#define loithesimEEprom             (LOITHESIM_EEPROM+MOVC_START_ADDRESS)
+#define debugEEprom                 (DEBUG_EEPROM+MOVC_START_ADDRESS)
+#define camEEprom                   (CAM_EEPROM+MOVC_START_ADDRESS)
 
-#define phut1EEprom					PHUT1_EEPROM+MOVC_START_ADDRESS
-#define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
-#define phut2EEprom					PHUT2_EEPROM+MOVC_START_ADDRESS
-#define gio2EEprom					GIO2_EEPROM+MOVC_START_ADDRESS
-#define phut3EEprom					PHUT3_EEPROM+MOVC_START_ADDRESS
-#define gio3EEprom					GIO3_EEPROM+MOVC_START_ADDRESS
-#define phut4EEprom					PHUT4_EEPROM+MOVC_START_ADDRESS
-#define gio4EEprom					GIO4_EEPROM+MOVC_START_ADDRESS
+#define phut1EEprom					(PHUT1_EEPROM+MOVC_START_ADDRESS)
+#define gio1EEprom					(GIO1_EEPROM+MOVC_START_ADDRESS)
+#define phut2EEprom					(PHUT2_EEPROM+MOVC_START_ADDRESS)
+#define gio2EEprom					(GIO2_EEPROM+MOVC_START_ADDRESS)
+#define phut3EEprom					(PHUT3_EEPROM+MOVC_START_ADDRESS)
+#define gio3EEprom					(GIO3_EEPROM+MOVC_START_ADDRESS)
+#define phut4EEprom					(PHUT4_EEPROM+MOVC_START_ADDRESS)
+#define gio4EEprom					(GIO4_EEPROM+MOVC_START_ADDRESS)
 
 
 __code __at     motorEEprom         u8 eep_motor;
@@ -106,3 +106,4 @@ void IAP_xoasector(u16 sector);
 //#define ENABLE_IAP 0x85 //if SYSCLK<3MHz
 //#define ENABLE_IAP 0x87 //if SYSCLK<1MHz
 //#define ENABLE_IAP 0x86 //if SYSCLK<2MHz
+

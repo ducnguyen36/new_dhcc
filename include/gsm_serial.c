@@ -425,7 +425,7 @@ void gsm_laygio_gps(){
 
 
 
-void gsm_serial_interrupt() __interrupt gsm_SERIAL_INT __using SERIAL_MEM{
+void gsm_serial_interrupt() __interrupt (gsm_SERIAL_INT) __using (SERIAL_MEM){
 	if(gsm_RI){
         WATCHDOG;
 	 	connect = connect_time_out;
