@@ -149,7 +149,7 @@ void main(void) {
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
 
 	// thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:10);
-	thoi_gian_doi_cam_chuan = 40;
+	thoi_gian_doi_cam_chuan = 128;
 
 	switch(so_motor){
 		case 4: thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
