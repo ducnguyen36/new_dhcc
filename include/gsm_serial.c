@@ -49,7 +49,7 @@ __bit send_sms(__bit chinh){
     return gsm_sendandcheck("\"\r",5,61,"   SENDING   ");
 }
 
-__bit kiemtrataikhoan(){
+__bit kiemtrataikhoan(void){
     lenh_sms[0] = 0;
     have_cusd = 0;
     gsm_serial_cmd = CUSD;
@@ -58,7 +58,7 @@ __bit kiemtrataikhoan(){
     return lenh_sms[0];
 }
 
-__bit kiemtrasodienthoai(){
+__bit kiemtrasodienthoai(void){
     // lenh_sms[0] = 0;
     have_cusd = 0;
     gsm_serial_cmd = SDT;
@@ -77,7 +77,7 @@ __bit kiemtrasodienthoai(){
     return 0;
 }
 
-void kiemtratinhieu(){
+void kiemtratinhieu(void){
     gsm_serial_cmd = CSQ;
     clear_sms_buffer(0);
     sms_index  = 0;
@@ -125,7 +125,7 @@ void send_thong_so_rut_gon(__bit chinh){
     send_gsm_byte(signal%10+'0');
 }
 
-void send_gio_kim(){
+void send_gio_kim(void){
     u8 i = 0;
     send_gsm_cmd(atmel_phat?"\r89C55":"\rSTC15");
     do{
@@ -246,7 +246,7 @@ void baocaosms(__bit chinh, u8  *noidung){
     
 }
 
-void send_thong_so_den(){
+void send_thong_so_den(void){
     u8 i;
     send_gsm_cmd(" DEN=");
     send_gsm_byte(DenRelay?'1':'0');
@@ -292,14 +292,14 @@ void baocaoden(__bit chinh, u8 *noidung){
     gsm_sendandcheck("\032",50,1,"GUI BAO CAO DEN ");
 }
 
-void gui_huong_dan(){
+void gui_huong_dan(void){
     lenh_sms[0]=0;
     if(!send_sms(CHINH)) return;
     send_gsm_cmd(huongdan);
     gsm_sendandcheck("\032",50,1," GUI HUONG DAN  ");
 }
 
-__bit gsm_thietlapsim800(){
+__bit gsm_thietlapsim800(void){
     if(sim_test_sec==61 && !sms_on) return 0;
     // if(!sms_on && !eep_gpson) return 0;
     if(gsm_sendandcheck("AT\r", 15, 1,"CALLIBRATING GPS")){      
@@ -314,7 +314,7 @@ __bit gsm_thietlapsim800(){
     return 0;
 }
 
-void gsm_thietlapngaygiothuc(){
+void gsm_thietlapngaygiothuc(void){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
     if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
@@ -344,7 +344,7 @@ void gsm_thietlapngaygiothuc(){
     gsm_serial_cmd = NORMAL;
 }
 
-__bit gsm_thietlapgoidien(){
+__bit gsm_thietlapgoidien(void){
    
     if(gsm_sendandcheck("AT+CLIP=1\r", 15, 1,"  SENDING CLIP  ")){
         clear_sms_buffer(0);
@@ -358,7 +358,7 @@ __bit gsm_thietlapgoidien(){
 	
 }
 
-__bit gsm_thietlapnhantin(){
+__bit gsm_thietlapnhantin(void){
     if(!gsm_pw || !sms_on) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 1,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
@@ -371,7 +371,7 @@ __bit gsm_thietlapnhantin(){
     return 0;
 }
 
-__bit gsm_thietlapnhantin1(){
+__bit gsm_thietlapnhantin1(void){
     if(!gsm_pw || !sms_on) return 0;
     if(!gsm_sendandcheck("AT\r", 15, 1,"THIET LAP TNHAN ")) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 2,"  SENDING CMGF  ")){
@@ -385,7 +385,7 @@ __bit gsm_thietlapnhantin1(){
 }
 
 
-void gsm_laygio_gps(){
+void gsm_laygio_gps(void){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
     if(gsm_sendandcheck("AT\r", 15, 1,"LAY GIO VE TINH ")){
@@ -425,7 +425,7 @@ void gsm_laygio_gps(){
 
 
 
-void gsm_serial_interrupt() __interrupt (gsm_SERIAL_INT) __using (SERIAL_MEM){
+void gsm_serial_interrupt(void) __interrupt (gsm_SERIAL_INT) __using (SERIAL_MEM){
 	if(gsm_RI){
         WATCHDOG;
 	 	connect = connect_time_out;

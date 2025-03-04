@@ -27,7 +27,7 @@ u8 __code ver[] = VERSION;
 
 
 
-void main() {
+void main(void) {
 	u8 __data giotemp=0,phuttemp=0, so_gio_mat_gps=0;
 	u8 __xdata  ngaytemp = 1, thangtemp=1, namtemp = 21, thutemp = 1;
 	u16 __xdata check;

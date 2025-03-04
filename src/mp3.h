@@ -14,5 +14,5 @@
 #define     mp3_START       2
 
 
-void mp3_serial_init();
+void mp3_serial_init(void);
 void mp3_play(u8 date, u8 hour, u8 minute);

@@ -8,7 +8,7 @@ u8 bcd2hex(u8 bcd){
 	return ((bcd>>4)*10) + (bcd & 0x0f);
 }
 
-void rtc_init(){
+void rtc_init(void){
 	// i2c_start();
 	// i2c_write(DS1307WRITE);
 	// i2c_write(DS3231CONTROLADDRESS);

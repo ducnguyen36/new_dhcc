@@ -1,6 +1,6 @@
 
 #include "gsm.h"
-void gsm_init(){
+void gsm_init(void){
     
 
 
@@ -9,8 +9,13 @@ void gsm_init(){
 	SCON = 0x50;  // 8 bits, variable baudrate 
 	AUXR |= 0x40;		//Timer1's clock is Fosc (1T)
 	AUXR &= 0xFE;		//Use Timer1 as baudrate generator
-	TL1= (65536 - (FOSC/4/gsm_BAUD));	
-	TH1= (65536 - (FOSC/4/gsm_BAUD))>>8;
+	u16 temp = 65536 - (FOSC / 4 / gsm_BAUD);
+	// TL1= (65536 - (FOSC/4/gsm_BAUD));	
+	// TH1= (65536 - (FOSC/4/gsm_BAUD))>>8;
+	// TL1 = 0x32;
+	// TH1 = 0xff;
+	TL1 = temp & 0xFF;
+	TH1 = (temp >> 8) & 0xFF;
 	ET1 = 0;
 	TR1 = 1;
 	ES = 1;

@@ -69,7 +69,7 @@ void LCD_guilenh(u8 lenh){
 	delay_us(100);
 }
 
-void LCD_noblink(){
+void LCD_noblink(void){
 	LCD_guilenh(0x0c);
 }
 
@@ -89,15 +89,15 @@ void LCD_xoa(u8 hang){
 
 
 
-
-void LCD_guichuoi(u8 *vanban) __reentrant {
+// void LCD_guichuoi(u8 *vanban) __reentran {
+void LCD_guichuoi(u8 *vanban)  {
 	u8 i=0;
 	while (*vanban && i<16)
 		if(*vanban<128 && *vanban>31 && ++i)LCD_guidulieu(*vanban++);
 		else LCD_guilenh(*vanban++);
 }
 
-void LCD_Init(){
+void LCD_Init(void){
 	lcd_pw = 0;delay_us(15000);
 	P0=0x1c;_nop_();
 	LCD_en=0;delay_us(4000);

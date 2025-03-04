@@ -1,6 +1,6 @@
 #include "true.h"
 #include "i2c.h"
-void i2c_start(){
+void i2c_start(void){
     sda_bit = 1;
     WATCHDOG;WATCHDOG;
     scl_bit = 1;
@@ -10,14 +10,14 @@ void i2c_start(){
     scl_bit=0;
 }
 
-void i2c_stop(){
+void i2c_stop(void){
     sda_bit = 0;
     WATCHDOG;WATCHDOG;
     scl_bit = 1;
     WATCHDOG;WATCHDOG;
     sda_bit  = 1;
 }
-void i2c_clock(){
+void i2c_clock(void){
     WATCHDOG;WATCHDOG;
     scl_bit = 1;
     WATCHDOG;WATCHDOG;

@@ -1,6 +1,6 @@
 
 /*kiem tra xem gio  phat den hay khong*/
-void kiem_tra_den(){
+void kiem_tra_den(void){
     u8 __data i,now = hour*6+minute/10;
     for(i=1;i<eep_tatmoden[0];i++)
         if((1+(eep_tatmoden[i]<eep_tatmoden[i+1]) + (now<eep_tatmoden[i]) + (now<eep_tatmoden[i+1]))%2){
@@ -11,7 +11,7 @@ void kiem_tra_den(){
         DenRelay = (i+1)%2;   
 }
 
-void kiem_tra_nhac(){
+void kiem_tra_nhac(void){
     switch(mp3_status){
         case mp3_IDLE:
             if( mp3_hour != hour || mp3_minute!=minute ){

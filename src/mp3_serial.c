@@ -1,11 +1,16 @@
 #include "mp3.h"
 
-void mp3_serial_init(){
+void mp3_serial_init(void){
     P_SW2 = 0x01; // USART 2 on P4.6 and P4.7 pins
 	S2CON = 0x50;		//8bit and variable baudrate
     AUXR |= 0x04;		//Timer2's clock is Fosc (1T)
-	T2L = (65536 - (FOSC/4/mp3_BAUD)); //Setthe preload value
-	T2H = (65536 - (FOSC/4/mp3_BAUD))>>8;
+    u16 temp = 65536 - (FOSC / 4 / mp3_BAUD);
+    T2L = temp & 0xFF;
+    T2H = (temp >> 8) & 0xFF;
+	// T2L = (65536 - (FOSC/4/mp3_BAUD)); //Setthe preload value
+	// T2H = (65536 - (FOSC/4/mp3_BAUD))>>8;
+    // T2L = 0x58;
+    // T2H = 0xfe;
 	AUXR |= 0x10;		//Timer2 running
     IE2 = 0x01;
 }

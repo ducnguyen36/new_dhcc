@@ -1,16 +1,16 @@
 
 
-void LCD_guichuoi(u8 *vanban) __reentrant;
+void LCD_guichuoi(u8 *vanban) ;
 void LCD_guilenh(u8 lenh);
 void LCD_guidulieu(u8 dulieu);
-void LCD_Init();
+void LCD_Init(void);
 void LCD_guigio(u8 vitri, u8 *chuoi, u8 gio, u8 phut, u8 giay,__bit haicham);
 void delay_ms(unsigned int t);
 void delay_us(unsigned int t);
 void LCD_xoa(u8 hang);
 void LCD_chop(u8 hang,u8 *vanban);
 void LCD_blinkXY(u8 hang, u8 cot);
-void LCD_noblink();
+void LCD_noblink(void);
 
 extern __bit chop;
 

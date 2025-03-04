@@ -2,7 +2,7 @@
 #include "common.h"
 #include "eeprom.h"
 
-void IAP_cho()
+void IAP_cho(void)
 {
     IAP_CONTR = 0; //Close IAP function
     IAP_CMD = CMD_IDLE; //Clear command to standby
@@ -50,7 +50,7 @@ void IAP_xoasector(u16 sector){
 
 }
 
-void IAP_docxoasector1(){
+void IAP_docxoasector1(void){
     //4 mt 4 rs 2 charge 48 lon 48 lof 1 ll 48 mp3 48 song 1ml 1ismp3
     u8 __data i=SECTOR1_LENGTH;
     WATCHDOG;
@@ -61,7 +61,7 @@ void IAP_docxoasector1(){
     IAP_xoasector(SECTOR1);
 }
 
-void IAP_ghisector1(){
+void IAP_ghisector1(void){
     u8 __data i=0;
     while(i<SECTOR1_LENGTH){
         IAP_CONTR = ENABLE_IAP;

@@ -10,7 +10,7 @@
 
 #define		gsm_BAUD		38400
 
-void gsm_init();
+void gsm_init(void);
 void send_gsm_byte(u8 dulieu);
 void send_gsm_cmd(u8 *cmd);
 

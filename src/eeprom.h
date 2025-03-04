@@ -92,8 +92,8 @@ extern u8  __xdata eeprom_buf[SECTOR1_LENGTH];
 #define	CMD_ERASE		3
 
 void IAP_ghibyte(u16 diachi,u8 dulieu);
-void IAP_ghisector1();
-void IAP_docxoasector1();
+void IAP_ghisector1(void);
+void IAP_docxoasector1(void);
 void IAP_xoasector(u16 sector);
 
 /********** Eeprom *****************/

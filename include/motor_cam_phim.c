@@ -1,6 +1,6 @@
 
-
-u8 motor_run_check() __reentrant {
+// u8 motor_run_check() __reentrant {
+u8 motor_run_check(void)  {
 	// u8 m,j=0;  
 	// motorDir1 = 1;
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
@@ -40,7 +40,7 @@ u8 motor_run_check() __reentrant {
 	// send_gsm_byte('S');
 	return 5;
 }
-u8 motor_run_check2(){
+u8 motor_run_check2(void){
 	// u8 m,j;
 	// motorDir2 = 1;
 	// if (!thoi_gian_doi_doc_cam[0] || dien_ap_thap || !eep_motor || eep_loithesim>23 || mode || (phut[0]==minute && gio[0]==hour12) ) return 0;
@@ -72,7 +72,7 @@ u8 motor_run_check2(){
 	return 5;
 }
 //multi motor
-void luu_gio_kim(){
+void luu_gio_kim(void){
 	IAP_xoasector(SECTOR2);
 	switch(so_motor){
 		case 4:IAP_ghibyte(PHUT4_EEPROM,phut[3]);IAP_ghibyte(GIO4_EEPROM,gio[3]);
@@ -83,14 +83,14 @@ void luu_gio_kim(){
 	}
 	
 }
-void PCA_Timer_init(){
+void PCA_Timer_init(void){
 	CCAP0L = CCAP0H = 0;
 	PCA_Timer0 = 25000;
 	CCAPM0 = 0x49;
 	CR=1;
 }
 
-void motor_step_int_init(){
+void motor_step_int_init(void){
 	AUXR &=0x7F;	//Timer clock is 12T mode
 	TMOD = 0;		//Set timer work mode
 	// TL0 = 0x24;		//Initial timer value
@@ -106,7 +106,7 @@ void motor_step_int_init(){
 	ET0 = 1;
 }
 
-void xunggiay(){
+void xunggiay(void){
 	WATCHDOG;
 	flip_pulse^=1;
 	over_cur_led = flip_pulse;
@@ -256,7 +256,7 @@ void	PCA_Handler (void) __interrupt (PCA_VECTOR) __using (MEM_DONG_HO){
 
 }
 
-void cam_phim() __interrupt (1) __using (2) {
+void cam_phim(void) __interrupt (1) __using (2) {
 	WATCHDOG;
 	if(atmel_phat){
 		motor1 = motor_index == 0; motor2 = motor_index2 == 1;

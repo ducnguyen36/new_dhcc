@@ -1,7 +1,7 @@
-void xu_ly_tin_nhan(){
+void xu_ly_tin_nhan(void){
     //lenh DH
     lenh_khong_hop_le = 0;
-    u8 giodelta,phutdelta, kim_index;
+    u8 giodelta = 0,phutdelta = 0, kim_index = 0;
     u8 __xdata i = 0;
     while(lenh_sms[i++])WATCHDOG;
     while(i<160)lenh_sms[i++] = 0;
