@@ -366,13 +366,13 @@ void main() {
 	/*thiet lap gio gps*/
 	//TODO validate dalas time
 	LCD_guilenh(0x80);
-	// LCD_guichuoi("KIEM TRA GIO RTC");
-	// rtc_gettime(&hour, &minute, &second);
-	// if(hour>23 || minute > 59 || second >59)	
-	// 	rtc_settime(0,0,0);
+	LCD_guichuoi("KIEM TRA GIO RTC");
+	rtc_gettime(&hour, &minute, &second);
+	if(hour>23 || minute > 59 || second >59)	
+		rtc_settime(0,0,0);
 	
 	// /* Interrupt Ngoai 0 xung giay*/
-	// rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
+	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
 	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
 	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
 	// rtc_gettime(&hour, &minute, &second);
