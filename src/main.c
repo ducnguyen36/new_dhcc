@@ -358,20 +358,20 @@ void main() {
 
 	
 	ADC_CONTR = 0x8b;
-	/*thiet lap gio gps*/
-	//TODO validate dalas time
+	
+	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
+	/* Interrupt Ngoai 0 xung giay*/
+	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
+	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
+
+	//Validate dalas time
 	LCD_guilenh(0x80);
 	LCD_guichuoi("KIEM TRA GIO RTC");
 	rtc_gettime(&hour, &minute, &second);
 	if(hour>23 || minute > 59 || second >59)	
-		rtc_settime(0,0,0);
+	rtc_settime(0,0,0);
 	
-	// /* Interrupt Ngoai 0 xung giay*/
-	rtc_init(); //khai bao cho ds1307 tao xung vuong moi giay
-	INT_DHO_EX = 1; //Bat ngat ngoai 0 (EX0)
-	INT_DHO_IT=1; // ngat ngoai 0 cho suon len
-	rtc_gettime(&hour, &minute, &second);
-
+	
 	// nhich motor 1 va 3 den khi cam tat
 	LCD_guilenh(0x80);
 	LCD_guichuoi("KIEM MOTOR 1 - 3");
@@ -555,11 +555,11 @@ void main() {
 			if(!GPS_time && eep_gpson) {
 				// gsm_laygio_gps();
 				gsm_thietlapngaygiothuc();
-				hour12 = (hour>11)?hour-12:hour;
 			}else{
 				rtc_gettime(&hour,&minute,&second);
 				rtc_getdate(&date,&day,&month,&year);
 			}
+			hour12 = (hour>11)?hour-12:hour;
 
 			if(eep_baocao) {
 				baocaosms(CHINH,"\rbao cao dau gio");
@@ -767,7 +767,7 @@ void main() {
 					mp3_hour = 24;
 					mp3_minute = 60;
 					if(eep_gpson) gsm_thietlapngaygiothuc();//gsm_laygio_gps();
-					// else rtc_gettime(&hour,&minute,&second);
+					else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
 				}
 				if(phim_cong_nhan){

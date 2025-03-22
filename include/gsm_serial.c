@@ -403,6 +403,7 @@ void gsm_laygio_gps(){
                                     if(date_str[++i+1]==',') second = (date_str[i++]-'0');
                                     else second = (date_str[i++]-'0')*10 + (date_str[i++]-'0');
                                     hour = (hour+7>23) ? hour-17 : hour+7;
+                                    
                                     rtc_settime(hour,minute,second);
                                     GPS_time_temp = 1;
                                 }
