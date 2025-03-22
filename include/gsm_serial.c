@@ -312,7 +312,7 @@ __bit gsm_thietlapsim800(){
 
 void gsm_thietlapngaygiothuc(){
     __bit GPS_time_temp = 0;
-    if(sim_test_sec==61) return;
+    if(sim_test_sec==61 || !eep_gpson) return;
     if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
         if(gsm_sendandcheck("AT+COPS=2\r",15,1," KHOI DONG GPS ")){
             gsm_serial_cmd = COPS;

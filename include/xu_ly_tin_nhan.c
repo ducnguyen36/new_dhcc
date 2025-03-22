@@ -337,7 +337,7 @@ void xu_ly_tin_nhan(){
                         gsm_thietlapngaygiothuc();
                         baocaosms(CHINH,"\rBat GPS");
                     }
-                    else if(lenh_sms[4]=='T' || lenh_sms[4]=='t' || lenh_sms[5]=='B' || lenh_sms[5]=='b' ){
+                    else if(lenh_sms[4]=='T' || lenh_sms[4]=='t' || lenh_sms[5]=='F' || lenh_sms[5]=='f' ){
                         IAP_docxoasector1();
                         eeprom_buf[GPSON_EEPROM] = 0;
                         IAP_ghisector1();
