@@ -20,7 +20,7 @@ void kiem_tra_nhac(){
                 // mp3_date = date;
                 if(eep_mp3==2)mp3_play(10, mp3_hour,mp3_minute);
                 else if(!(mp3_minute%5))mp3_play(date, mp3_hour,mp3_minute);
-                mp3_doi_start = 120;
+                mp3_doi_start = 150;
                 mp3_status = mp3_START;
             }
             break;
