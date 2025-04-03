@@ -131,8 +131,8 @@ void main() {
 	motor_dung  = (eep_motor & 16);
 	// motor_debug = (eep_motor & 32);
 	//get the first 3 bit of eep_motor
-	thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = ((eep_motor & 192) >> 5) + 2;
-	// if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 5;
+	// thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = ((eep_motor & 192) >> 5) + 2;
+	if(!may_dc && !atmel_phat) toc_do_motor_step = (eep_motor & 192) >> 5;
 	// else toc_do_motor_step = 0;
 
 	sms_on = (eep_debug & 96)>>5;
@@ -311,7 +311,7 @@ void main() {
 						phuttemp += (so_motor-1);
 						phuttemp += (may_dc?4:0); 
 						if(so_motor!=1) phuttemp += (atmel_phat?8:0);
-						// if(!may_dc && !atmel_phat) phuttemp += (toc_do_motor_step<<6);
+						if(!may_dc && !atmel_phat) phuttemp += (toc_do_motor_step<<6);
 						//make the first 3 bit of phuttemp to 0
 						phuttemp &= 0x1f;
 						IAP_xoasector(SECTOR1);
