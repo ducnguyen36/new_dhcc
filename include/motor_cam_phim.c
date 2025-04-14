@@ -117,6 +117,7 @@ void xunggiay(){
 		if(thoi_gian_giu_motor_con_lai) thoi_gian_giu_motor_con_lai--;
 		
 	}
+	AmplyRelay = mp3_playing;
 	if(mode!=2 && ++second>max_second-1){
 			second=0;
 			if(so_lan_goi_dien && !--delay_cuoc_goi_ke_tiep) so_lan_goi_dien = 0;
