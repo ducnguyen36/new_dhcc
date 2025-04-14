@@ -37,28 +37,28 @@
 
 
 // #define motorSTEEprom               MOTORST_EEPROM+MOVC_START_ADDRESS
-#define motorEEprom                 MOTOR_EEPROM+MOVC_START_ADDRESS
-#define baocaoEEprom                BAOCAO_EEPROM+MOVC_START_ADDRESS
-#define gpsonEEprom                 GPSON_EEPROM+MOVC_START_ADDRESS
-#define ngayresetEEprom             NGAYRESET_EEPROM+MOVC_START_ADDRESS
-#define gioresetEEprom              GIORESET_EEPROM+MOVC_START_ADDRESS
-#define norresetEEprom              NORRESET_EEPROM+MOVC_START_ADDRESS
-#define giosacxaEEprom              GIOSACXA_EEPROM+MOVC_START_ADDRESS
-#define tatmodenEEprom              TATMODEN_EEPROM+MOVC_START_ADDRESS
-#define mp3EEprom                   MP3_EEPROM+MOVC_START_ADDRESS
-#define phonephuEEprom              PHONEPHU_EEPROM+MOVC_START_ADDRESS
-#define loithesimEEprom             LOITHESIM_EEPROM+MOVC_START_ADDRESS
-#define debugEEprom                 DEBUG_EEPROM+MOVC_START_ADDRESS
-#define camEEprom                   CAM_EEPROM+MOVC_START_ADDRESS
+#define motorEEprom                 (MOTOR_EEPROM+MOVC_START_ADDRESS)
+#define baocaoEEprom                (BAOCAO_EEPROM+MOVC_START_ADDRESS)
+#define gpsonEEprom                 (GPSON_EEPROM+MOVC_START_ADDRESS)
+#define ngayresetEEprom             (NGAYRESET_EEPROM+MOVC_START_ADDRESS)
+#define gioresetEEprom              (GIORESET_EEPROM+MOVC_START_ADDRESS)
+#define norresetEEprom              (NORRESET_EEPROM+MOVC_START_ADDRESS)
+#define giosacxaEEprom              (GIOSACXA_EEPROM+MOVC_START_ADDRESS)
+#define tatmodenEEprom              (TATMODEN_EEPROM+MOVC_START_ADDRESS)
+#define mp3EEprom                   (MP3_EEPROM+MOVC_START_ADDRESS)
+#define phonephuEEprom              (PHONEPHU_EEPROM+MOVC_START_ADDRESS)
+#define loithesimEEprom             (LOITHESIM_EEPROM+MOVC_START_ADDRESS)
+#define debugEEprom                 (DEBUG_EEPROM+MOVC_START_ADDRESS)
+#define camEEprom                   (CAM_EEPROM+MOVC_START_ADDRESS)
 
-#define phut1EEprom					PHUT1_EEPROM+MOVC_START_ADDRESS
-#define gio1EEprom					GIO1_EEPROM+MOVC_START_ADDRESS
-#define phut2EEprom					PHUT2_EEPROM+MOVC_START_ADDRESS
-#define gio2EEprom					GIO2_EEPROM+MOVC_START_ADDRESS
-#define phut3EEprom					PHUT3_EEPROM+MOVC_START_ADDRESS
-#define gio3EEprom					GIO3_EEPROM+MOVC_START_ADDRESS
-#define phut4EEprom					PHUT4_EEPROM+MOVC_START_ADDRESS
-#define gio4EEprom					GIO4_EEPROM+MOVC_START_ADDRESS
+#define phut1EEprom					(PHUT1_EEPROM+MOVC_START_ADDRESS)
+#define gio1EEprom					(GIO1_EEPROM+MOVC_START_ADDRESS)
+#define phut2EEprom					(PHUT2_EEPROM+MOVC_START_ADDRESS)
+#define gio2EEprom					(GIO2_EEPROM+MOVC_START_ADDRESS)
+#define phut3EEprom					(PHUT3_EEPROM+MOVC_START_ADDRESS)
+#define gio3EEprom					(GIO3_EEPROM+MOVC_START_ADDRESS)
+#define phut4EEprom					(PHUT4_EEPROM+MOVC_START_ADDRESS)
+#define gio4EEprom					(GIO4_EEPROM+MOVC_START_ADDRESS)
 
 
 __code __at     motorEEprom         u8 eep_motor;

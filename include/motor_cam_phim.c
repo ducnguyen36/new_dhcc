@@ -149,7 +149,7 @@ void xunggiay(){
 u8 __xdata cnt = 20;
 u8 __xdata counter_xung_giay=40;
 __bit lcd_update_chop = 0;
-void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
+void	PCA_Handler (void) __interrupt (PCA_VECTOR) __using (MEM_DONG_HO){
 	WATCHDOG;
 	if(CCF0){
 		CCF0=0;//tat co PCA timer 0
@@ -256,7 +256,7 @@ void	PCA_Handler (void) __interrupt PCA_VECTOR __using MEM_DONG_HO{
 
 }
 
-void cam_phim() __interrupt 1 __using 2 {
+void cam_phim() __interrupt (1) __using (2) {
 	WATCHDOG;
 	if(atmel_phat){
 		motor1 = motor_index == 0; motor2 = motor_index2 == 1;
