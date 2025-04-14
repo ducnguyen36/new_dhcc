@@ -494,6 +494,25 @@ void main() {
     		send_gsm_byte(second%10+'0');
 			send_gsm_cmd("###\r\n");
 		}
+		if(gio_out){
+			gio_out = 0;
+			P2 &= 0x0F;  // Clear upper nibble (P2.4 - P2.7), preserving lower bits
+			switch (hour12) {
+				case 0:  P2 |= (0 << 4); break;  // C0 -> 0000
+				case 1:  P2 |= (1 << 4); break;  // C1 -> 0001
+				case 2:  P2 |= (2 << 4); break;  // C2 -> 0010
+				case 3:  P2 |= (3 << 4); break;  // C3 -> 0011
+				case 4:  P2 |= (4 << 4); break;  // C4 -> 0100
+				case 5:  P2 |= (5 << 4); break;  // C5 -> 0101
+				case 6:  P2 |= (6 << 4); break;  // C6 -> 0110
+				case 7:  P2 |= (7 << 4); break;  // C7 -> 0111
+				case 8:  P2 |= (8 << 4); break;  // C8 -> 1000
+				case 9:  P2 |= (9 << 4); break;  // C9 -> 1001
+				case 10: P2 |= (10 << 4); break; // C10 -> 1010
+				case 11: P2 |= (11 << 4); break; // C11 -> 1011
+				default: break; // optionally handle out-of-range values
+			}
+		}
 		if(!bao_cao_dien_ap_thap && dien_ap_thap){
 			baocaosms(CHINH,"\rdien ap thap");
 			if(bat_phone_phu)baocaosms(PHU,"\rdien ap thap");

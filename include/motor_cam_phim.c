@@ -123,6 +123,7 @@ void xunggiay(){
 			if(so_lan_goi_dien && !--delay_cuoc_goi_ke_tiep) so_lan_goi_dien = 0;
 			phut_out = 1;
 			if(++minute>59){
+				gio_out = 1;
 				da_gui_bao_cao = 0;
 				minute=0;
 				if(++hour>23){

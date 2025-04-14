@@ -91,6 +91,7 @@ __bit      cam_ra, cam_ra2;
 __bit       GPS_time;
 __bit		giay_out;
 __bit		phut_out;
+__bit		gio_out;
 __bit		flip_pulse;
 
 // __bit       step_run;
