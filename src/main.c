@@ -148,7 +148,7 @@ void main() {
 	max_second = (eep_debug & 15)<6?(eep_debug & 15) + 1 : (60/(12-(eep_debug & 15)));
 	if(!(eep_debug & 16) || max_second<60) sim_test_sec = 61;
 
-	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?30:10);
+	thoi_gian_doi_cam_chuan = (eep_motor & 64)?255:(may_dc?120:10);
 
 	switch(so_motor){
 		case 4: thoi_gian_doi_doc_cam[3]=thoi_gian_doi_cam_chuan;
@@ -452,6 +452,7 @@ void main() {
 	}
 	// gsm_laygio_gps();
 	if(!GPS_time) so_gio_mat_gps++;
+	gio_out = 1;
     hour12 = (hour>11)?hour-12:hour;
 	if(!eep_norreset){
 		mode_wait = 5;
@@ -847,6 +848,7 @@ void main() {
 					
 					else rtc_gettime(&hour,&minute,&second);
 					hour12 = (hour>11)?hour-12:hour;
+					gio_out = 1;
 				}
 				if(phim_cong_nhan){
 					phim_cong_nhan = 0;
@@ -894,6 +896,7 @@ void main() {
 						GPS_time = 0;
 						mp3_hour = 24;
 						mp3_minute = 60;
+						gio_out = 1;
 					}
 				}
 				break;

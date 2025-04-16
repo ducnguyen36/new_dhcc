@@ -271,12 +271,12 @@ void cam_phim() __interrupt (1) __using (2) {
 		 
 		
 		motorDir = may_dc || may_canh_kim || motorDir1 || motorDir2;
-		if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
-			P2=(P2&0x0f)|motor_step[step_index];
-			step_index+= motorDir?1:-1; 
-			if(step_index>8) step_index=7;
-			else if(step_index==8) step_index=0;
-		} else P2 &= 0x0f;
+		// if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
+		// 	P2=(P2&0x0f)|motor_step[step_index];
+		// 	step_index+= motorDir?1:-1; 
+		// 	if(step_index>8) step_index=7;
+		// 	else if(step_index==8) step_index=0;
+		// } else P2 &= 0x0f;
 	}
 
 }
