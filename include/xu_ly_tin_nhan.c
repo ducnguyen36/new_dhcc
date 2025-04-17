@@ -102,6 +102,12 @@ void xu_ly_tin_nhan(){
                             // gsm_laygio_gps();
                             gsm_thietlapngaygiothuc();
                             hour12 = hour%12;
+                            send_gsm_byte('$');
+                            send_gsm_byte(hour/10+'0');
+                            send_gsm_byte(hour%10+'0');
+                            send_gsm_byte(minute/10+'0');
+                            send_gsm_byte(minute%10+'0');
+                            send_gsm_byte('#');
                             mp3_hour = 24;
                             mp3_minute = 60;
                             i = 101;
@@ -122,6 +128,12 @@ void xu_ly_tin_nhan(){
                                     minute = (lenh_sms[i+2]-'0')*10 + lenh_sms[i+3] - '0';
                                     hour12=hour%12;
                                     rtc_settime(hour,minute,second);
+                                    send_gsm_byte('$');
+                                    send_gsm_byte(hour/10+'0');
+                                    send_gsm_byte(hour%10+'0');
+                                    send_gsm_byte(minute/10+'0');
+                                    send_gsm_byte(minute%10+'0');
+                                    send_gsm_byte('#');
                                     GPS_time = 0;
                                     mp3_hour = 24;
                                     mp3_minute = 60;
