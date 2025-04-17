@@ -465,10 +465,10 @@ void main() {
 	send_gsm_cmd("$D250");
 	send_gsm_cmd("$E250");
 	send_gsm_byte('$');
-	send_gsm_byte(hour/10+'0');
-	send_gsm_byte(hour%10+'0');
 	send_gsm_byte(minute/10+'0');
 	send_gsm_byte(minute%10+'0');
+	send_gsm_byte(hour/10+'0');
+	send_gsm_byte(hour%10+'0');
 	send_gsm_byte('#');
 
 	WDT_CONTR = EN_WDT | CLR_WDT | WDT_SCALE_64; // Enable watchdog, clear watchdog, pre scale = 64, watchdog idle mode = NO
@@ -505,10 +505,10 @@ void main() {
     		// send_gsm_byte(second%10+'0');
 			 // send_gsm_cmd("###\r\n");
 			send_gsm_byte('$');
-			send_gsm_byte(hour/10+'0');
-			send_gsm_byte(hour%10+'0');
 			send_gsm_byte(minute/10+'0');
 			send_gsm_byte(minute%10+'0');
+			send_gsm_byte(hour/10+'0');
+			send_gsm_byte(hour%10+'0');
 			send_gsm_byte('#');
 		}
 		if(gio_out){
@@ -618,10 +618,10 @@ void main() {
 				gsm_thietlapngaygiothuc();
 				hour12 = (hour>11)?hour-12:hour;
 				send_gsm_byte('$');
-				send_gsm_byte(hour/10+'0');
-				send_gsm_byte(hour%10+'0');
 				send_gsm_byte(minute/10+'0');
 				send_gsm_byte(minute%10+'0');
+				send_gsm_byte(hour/10+'0');
+				send_gsm_byte(hour%10+'0');
 				send_gsm_byte('#');
 				
 				if(so_gio_mat_gps>34 && !motor_dung){
@@ -638,10 +638,10 @@ void main() {
 				
 				rtc_gettime(&hour,&minute,&second);
 				send_gsm_byte('$');
-				send_gsm_byte(hour/10+'0');
-				send_gsm_byte(hour%10+'0');
 				send_gsm_byte(minute/10+'0');
 				send_gsm_byte(minute%10+'0');
+				send_gsm_byte(hour/10+'0');
+				send_gsm_byte(hour%10+'0');
 				send_gsm_byte('#');
 				// rtc_getdate(&date,&day,&month,&year);
 			}
@@ -684,10 +684,10 @@ void main() {
 					gsm_thietlapngaygiothuc();
 					hour12=hour%12;
 					send_gsm_byte('$');
-					send_gsm_byte(hour/10+'0');
-					send_gsm_byte(hour%10+'0');
 					send_gsm_byte(minute/10+'0');
 					send_gsm_byte(minute%10+'0');
+					send_gsm_byte(hour/10+'0');
+					send_gsm_byte(hour%10+'0');
 					send_gsm_byte('#');
 					if(gsm_thietlapnhantin()){
 						baocaosms(CHINH,"\rgsm reset thanh cong");
@@ -765,8 +765,9 @@ void main() {
 										break;
 							case GIOTHUC: LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),hour,minute,second,1); 
 											giotemp=hour;phuttemp=minute;send_gsm_cmd("$B0001");
-											send_gsm_byte('$');send_gsm_byte(giotemp/10+'0');send_gsm_byte(giotemp%10+'0');
+											send_gsm_byte('$');
 											send_gsm_byte(phuttemp/10+'0');send_gsm_byte(phuttemp%10+'0');
+											send_gsm_byte(giotemp/10+'0');send_gsm_byte(giotemp%10+'0');
 											send_gsm_byte('#');break;
 							case CANHKIM: LCD_guichuoi("\300MAY 1          ");LCD_blinkXY(DUOI,4);break;
 							case MP3TEST: LCD_guigio(0xc0,"000 ",0,0,251,1);LCD_guigio(0xc8," ",day,month,100+year,1);giotemp=phuttemp=song_name=0;
@@ -887,10 +888,10 @@ void main() {
 					hour12 = (hour>11)?hour-12:hour;
 					send_gsm_cmd("$B0000");
 					send_gsm_byte('$');
-					send_gsm_byte(hour/10+'0');
-					send_gsm_byte(hour%10+'0');
 					send_gsm_byte(minute/10+'0');
 					send_gsm_byte(minute%10+'0');
+					send_gsm_byte(hour/10+'0');
+					send_gsm_byte(hour%10+'0');
 					send_gsm_byte('#');
 					gio_out = 1;
 
@@ -919,10 +920,10 @@ void main() {
 					
 					LCD_guigio(0xc0,GPS_time?"  GPS  ":(eep_gpson?"   DS  ":" ASIA  "),giotemp,phuttemp,mode_wait,1);
 					send_gsm_byte('$');
-					send_gsm_byte(giotemp/10+'0');
-					send_gsm_byte(giotemp%10+'0');
 					send_gsm_byte(phuttemp/10+'0');
 					send_gsm_byte(phuttemp%10+'0');
+					send_gsm_byte(giotemp/10+'0');
+					send_gsm_byte(giotemp%10+'0');
 					send_gsm_byte('#');
 
 				}
@@ -949,10 +950,10 @@ void main() {
 						mp3_minute = 60;
 						send_gsm_cmd("$B0000");
 						send_gsm_byte('$');
-						send_gsm_byte(giotemp/10+'0');
-						send_gsm_byte(giotemp%10+'0');
 						send_gsm_byte(phuttemp/10+'0');
 						send_gsm_byte(phuttemp%10+'0');
+						send_gsm_byte(giotemp/10+'0');
+						send_gsm_byte(giotemp%10+'0');
 						send_gsm_byte('#');
 						gio_out = 1;
 					}

@@ -129,10 +129,10 @@ void xu_ly_tin_nhan(){
                                     hour12=hour%12;
                                     rtc_settime(hour,minute,second);
                                     send_gsm_byte('$');
-                                    send_gsm_byte(hour/10+'0');
-                                    send_gsm_byte(hour%10+'0');
                                     send_gsm_byte(minute/10+'0');
                                     send_gsm_byte(minute%10+'0');
+                                    send_gsm_byte(hour/10+'0');
+                                    send_gsm_byte(hour%10+'0');
                                     send_gsm_byte('#');
                                     GPS_time = 0;
                                     mp3_hour = 24;
