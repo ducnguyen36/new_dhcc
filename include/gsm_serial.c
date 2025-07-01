@@ -331,10 +331,10 @@ void gsm_thietlapngaygiothuc(){
                     hour   = (lenh_sms[12]-48)*10 + lenh_sms[13] - 48;
                     minute = (lenh_sms[15]-48)*10 + lenh_sms[16] - 48;
                     second = (lenh_sms[18]-48)*10 + lenh_sms[19] - 48;
-                    // rtc_settime(hour,minute,second);
+                    rtc_settime(hour,minute,second);
                     u16 check = (23*month/9 + day + (month>2?!(year%4):2) + year + (year+3)/4 + 1) ;
                     date = check%7+1;
-                    // rtc_setdate(date,day,month,year);
+                    rtc_setdate(date,day,month,year);
                     GPS_time_temp = 1;
                 }
             }
