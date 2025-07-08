@@ -19,6 +19,8 @@ u8 __code ver[] = VERSION;
 	4.9B thay doi sms eeprom 1,3,4 binh thuong 2 nhan tin nhung ko
 	kiem tra tai khoan. va ha dien ap hoat dong xuong 8V5
 	4.9C fix bug sms_on 2 khong kiem tra tien
+	5.0AA sua ds3231 khong luu gio thuc tu sim800
+	5.0AB fix bug khi khong co mp3 amply relay bat lien tuc
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"
@@ -881,7 +883,7 @@ void main() {
 			case MP3TEST:
 				
 				LCD_blinkXY(DUOI,sub_mode+(sub_mode>2)+(sub_mode>6));
-				AmplyRelay = mp3_playing;
+				if(eep_mp3%4==2)AmplyRelay = mp3_playing;
 				if(!phim_mode_doi){
 					sub_mode = mode;
 					mode = SELECT;
@@ -980,7 +982,7 @@ void main() {
 						sub_mode = 0;
 						mp3_play(eep_mp3>3?thutemp:10,giotemp,phuttemp);
 						delay_ms(100);
-						AmplyRelay = mp3_playing;
+						if(eep_mp3%4==2)AmplyRelay = mp3_playing;
 						LCD_guilenh(0xc3);
 						LCD_guidulieu(mp3_playing?'O':'X');
 						// LCD_guigio(0xc0,mp3_playing?" OK ":" NO ",giotemp,phuttemp,251,1);
@@ -993,7 +995,7 @@ void main() {
 						sub_mode = 0;
 						mp3_play(0,song_name/12,(song_name-song_name/12*12)*5);
 						delay_ms(100);
-						AmplyRelay = mp3_playing;
+						if(eep_mp3%4==2)AmplyRelay = mp3_playing;
 						LCD_guilenh(0xc3);
 						LCD_guidulieu(mp3_playing?'M':'X');
 					}
