@@ -21,6 +21,8 @@ u8 __code ver[] = VERSION;
 	4.9C fix bug sms_on 2 khong kiem tra tien
 	5.0AA sua ds3231 khong luu gio thuc tu sim800
 	5.0AB fix bug khi khong co mp3 amply relay bat lien tuc
+	AC sua ds3231 khong luu gio thuc tu sim800 khi co gps
+	AD sua bo kiemtrataikhoan
 */
 #include "chuong_trinh.c"
 #include "motor_cam_phim.c"

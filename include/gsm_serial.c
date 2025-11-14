@@ -216,9 +216,9 @@ void baocaosms(__bit chinh, u8  *noidung){
     gsm_sendandcheck("AT\r", 15, 1,"BAT DAU BAO CAO ");
     kiemtratinhieu();    
     //IMPORTANT: BO KIEM TRA TAI KHOAN TAM THOI
-    if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
-    else lenh_sms[0]=0;
-    // lenh_sms[0]=0;
+    // if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
+    // else lenh_sms[0]=0;
+    lenh_sms[0]=0;
     if(!send_sms(chinh)) return;
     
     if(sms_on>2){
