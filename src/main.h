@@ -89,6 +89,12 @@ __bit      cam_vao_han, cam_vao_han2;
 __bit      cam_ra, cam_ra2;
 
 __bit       GPS_time;
+__bit       gps_module_atgm;        // 1 = ATGM336H GPS detected, 0 = SIM module
+__bit       gps_valid_fix;          // 1 = Valid GPS fix (A), 0 = Invalid (V)
+u8 __xdata  gnrmc_field_index;      // Current field being parsed in GNRMC
+u8 __xdata  gnrmc_char_index;       // Character index within current field
+u8 __xdata  gnrmc_time_buf[6];      // HHMMSS buffer
+u8 __xdata  gnrmc_date_buf[6];      // DDMMYY buffer
 __bit		giay_out;
 __bit		phut_out;
 __bit		flip_pulse;
