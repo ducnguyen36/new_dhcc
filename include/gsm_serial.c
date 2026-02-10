@@ -22,8 +22,10 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display){
                 error = 0;
                 if(!retry--) break;
                 connect_time_out = connect = delay;
-                if(*(cmd+2) == '+' && *(cmd+7)!='?' && *(cmd+8)!='?') send_gsm_cmd("A/\r"); 
-                else send_gsm_cmd(cmd);
+                // if(*(cmd+2) == '+' && *(cmd+7)!='?' && *(cmd+8)!='?') send_gsm_cmd("A/\r"); 
+                // else send_gsm_cmd(cmd);
+                send_gsm_cmd(cmd);
+                
             } 
         
     }
@@ -216,15 +218,16 @@ void baocaosms(__bit chinh, u8  *noidung){
     gsm_sendandcheck("AT\r", 15, 1,"BAT DAU BAO CAO ");
     kiemtratinhieu();    
     //IMPORTANT: BO KIEM TRA TAI KHOAN TAM THOI
-    if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
-    else lenh_sms[0]=0;
-    // lenh_sms[0]=0;
+    // if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
+    // else lenh_sms[0]=0;
+    lenh_sms[0]=0;
     if(!send_sms(chinh)) return;
     
     if(sms_on>2){
         send_thong_so_rut_gon(chinh);
     }else{
-        send_gsm_cmd(ver);
+        // send_gsm_cmd(ver);
+        send_gsm_cmd((const char*)&(ver+12));
 
         send_gio_kim();
         send_gio_thuc(chinh);
@@ -317,7 +320,7 @@ __bit gsm_thietlapsim800(){
 void gsm_thietlapngaygiothuc(){
     __bit GPS_time_temp = 0;
     if(sim_test_sec==61) return;
-    if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
+    // if(gsm_sendandcheck("AT+CLTS=1\r",15,1,"BAT CHE DO GPS ")){
         if(gsm_sendandcheck("AT+COPS=2\r",15,1," KHOI DONG GPS ")){
             gsm_serial_cmd = COPS;
             if(gsm_sendandcheck("AT+COPS=0\r",10,60,"  KET NOI GPS  ")){
@@ -339,7 +342,7 @@ void gsm_thietlapngaygiothuc(){
                 }
             }
         }
-    }
+    // }
     GPS_time = GPS_time_temp;
     gsm_serial_cmd = NORMAL;
 }
@@ -350,9 +353,10 @@ __bit gsm_thietlapgoidien(){
         clear_sms_buffer(0);
         sms_index = 0;
         gsm_serial_cmd = CALR;
-        if(gsm_sendandcheck("AT+CCALR?\r",15,1," THIET LAP GOI ")){
-            return 1;
-        }
+        // if(gsm_sendandcheck("AT+CCALR?\r",15,1," THIET LAP GOI ")){
+        //     return 1;
+        // }
+        return 1;
     }
     return 0;
 	
@@ -362,7 +366,8 @@ __bit gsm_thietlapnhantin(){
     if(!gsm_pw || !sms_on) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 1,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
-            if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  THIET LAP TN  ")){
+            // if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  THIET LAP TN  ")){
+            if(gsm_sendandcheck("AT+CMGD=,4\r", 20, 3,"  SENDING CMGDA  ")){
                 kiemtratinhieu();
                 return 1;
             }
@@ -376,7 +381,8 @@ __bit gsm_thietlapnhantin1(){
     if(!gsm_sendandcheck("AT\r", 15, 1,"THIET LAP TNHAN ")) return 0;
     if(gsm_sendandcheck("AT+CMGF=1\r", 15, 2,"  SENDING CMGF  ")){
         if(gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1,"  SENDING CNMI  ")){
-            if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 20, 3,"  SENDING CMGDA  ")){
+            // if(gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 20, 3,"  SENDING CMGDA  ")){
+            if(gsm_sendandcheck("AT+CMGD=,4\r", 20, 3,"  SENDING CMGDA  ")){
                 return 1;
             }
         }
@@ -446,8 +452,8 @@ void gsm_serial_interrupt() __interrupt (gsm_SERIAL_INT) __using (SERIAL_MEM){
                 if(SBUF==' ' &&  gsm_receive_buf[(gsm_receive_pointer+12)%13] ==':')sms_index = 0;
                 if(SBUF==',')sms_index = gsm_serial_cmd = NORMAL;
                 break;
-            case COPS:
-                if(SBUF=='T' &&  gsm_receive_buf[(gsm_receive_pointer+12)%13] =='S' &&  gsm_receive_buf[(gsm_receive_pointer+11)%13] =='D')
+            case COPS://SUA CHO A7680C
+                if(SBUF=='V' &&  gsm_receive_buf[(gsm_receive_pointer+12)%13] =='E' &&  gsm_receive_buf[(gsm_receive_pointer+11)%13] =='G')
                     gui_lenh_thanh_cong = 1;
                 else if(SBUF=='R' &&  gsm_receive_buf[(gsm_receive_pointer+12)%13] =='O' &&  gsm_receive_buf[(gsm_receive_pointer+11)%13] =='R')
                     connect = 0;
@@ -507,7 +513,7 @@ void gsm_serial_interrupt() __interrupt (gsm_SERIAL_INT) __using (SERIAL_MEM){
                     have_not = 0;
                     if(sms_index){
                         sms_index = 0;
-                        send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
+                        send_gsm_cmd("AT+CMGD=,4\r");
                     }
 
 

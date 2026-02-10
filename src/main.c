@@ -439,15 +439,15 @@ void main() {
 	if(!nosim && gsm_thietlapsim800()){
 		gsm_thietlapngaygiothuc();
 		
-		gsm_thietlapgoidien();
+		// gsm_thietlapgoidien();
 		// gsm_thietlapnhantin();
 		if(gsm_thietlapnhantin()){ // thiet lap thong so nhan tin
 			if(!eep_norreset)baocaosms(CHINH,"\rkhoi dong phan mem san sang");
 			else{
-				baocaosms(CHINH,"\rkhoi dong san sang");
-				if(bat_phone_phu)baocaosms(PHU,"\rkhoi dong san sang");
+				baocaosms(CHINH,"\rsan sang");
+				if(bat_phone_phu)baocaosms(PHU,"\rsan sang");
 			}
-			kiemtrasodienthoai();
+			// kiemtrasodienthoai();
 		}
 	}
 	// gsm_laygio_gps();
@@ -642,7 +642,8 @@ void main() {
 				if(sms_dang_xu_ly){
 					/*xu ly tin nhan*/
 					xu_ly_tin_nhan();
-					gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ");
+					// gsm_sendandcheck("AT+CMGDA\"DEL ALL\"\r", 15, 1,"  SENDING CMGDA  ");
+					gsm_sendandcheck("AT+CMGD=,4\r", 20, 3,"  SENDING CMGDA  ");
 					sms_dang_xu_ly = 0;
 				}
 				else {
