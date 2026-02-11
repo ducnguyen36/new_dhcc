@@ -360,9 +360,9 @@ __bit gsm_thietlapsim800() {
     clear_sms_buffer(0);
     sms_index = 0;
     gsm_serial_cmd = CSPN;
-    if (gsm_sendandcheck("AT+CSPN?\r", 15, 1, " TEN TONG DAI  ")) {
-      nha_mang = lenh_sms[4];
-    }
+    // if (gsm_sendandcheck("AT+CSPN?\r", 15, 1, " TEN TONG DAI  ")) {
+    //   nha_mang = lenh_sms[4];
+    // }
     return 1;
   }
   return 0;
@@ -406,11 +406,8 @@ __bit gsm_thietlapgoidien() {
     clear_sms_buffer(0);
     sms_index = 0;
     gsm_serial_cmd = CALR;
-    if (gsm_sendandcheck("AT+CCALR?\r", 15, 1, " THIET LAP GOI ")) {
-      return 1;
-    }
   }
-  return 0;
+  return 1;
 }
 
 __bit gsm_thietlapnhantin() {
@@ -847,7 +844,7 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
       } else if (SBUF == '\r' || SBUF == '\n' || SBUF == '*') {
         // End of sentence
         if (gnrmc_field_index >= 8 && gps_valid_fix) {
-          // Valid data received, set time to DS3231
+          // Extract time/date from GNRMC
           hour = (gnrmc_time_buf[0] - '0') * 10 + (gnrmc_time_buf[1] - '0');
           minute = (gnrmc_time_buf[2] - '0') * 10 + (gnrmc_time_buf[3] - '0');
           second = (gnrmc_time_buf[4] - '0') * 10 + (gnrmc_time_buf[5] - '0');
@@ -858,11 +855,15 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
           // Apply UTC+7 timezone offset
           hour = (hour + 7 > 23) ? hour - 17 : hour + 7;
 
-          rtc_settime(hour, minute, second);
-          u16 check = (23 * month / 9 + day + (month > 2 ? !(year % 4) : 2) +
-                       year + (year + 3) / 4 + 1);
-          date = check % 7 + 1;
-          rtc_setdate(date, day, month, year);
+          // Only sync RTC when allowed (startup or hourly)
+          if (gps_sync_allowed) {
+            rtc_settime(hour, minute, second);
+            u16 check = (23 * month / 9 + day + (month > 2 ? !(year % 4) : 2) +
+                         year + (year + 3) / 4 + 1);
+            date = check % 7 + 1;
+            rtc_setdate(date, day, month, year);
+            gps_sync_allowed = 0; // Block further syncs until re-enabled
+          }
           GPS_time = 1;
         }
         gsm_serial_cmd = NORMAL;

@@ -29,6 +29,53 @@ u8 __code ver[] = VERSION;
 #include "motor_cam_phim.c"
 #include "xu_ly_tin_nhan.c"
 
+// Display error message on LCD (used in GPS mode when SMS is disabled)
+void display_error() {
+  if (!last_error_type)
+    return; // No error to display
+
+  switch (last_error_type) {
+  case 1: // Voltage error
+    if (last_error_subtype == 0) {
+      LCD_guilenh(0x80);
+      LCD_guichuoi("!DIEN AP THAP!  ");
+      LCD_guilenh(0xc0);
+      LCD_guichuoi("LOI NGUON DIEN  ");
+    } else {
+      LCD_guilenh(0x80);
+      LCD_guichuoi("NGUON KHOI PHUC ");
+      LCD_guilenh(0xc0);
+      LCD_guichuoi("DIEN AP ON DINH ");
+    }
+    break;
+  case 2: // Motor 1 error
+    LCD_guilenh(0x80);
+    LCD_guichuoi("! LOI CAM BIE 1!");
+    LCD_guilenh(0xc0);
+    LCD_guichuoi("KT CAM MOTOR 1  ");
+    break;
+  case 3: // Motor 2 error
+    LCD_guilenh(0x80);
+    LCD_guichuoi("! LOI CAM BIE 2!");
+    LCD_guilenh(0xc0);
+    LCD_guichuoi("KT CAM MOTOR 2 ");
+    break;
+  case 4: // Motor 3 error
+    LCD_guilenh(0x80);
+    LCD_guichuoi("! LOI CAM BIE 3!");
+    LCD_guilenh(0xc0);
+    LCD_guichuoi("KT CAM MOTOR 3  ");
+    break;
+  case 5: // Motor 4 error
+    LCD_guilenh(0x80);
+    LCD_guichuoi("! LOI CAM BIE 4!");
+    LCD_guilenh(0xc0);
+    LCD_guichuoi("KT CAM MOTOR 4  ");
+    break;
+  }
+  delay_ms(3000);
+}
+
 void main() {
   u8 __data giotemp = 0, phuttemp = 0, so_gio_mat_gps = 0;
   u8 __xdata ngaytemp = 1, thangtemp = 1, namtemp = 21, thutemp = 1;
@@ -223,7 +270,7 @@ void main() {
   {
     u8 detect_countdown = 40; // 30 * 100ms = 3 seconds
     while (detect_countdown-- && !gps_module_atgm) {
-    //   send_gsm_byte(detect_countdown / 10 + '0');
+      //   send_gsm_byte(detect_countdown / 10 + '0');
       delay_ms(1000);
       WATCHDOG;
     }
@@ -236,7 +283,8 @@ void main() {
     LCD_guichuoi("GPS MODULE ATGM ");
     delay_ms(1000);
     gps_configure_atgm336h();
-    nosim = 1; // No SIM module present
+    gps_sync_allowed = 1; // Allow initial GPS sync to RTC
+    nosim = 1;            // No SIM module present
   } else {
     // SIM module detected (or no module)
     LCD_guilenh(0x80);
@@ -534,7 +582,7 @@ void main() {
 
   bat_phone_phu = eep_phonephu[11] & 1;
   GPS_time = 0;
-  if (!nosim && gsm_thietlapsim800()) {
+  if (!nosim && !gps_module_atgm && gsm_thietlapsim800()) {
     gsm_thietlapngaygiothuc();
 
     gsm_thietlapgoidien();
@@ -605,15 +653,27 @@ void main() {
       send_gsm_cmd("###\r\n");
     }
     if (!bao_cao_dien_ap_thap && dien_ap_thap) {
-      baocaosms(CHINH, "\rdien ap thap");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rdien ap thap");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rdien ap thap");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rdien ap thap");
+      } else {
+        last_error_type = 1;
+        last_error_subtype = 0;
+      }
+      display_error();
       bao_cao_dien_ap_thap = 1;
     }
     if (bao_cao_dien_ap_thap && !dien_ap_thap) {
-      baocaosms(CHINH, "\rdien ap khoi phuc");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rdien ap khoi phuc");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rdien ap khoi phuc");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rdien ap khoi phuc");
+      } else {
+        last_error_type = 1;
+        last_error_subtype = 1;
+      }
+      display_error();
       bao_cao_dien_ap_thap = 0;
     }
     if (!xung_giay_check && !mat_xung_giay) {
@@ -623,27 +683,47 @@ void main() {
     // multi motor
     if (!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1) {
       loi_cam_motor1 = 1;
-      baocaosms(CHINH, "\rloi doc cam 1");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rloi doc cam 1");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rloi doc cam 1");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rloi doc cam 1");
+      } else {
+        last_error_type = 2;
+      }
+      display_error();
     }
     if (so_motor > 1 && !thoi_gian_doi_doc_cam[1] && !loi_cam_motor2) {
       loi_cam_motor2 = 1;
-      baocaosms(CHINH, "\rloi doc cam 2");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rloi doc cam 2");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rloi doc cam 2");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rloi doc cam 2");
+      } else {
+        last_error_type = 3;
+      }
+      display_error();
     }
     if (so_motor > 2 && !thoi_gian_doi_doc_cam[2] && !loi_cam_motor3) {
       loi_cam_motor3 = 1;
-      baocaosms(CHINH, "\rloi doc cam 3");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rloi doc cam 3");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rloi doc cam 3");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rloi doc cam 3");
+      } else {
+        last_error_type = 4;
+      }
+      display_error();
     }
     if (so_motor == 4 && !thoi_gian_doi_doc_cam[3] && !loi_cam_motor4) {
       loi_cam_motor4 = 1;
-      baocaosms(CHINH, "\rloi doc cam 4");
-      if (bat_phone_phu)
-        baocaosms(PHU, "\rloi doc cam 4");
+      if (!gps_module_atgm) {
+        baocaosms(CHINH, "\rloi doc cam 4");
+        if (bat_phone_phu)
+          baocaosms(PHU, "\rloi doc cam 4");
+      } else {
+        last_error_type = 5;
+      }
+      display_error();
     }
     if (giay_out) {
       if (!gsm_pw) {
@@ -678,6 +758,12 @@ void main() {
       if (phim_mode_doi && phim_mode_giu) {
         phim_mode_doi--;
       }
+      if (phim_back_doi && phim_back_giu) {
+        phim_back_doi--;
+      }
+      if (phim_cong_doi && phim_cong_giu) {
+        phim_cong_doi--;
+      }
       giay_out = 0;
     }
 
@@ -693,7 +779,7 @@ void main() {
         (!(eep_mp3 % 4) || !mp3_playing)) {
       if (max_second < 60)
         rtc_settime(eep_gioreset, 6, 0);
-      if (so_lan_goi_dien > 1)
+      if (so_lan_goi_dien > 1 && !gps_module_atgm)
         baocaosms(CHINH, "\rChuan bi reset phan mem tu cuoc goi");
       EA = 0;
       gsm_pw = 0;
@@ -707,6 +793,9 @@ void main() {
         motor_index2 == 5 && (!(eep_mp3 % 4) || !mp3_playing)) {
       if (eep_gpson) {
         // gsm_laygio_gps();
+        if (gps_module_atgm) {
+          gps_sync_allowed = 1; // Allow GPS sync at top of hour
+        }
         motor_index = motor_index2 = 5;
         delay_ms(3000);
         gsm_serial_cmd = NORMAL;
@@ -731,7 +820,7 @@ void main() {
         // rtc_getdate(&date,&day,&month,&year);
       }
 
-      if (eep_baocao) {
+      if (eep_baocao && !gps_module_atgm) {
         baocaosms(CHINH, "\rbao cao dau gio");
       }
       da_gui_bao_cao = 1;
@@ -749,12 +838,12 @@ void main() {
       AmplyRelay = 0;
     }
 
-    if (co_tin_nhan_moi) {
+    if (co_tin_nhan_moi && !gps_module_atgm) {
       co_tin_nhan_moi = 0;
       gsm_sendandcheck("AT\r", 15, 1, "CO TIN NHAN MOI ");
       send_gsm_cmd("AT+CMGL=\"ALL\"\r");
     }
-    if (goi_dien_thoai) {
+    if (goi_dien_thoai && !gps_module_atgm) {
       goi_dien_thoai = 0;
       gsm_quay_so(phone_chinh);
     }
@@ -767,7 +856,7 @@ void main() {
         // gsm_laygio_gps();
         gsm_thietlapngaygiothuc();
         hour12 = hour % 12;
-        if (gsm_thietlapnhantin()) {
+        if (gsm_thietlapnhantin() && !gps_module_atgm) {
           baocaosms(CHINH, "\rgsm reset thanh cong");
         }
       }
@@ -795,17 +884,29 @@ void main() {
                      hour, minute, second, flip_pulse);
           LCD_guigio(0xc0, " ", gio[3], phut[3], 251, 0);
         case 3:
-          LCD_guigio(0x80, " ", gio[0], phut[0], 251, 0);
-          LCD_guigio(0x85, " ", gio[1], phut[1], 251, 0);
-          LCD_guigio(0x8a, " ", gio[2], phut[2], 251, 0);
-          LCD_guidulieu(' ');
+          LCD_guigio(0x80, "  ", gio[0], phut[0], 254, flip_pulse);
+          LCD_guigio(0x87, "  ", gio[1], phut[1], 254, flip_pulse);
+          LCD_guigio(0xc0, "  ", gio[2], phut[2], 254, 0);
+          LCD_guilenh(0x8E);
+          LCD_guichuoi(" ");
+          break;
         }
-        if (so_motor != 4) {
-          LCD_guigio(0xc0,
-                     GPS_time ? "  GPS  "
-                              : ((eep_motor & 16) ? "   DS  " : " ASIA  "),
-                     hour, minute, second, flip_pulse);
+
+        // + button error review in GPS mode
+        if (!phim_cong_doi && phim_cong_nhan &&
+            last_error_type) {
+          phim_cong_nhan = 0;
+          if (phim_back_nhan) {
+            phim_back_nhan = 0;
+            display_error();
+          }
         }
+      }
+      if (so_motor != 4) {
+        LCD_guigio(0xc0,
+                   GPS_time ? "  GPS  "
+                            : ((eep_motor & 16) ? "   DS  " : " ASIA  "),
+                   hour, minute, second, flip_pulse);
       }
       if (!phim_mode_doi && !cam_vao) {
         phim_mode_nhan = 0;
@@ -820,7 +921,7 @@ void main() {
         mp3_status = mp3_IDLE;
         if (phim_back_nhan)
           phim_back_nhan = 0;
-        else {
+        else if (!gps_module_atgm) {
           baocaosms(CHINH, "\rchinh gio bang tay");
           if (bat_phone_phu)
             baocaosms(PHU, "\r*chinh gio bang tay*");
