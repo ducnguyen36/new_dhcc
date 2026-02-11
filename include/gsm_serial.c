@@ -30,7 +30,11 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display) {
       if (!retry--)
         break;
       connect_time_out = connect = delay;
-      if (*(cmd + 2) == '+' && *(cmd + 7) != '?' && *(cmd + 8) != '?')
+      // A/ command is deprecated in a7680c, use send_gsm_cmd(cmd) instead
+      if(*(cmd + 2) == 'I' && *(cmd + 3) == 'P' && *(cmd + 4) =='R')
+        send_gsm_cmd(cmd);
+      else if (*(cmd + 2) == '+' && *(cmd + 7) != '?' && *(cmd + 8) != '?' &&
+          !gsm_module_a7680c)
         send_gsm_cmd("A/\r");
       else
         send_gsm_cmd(cmd);
@@ -72,6 +76,8 @@ __bit kiemtrataikhoan() {
 
 __bit kiemtrasodienthoai() {
   // lenh_sms[0] = 0;
+  //return immediately if a7680c
+  if(gsm_module_a7680c) return 1;
   have_cusd = 0;
   gsm_serial_cmd = SDT;
   switch (nha_mang) {
@@ -186,14 +192,14 @@ void send_gio_thuc(__bit chinh) {
   if (chinh) {
     send_gsm_cmd(" GPS=");
     send_gsm_byte((GPS_time ? '1' : '0') + eep_gpson);
+    send_gsm_cmd(" DH=");
+    send_gsm_byte(motor_dung ? '0' : '1');
   }
 }
 
 void send_thong_so(__bit chinh) {
   u8 dien_ap = dien_ap_nguon * 28 / 256;
   if (chinh) {
-    send_gsm_cmd(" DH=");
-    send_gsm_byte(motor_dung ? '0' : '1');
     send_gsm_cmd(" BC=");
     send_gsm_byte(eep_baocao + '0');
     send_gsm_cmd(" XG=");
@@ -230,6 +236,44 @@ void send_thong_so(__bit chinh) {
   send_gsm_cmd(eep_phonephu);
 }
 
+void baocaosmsdaydu(__bit chinh, u8 *noidung) {
+  if (!sms_on)
+    return;
+  gsm_sendandcheck("AT\r", 15, 1, "BAT DAU BAO CAO ");
+  kiemtratinhieu();
+  // IMPORTANT: BO KIEM TRA TAI KHOAN TAM THOI
+  //  if(*(noidung+1)!='*' && sms_on == 1) kiemtrataikhoan();
+  //  else lenh_sms[0]=0;
+  lenh_sms[0] = 0;
+  if (!send_sms(chinh))
+    return;
+
+  if (sms_on > 2) {
+    send_thong_so_rut_gon(chinh);
+  } else {
+    // send_gsm_cmd(ver);
+    send_gsm_cmd((const char*)&(ver+11));
+
+    send_gio_kim();
+    send_gio_thuc(chinh);
+    send_thong_so(chinh);
+
+    if (*(noidung + 1) != '*' && lenh_sms[0]) {
+      send_gsm_cmd("\rTK Chinh=");
+      send_gsm_cmd(lenh_sms);
+      if (chinh && !lenh_sms[4])
+        send_gsm_cmd("\rTai khoan con duoi 10000");
+      lenh_sms[1] = lenh_sms[2] = lenh_sms[3] = lenh_sms[4] = 0;
+    }
+    send_gsm_cmd(noidung);
+  }
+
+  if (*(noidung + 1) == '*')
+    send_gsm_cmd("\032");
+  else
+    gsm_sendandcheck("\032", 50, 1, "DANG GUI BAO CAO");
+}
+
 void baocaosms(__bit chinh, u8 *noidung) {
   if (!sms_on)
     return;
@@ -245,11 +289,12 @@ void baocaosms(__bit chinh, u8 *noidung) {
   if (sms_on > 2) {
     send_thong_so_rut_gon(chinh);
   } else {
-    send_gsm_cmd(ver);
+    // send_gsm_cmd(ver);
+    send_gsm_cmd((const char*)&(ver+11));
 
     send_gio_kim();
     send_gio_thuc(chinh);
-    send_thong_so(chinh);
+    // send_thong_so(chinh);
 
     if (*(noidung + 1) != '*' && lenh_sms[0]) {
       send_gsm_cmd("\rTK Chinh=");
@@ -356,13 +401,48 @@ __bit gsm_thietlapsim800() {
   if (sim_test_sec == 61 && !sms_on)
     return 0;
   // if(!sms_on && !eep_gpson) return 0;
+  //change baudrate
+  gsm_sendandcheck("AT+IPREX=38400\r", 5, 1, " BAUDRATE 38400 ");
+  delay_ms(1000);
   if (gsm_sendandcheck("AT\r", 15, 1, "CALLIBRATING GPS")) {
     clear_sms_buffer(0);
     sms_index = 0;
+    gsm_serial_cmd = CGMM;
+    if (gsm_sendandcheck("AT+CGMM\r", 15, 1, "  SENDING CGMM  ")) {
+      gsm_module_a7680c = lenh_sms[10] == 'A' ? 1 : 0;
+      // display LCD gsm module name
+      LCD_guilenh(0x80);
+      
+      LCD_guidulieu(lenh_sms[10]);
+      
+      // if a7680c display A7680C else display SIM800C
+      if (gsm_module_a7680c) {
+        LCD_guichuoi("GSM: A7680C");
+      } else {
+        LCD_guichuoi("GSM: SIM800C");
+      }
+      // delay to see the module name
+      delay_ms(2000);
+    }
+    clear_sms_buffer(0);
+    sms_index = 0;
     gsm_serial_cmd = CSPN;
-    // if (gsm_sendandcheck("AT+CSPN?\r", 15, 1, " TEN TONG DAI  ")) {
-    //   nha_mang = lenh_sms[4];
-    // }
+    if (gsm_sendandcheck("AT+CSPN?\r", 15, 1, " TEN TONG DAI  ")) {
+      nha_mang = lenh_sms[4];
+      // display LCD carrier name
+      LCD_guilenh(0x80);
+      if (nha_mang == VIETTEL) {
+        LCD_guichuoi("VIETTEL");
+      } else if (nha_mang == VINAPHONE) {
+        LCD_guichuoi("VINAPHONE");
+      } else if (nha_mang == MOBIFONE) {
+        LCD_guichuoi("MOBIFONE");
+      } else if (nha_mang == VIETNAM) {
+        LCD_guichuoi("VIETNAM");
+      }
+      // delay to see the carrier name
+      delay_ms(2000);
+    }
     return 1;
   }
   return 0;
@@ -372,7 +452,9 @@ void gsm_thietlapngaygiothuc() {
   __bit GPS_time_temp = 0;
   if (sim_test_sec == 61)
     return;
-  if (gsm_sendandcheck("AT+CLTS=1\r", 15, 1, "BAT CHE DO GPS ")) {
+  // if a7680c no need to check at+clts=1
+  if (gsm_module_a7680c ||
+      gsm_sendandcheck("AT+CLTS=1\r", 15, 1, "BAT CHE DO GPS ")) {
     if (gsm_sendandcheck("AT+COPS=2\r", 15, 1, " KHOI DONG GPS ")) {
       gsm_serial_cmd = COPS;
       if (gsm_sendandcheck("AT+COPS=0\r", 10, 60, "  KET NOI GPS  ")) {
@@ -401,11 +483,20 @@ void gsm_thietlapngaygiothuc() {
 }
 
 __bit gsm_thietlapgoidien() {
-
+  // if not sim800l or a7680c but without viettel provider, no need to setup
+  // phone call
+  if (gsm_module_a7680c && nha_mang != VIETTEL) {
+    // display LCD message
+    LCD_guilenh(0x80);
+    LCD_guichuoi("KHONG HO TRO");
+    LCD_guilenh(0xC0);
+    LCD_guichuoi("GOI DI");
+    delay_ms(2000);
+    return 0;
+  }
   if (gsm_sendandcheck("AT+CLIP=1\r", 15, 1, "  SENDING CLIP  ")) {
     clear_sms_buffer(0);
     sms_index = 0;
-    gsm_serial_cmd = CALR;
   }
   return 1;
 }
@@ -415,8 +506,7 @@ __bit gsm_thietlapnhantin() {
     return 0;
   if (gsm_sendandcheck("AT+CMGF=1\r", 15, 1, "  SENDING CMGF  ")) {
     if (gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1, "  SENDING CNMI  ")) {
-      if (gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1,
-                           "  THIET LAP TN  ")) {
+      if (gsm_sendandcheck("AT+CMGD=1,4\r", 15, 1, "  THIET LAP TN  ")) {
         kiemtratinhieu();
         return 1;
       }
@@ -432,8 +522,7 @@ __bit gsm_thietlapnhantin1() {
     return 0;
   if (gsm_sendandcheck("AT+CMGF=1\r", 15, 2, "  SENDING CMGF  ")) {
     if (gsm_sendandcheck("AT+CNMI=1,1,0,0,1\r", 15, 1, "  SENDING CNMI  ")) {
-      if (gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 20, 3,
-                           "  SENDING CMGDA  ")) {
+      if (gsm_sendandcheck("AT+CMGD=1,4\r", 20, 3, "  SENDING CMGDA  ")) {
         return 1;
       }
     }
@@ -511,14 +600,26 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
         sms_index = gsm_serial_cmd = NORMAL;
       break;
     case COPS:
-      if (SBUF == 'T' &&
-          gsm_receive_buf[(gsm_receive_pointer + 12) % 13] == 'S' &&
-          gsm_receive_buf[(gsm_receive_pointer + 11) % 13] == 'D')
+      // if a7680C the check  character wll be G E V
+      // if sim800l the check  character wll be D S T
+
+      if ((gsm_module_a7680c && SBUF == 'V' &&
+           gsm_receive_buf[(gsm_receive_pointer + 12) % 13] == 'E' &&
+           gsm_receive_buf[(gsm_receive_pointer + 11) % 13] == 'G') ||
+          (SBUF == 'T' &&
+           gsm_receive_buf[(gsm_receive_pointer + 12) % 13] == 'S' &&
+           gsm_receive_buf[(gsm_receive_pointer + 11) % 13] == 'D'))
         gui_lenh_thanh_cong = 1;
       else if (SBUF == 'R' &&
                gsm_receive_buf[(gsm_receive_pointer + 12) % 13] == 'O' &&
                gsm_receive_buf[(gsm_receive_pointer + 11) % 13] == 'R')
         connect = 0;
+      break;
+    case CGMM:
+      lenh_sms[sms_index++] = SBUF;
+      if (SBUF == 'K' &&
+          gsm_receive_buf[(gsm_receive_pointer + 12) % 13] == 'O')
+        sms_index = gsm_serial_cmd = 0;
       break;
     case CSPN:
       lenh_sms[sms_index++] = SBUF;
@@ -602,7 +703,7 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
         have_not = 0;
         if (sms_index) {
           sms_index = 0;
-          send_gsm_cmd("AT+CMGDA=\"DEL ALL\"\r");
+          send_gsm_cmd("AT+CMGD=1,4\r");
         }
 
         // GPS Module Detection: Check for $GNRMC sentence

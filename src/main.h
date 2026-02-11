@@ -5,7 +5,6 @@
 #include "lcd.h"
 #include "mp3.h"
 
-
 // Read Voltage
 u8 __idata dien_ap_nguon;
 __bit dien_ap_thap;
@@ -58,14 +57,14 @@ u8 __xdata message_index;
 u8 __xdata eeprom_buf[SECTOR1_LENGTH];
 
 // TIME
-u8 __data second;
-u8 __data minute;
-u8 __data hour;
-u8 __data hour12;
+u8 __xdata second;
+u8 __xdata minute;
+u8 __xdata hour;
+u8 __xdata hour12;
 u8 __xdata date, day, month, year;
 
-u8 __data gio[4];
-u8 __data phut[4];
+u8 __xdata gio[4];
+u8 __xdata phut[4];
 
 u8 __xdata canhkim, may_canh_kim, delay_ve_kim;
 u16 __xdata PCA_Timer0;
@@ -77,9 +76,9 @@ u8 __xdata thoi_gian_doi_doc_cam[4];
 u8 __xdata thoi_gian_doi_cam_chuan;
 u8 __code motor_step[] = {128, 144, 16, 48, 32, 96, 64, 192};
 u8 __xdata toc_do_motor_step;
-u8 __data step_index;
-u8 __data motor_index;
-u8 __data motor_index2;
+u8 __xdata step_index;
+u8 __xdata motor_index;
+u8 __xdata motor_index2;
 __bit motorDir, motorDir1, motorDir2;
 __bit trang_thai_cam, trang_thai_cam2;
 __bit cam_vao, cam_vao2;
@@ -88,6 +87,7 @@ __bit cam_ra, cam_ra2;
 
 __bit GPS_time;
 __bit gps_module_atgm;         // 1 = ATGM336H GPS detected, 0 = SIM module
+__bit gsm_module_a7680c;       // 1 = A7680C detected, 0 = SIM800L module
 __bit gps_valid_fix;           // 1 = Valid GPS fix (A), 0 = Invalid (V)
 __bit gps_sync_allowed;        // 1 = Allow GPS to sync RTC, 0 = block sync
 u8 __xdata gnrmc_field_index;  // Current field being parsed in GNRMC

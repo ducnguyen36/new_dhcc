@@ -173,20 +173,12 @@ void xu_ly_tin_nhan(){
                     IAP_docxoasector1();
                     eeprom_buf[BAOCAO_EEPROM] = 0;
                     IAP_ghisector1();
-                }else if(lenh_sms[2] && lenh_sms[3]){
-                    if(phone_phu_so_sanh_that_bai)
-                        baocaosms(CHINH,"\rlenh khong hop le");
-                    else{
-                        baocaosms(CHINH,"\rlenh khong hop le\rPhone phu gui lenh den");
-                        baocaosms(PHU,"\rlenh khong hop le");
-                    }
-                    break;
                 }
                 if(phone_phu_so_sanh_that_bai)
-                    baocaosms(CHINH,"\rbao cao thanh cong");
+                    baocaosmsdaydu(CHINH,"");
                 else{
-                    baocaosms(CHINH,"\rbao cao thanh cong\rPhone phu gui lenh");
-                    baocaosms(PHU,"\rbao cao thanh cong");
+                    baocaosmsdaydu(CHINH," phu");
+                    baocaosmsdaydu(PHU,"");
                 }
                 break;
             case 's':

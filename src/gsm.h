@@ -36,6 +36,7 @@ extern u8 __xdata gsm_serial_cmd;
 #define CSQ 14
 #define GNRMC_DETECT 15
 #define GNRMC_PARSE 16
+#define CGMM 17
 
 #define VIETTEL 't'
 #define MOBIFONE 'f'

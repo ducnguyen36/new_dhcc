@@ -268,10 +268,10 @@ void main() {
 
   // Wait 3 seconds for serial data to detect GPS module
   {
-    u8 detect_countdown = 40; // 30 * 100ms = 3 seconds
+    u8 detect_countdown = 100; // 30 * 100ms = 3 seconds
     while (detect_countdown-- && !gps_module_atgm) {
       //   send_gsm_byte(detect_countdown / 10 + '0');
-      delay_ms(1000);
+      delay_ms(100);
       WATCHDOG;
     }
   }
@@ -589,11 +589,11 @@ void main() {
     // gsm_thietlapnhantin();
     if (gsm_thietlapnhantin()) { // thiet lap thong so nhan tin
       if (!eep_norreset)
-        baocaosms(CHINH, "\rkhoi dong phan mem san sang");
+        baocaosmsdaydu(CHINH, "\rsoft reset");
       else {
-        baocaosms(CHINH, "\rkhoi dong san sang");
+        baocaosmsdaydu(CHINH, "\rready");
         if (bat_phone_phu)
-          baocaosms(PHU, "\rkhoi dong san sang");
+          baocaosmsdaydu(PHU, "\rready");
       }
       kiemtrasodienthoai();
     }
@@ -657,10 +657,10 @@ void main() {
         baocaosms(CHINH, "\rdien ap thap");
         if (bat_phone_phu)
           baocaosms(PHU, "\rdien ap thap");
-      } else {
+      } 
         last_error_type = 1;
         last_error_subtype = 0;
-      }
+      
       display_error();
       bao_cao_dien_ap_thap = 1;
     }
@@ -669,10 +669,10 @@ void main() {
         baocaosms(CHINH, "\rdien ap khoi phuc");
         if (bat_phone_phu)
           baocaosms(PHU, "\rdien ap khoi phuc");
-      } else {
+      } 
         last_error_type = 1;
         last_error_subtype = 1;
-      }
+      
       display_error();
       bao_cao_dien_ap_thap = 0;
     }
@@ -687,9 +687,8 @@ void main() {
         baocaosms(CHINH, "\rloi doc cam 1");
         if (bat_phone_phu)
           baocaosms(PHU, "\rloi doc cam 1");
-      } else {
-        last_error_type = 2;
-      }
+      } 
+      last_error_type = 2;
       display_error();
     }
     if (so_motor > 1 && !thoi_gian_doi_doc_cam[1] && !loi_cam_motor2) {
@@ -698,9 +697,8 @@ void main() {
         baocaosms(CHINH, "\rloi doc cam 2");
         if (bat_phone_phu)
           baocaosms(PHU, "\rloi doc cam 2");
-      } else {
-        last_error_type = 3;
-      }
+      } 
+      last_error_type = 3;
       display_error();
     }
     if (so_motor > 2 && !thoi_gian_doi_doc_cam[2] && !loi_cam_motor3) {
@@ -709,9 +707,8 @@ void main() {
         baocaosms(CHINH, "\rloi doc cam 3");
         if (bat_phone_phu)
           baocaosms(PHU, "\rloi doc cam 3");
-      } else {
-        last_error_type = 4;
-      }
+      } 
+      last_error_type = 4;
       display_error();
     }
     if (so_motor == 4 && !thoi_gian_doi_doc_cam[3] && !loi_cam_motor4) {
@@ -720,9 +717,8 @@ void main() {
         baocaosms(CHINH, "\rloi doc cam 4");
         if (bat_phone_phu)
           baocaosms(PHU, "\rloi doc cam 4");
-      } else {
-        last_error_type = 5;
-      }
+      } 
+      last_error_type = 5;
       display_error();
     }
     if (giay_out) {
@@ -863,7 +859,7 @@ void main() {
       if (sms_dang_xu_ly) {
         /*xu ly tin nhan*/
         xu_ly_tin_nhan();
-        gsm_sendandcheck("AT+CMGDA=\"DEL ALL\"\r", 15, 1, "  SENDING CMGDA  ");
+        gsm_sendandcheck("AT+CMGD=1,4\r", 15, 1, "  SENDING CMGDA  ");
         sms_dang_xu_ly = 0;
       } else {
         switch (so_motor) {
