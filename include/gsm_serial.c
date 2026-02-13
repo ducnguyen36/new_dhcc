@@ -31,10 +31,10 @@ __bit gsm_sendandcheck(u8 *cmd, u8 retry, u8 delay, u8 *display) {
         break;
       connect_time_out = connect = delay;
       // A/ command is deprecated in a7680c, use send_gsm_cmd(cmd) instead
-      if(*(cmd + 2) == 'I' && *(cmd + 3) == 'P' && *(cmd + 4) =='R')
+      if (*(cmd + 2) == 'I' && *(cmd + 3) == 'P' && *(cmd + 4) == 'R')
         send_gsm_cmd(cmd);
       else if (*(cmd + 2) == '+' && *(cmd + 7) != '?' && *(cmd + 8) != '?' &&
-          !gsm_module_a7680c)
+               !gsm_module_a7680c)
         send_gsm_cmd("A/\r");
       else
         send_gsm_cmd(cmd);
@@ -76,8 +76,9 @@ __bit kiemtrataikhoan() {
 
 __bit kiemtrasodienthoai() {
   // lenh_sms[0] = 0;
-  //return immediately if a7680c
-  if(gsm_module_a7680c) return 1;
+  // return immediately if a7680c
+  if (gsm_module_a7680c)
+    return 1;
   have_cusd = 0;
   gsm_serial_cmd = SDT;
   switch (nha_mang) {
@@ -252,7 +253,7 @@ void baocaosmsdaydu(__bit chinh, u8 *noidung) {
     send_thong_so_rut_gon(chinh);
   } else {
     // send_gsm_cmd(ver);
-    send_gsm_cmd((const char*)&(ver+11));
+    send_gsm_cmd((const char *)&(ver + 11));
 
     send_gio_kim();
     send_gio_thuc(chinh);
@@ -290,7 +291,7 @@ void baocaosms(__bit chinh, u8 *noidung) {
     send_thong_so_rut_gon(chinh);
   } else {
     // send_gsm_cmd(ver);
-    send_gsm_cmd((const char*)&(ver+11));
+    send_gsm_cmd((const char *)&(ver + 11));
 
     send_gio_kim();
     send_gio_thuc(chinh);
@@ -400,10 +401,7 @@ __bit gps_configure_atgm336h() {
 __bit gsm_thietlapsim800() {
   if (sim_test_sec == 61 && !sms_on)
     return 0;
-  // if(!sms_on && !eep_gpson) return 0;
-  //change baudrate
-  gsm_sendandcheck("AT+IPREX=38400\r", 5, 1, " BAUDRATE 38400 ");
-  delay_ms(1000);
+  
   if (gsm_sendandcheck("AT\r", 15, 1, "CALLIBRATING GPS")) {
     clear_sms_buffer(0);
     sms_index = 0;
@@ -412,9 +410,9 @@ __bit gsm_thietlapsim800() {
       gsm_module_a7680c = lenh_sms[10] == 'A' ? 1 : 0;
       // display LCD gsm module name
       LCD_guilenh(0x80);
-      
+
       LCD_guidulieu(lenh_sms[10]);
-      
+
       // if a7680c display A7680C else display SIM800C
       if (gsm_module_a7680c) {
         LCD_guichuoi("GSM: A7680C");
@@ -452,12 +450,14 @@ void gsm_thietlapngaygiothuc() {
   __bit GPS_time_temp = 0;
   if (sim_test_sec == 61)
     return;
-  // if a7680c no need to check at+clts=1
-  if (gsm_module_a7680c ||
-      gsm_sendandcheck("AT+CLTS=1\r", 15, 1, "BAT CHE DO GPS ")) {
+  // if a7680c using AT+CTZU=1 else using AT+CLTS = 1
+  char* time_cmd = gsm_module_a7680c ? "AT+CTZU=1\r" : "AT+CLTS=1\r";
+
+  if (gsm_sendandcheck(time_cmd, 25, 2, "BAT CHE DO GPS ")) {
     if (gsm_sendandcheck("AT+COPS=2\r", 15, 1, " KHOI DONG GPS ")) {
       gsm_serial_cmd = COPS;
       if (gsm_sendandcheck("AT+COPS=0\r", 10, 60, "  KET NOI GPS  ")) {
+        delay_ms(1000);
         clear_sms_buffer(0);
         sms_index = 0;
         gsm_serial_cmd = CLK;
@@ -944,7 +944,11 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
         gnrmc_char_index = 0;
       } else if (SBUF == '\r' || SBUF == '\n' || SBUF == '*') {
         // End of sentence
-        if (gnrmc_field_index >= 8 && gps_valid_fix) {
+        // Check if time and date fields are populated (not empty)
+        // This allows sync even without location fix (V status)
+        if (gnrmc_field_index >= 8 && gnrmc_time_buf[0] >= '0' &&
+            gnrmc_time_buf[0] <= '9' && gnrmc_date_buf[0] >= '0' &&
+            gnrmc_date_buf[0] <= '9') {
           // Extract time/date from GNRMC
           hour = (gnrmc_time_buf[0] - '0') * 10 + (gnrmc_time_buf[1] - '0');
           minute = (gnrmc_time_buf[2] - '0') * 10 + (gnrmc_time_buf[3] - '0');
