@@ -18,14 +18,21 @@ void kiem_tra_nhac(){
                 mp3_hour = hour;
                 mp3_minute = minute;
                 // mp3_date = date;
-                if(eep_mp3==2)mp3_play(10, mp3_hour,mp3_minute);
-                else if(!(mp3_minute%5))mp3_play(date, mp3_hour,mp3_minute);
-                mp3_doi_start = 150;
-                mp3_status = mp3_START;
+                // Che do phat theo xung (eep_mp3 bit3 = 1): chi phat khi co doi phat nhac.
+                // Che do cu (bit3 = 0): luon phat theo gio nhu truoc, giu nguyen.
+                if(!(eep_mp3 & 8) || cho_phat_nhac){
+                    if(!(eep_mp3 & 4))mp3_play(10, mp3_hour,mp3_minute);
+                    else if(!(mp3_minute%5))mp3_play(date, mp3_hour,mp3_minute);
+                    mp3_doi_start = 150;
+                    mp3_status = mp3_START;
+                }
             }
             break;
         case mp3_START:
-            if(mp3_playing) mp3_status = AmplyRelay = mp3_END;
+            if(mp3_playing){
+                mp3_status = AmplyRelay = mp3_END;
+                cho_phat_nhac = 0; // da phat duoc 1 bai -> tat co, cho xung ke tiep
+            }
             else if(mp3_doi_start--) break;
         case mp3_END:
             if(!mp3_playing) AmplyRelay = mp3_status = mp3_IDLE;

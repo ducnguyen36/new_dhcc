@@ -138,7 +138,7 @@ void send_thong_so_rut_gon(__bit chinh) {
   send_gsm_byte(xung_giay_check ? '1' : '0');
   send_gsm_byte(DenRelay ? '1' : '0');
   if ((eep_mp3 % 4) || chinh) {
-    send_gsm_byte(eep_mp3 + (mp3_playing ? '0' : 47));
+    send_gsm_byte((eep_mp3 & 7) + (mp3_playing ? '0' : 47));
   }
   send_gsm_byte(' ');
   send_gsm_byte(dien_ap / 10 + '0');
@@ -221,7 +221,7 @@ void send_thong_so(__bit chinh) {
   send_gsm_byte(dien_ap % 10 + '0');
   if ((eep_mp3 % 4) || chinh) {
     send_gsm_cmd(" MP3=");
-    send_gsm_byte(eep_mp3 + (mp3_playing ? '0' : 47));
+    send_gsm_byte((eep_mp3 & 7) + (mp3_playing ? '0' : 47));
   }
   if (!chinh)
     return;

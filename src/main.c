@@ -116,6 +116,9 @@ void main()
   motor_index = motor_index2 = 5;
   phone[0] = '0';
 
+  cho_phat_nhac = 0;
+  p10_cu = P10; // trang thai ban dau chan xung P1.0
+
   gsm_delay_reset = 10;
   phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
   mode = SELECT;
@@ -192,8 +195,8 @@ void main()
   if (eeprom_buf[LOITHESIM_EEPROM] > 24)
     eeprom_buf[LOITHESIM_EEPROM] = 0;
   if (mp3_playing)
-    eeprom_buf[MP3_EEPROM] &= 4;
-  else if (eeprom_buf[MP3_EEPROM] > 6)
+    eeprom_buf[MP3_EEPROM] &= 0x0C; // giu bit2 (date) va bit3 (che do xung)
+  else if (eeprom_buf[MP3_EEPROM] > 14)
     eeprom_buf[MP3_EEPROM] = 2;
   else if (!(eeprom_buf[MP3_EEPROM] & 3))
     eeprom_buf[MP3_EEPROM] += 2;
@@ -369,6 +372,9 @@ void main()
                                             : (((giotemp & 16) >> 4) + '0'));
           LCD_guichuoi(" M:");
           LCD_guidulieu((mode == 3 && chop) ? '_' : ((mp3temp & 4) >> 2) + '0');
+          LCD_guichuoi("\200XUNG P1.0:");
+          LCD_guidulieu((mode == 4 && chop) ? '_' : ((mp3temp & 8) >> 3) + '0');
+          LCD_guichuoi("     ");
         }
         if (phim_mode_nhan)
         {
@@ -386,6 +392,9 @@ void main()
             sub_mode = (mp3temp & 4) >> 2;
             break;
           case 4:
+            sub_mode = (mp3temp & 8) >> 3;
+            break;
+          case 5:
             IAP_docxoasector1();
             eeprom_buf[MOTOR_EEPROM] &= 0xef;
             eeprom_buf[DEBUG_EEPROM] = giotemp;
@@ -411,6 +420,12 @@ void main()
             break;
           case 2:
             sub_mode = (giotemp & 16) >> 4;
+            break;
+          case 3:
+            sub_mode = (mp3temp & 4) >> 2;
+            break;
+          case 4:
+            sub_mode = (mp3temp & 8) >> 3;
             break;
           }
         }
@@ -438,7 +453,12 @@ void main()
           case 3:
             if (sub_mode > 1)
               sub_mode = 0;
-            mp3temp = mp3temp & 0x03 | (sub_mode << 2);
+            mp3temp = mp3temp & 0x0b | (sub_mode << 2); // giu bit3 (xung)
+            break;
+          case 4:
+            if (sub_mode > 1)
+              sub_mode = 0;
+            mp3temp = mp3temp & 0xf7 | (sub_mode << 3); // bit3 = che do xung
             break;
           }
         }
@@ -671,6 +691,11 @@ void main()
   // LCD_guichuoi(mode_select[mode]);
   while (1)
   {
+    // Doc xung kich tu bo dieu khien ngoai tren chan P1.0 (suon len 0->1).
+    // Khi co xung va dang bat che do phat theo xung -> bat co doi phat nhac.
+    if (P10 && !p10_cu && (eep_mp3 & 8))
+      cho_phat_nhac = 1;
+    p10_cu = P10;
 
     if (so_motor == 4 && (eep_phut4 != phut[3] || eep_gio4 != gio[3]))
       luu_gio_kim();
@@ -1403,7 +1428,7 @@ void main()
             phuttemp += 10;
           break;
         case MP3PHUTDVI:
-          phuttemp = phuttemp + (eep_mp3 > 3 ? 5 : 1);
+          phuttemp = phuttemp + (eep_mp3 & 4 ? 5 : 1);
           if (!(phuttemp % 10))
             phuttemp -= 10;
           break;
@@ -1485,7 +1510,7 @@ void main()
         if (++sub_mode > 12)
         {
           sub_mode = 0;
-          mp3_play(eep_mp3 > 3 ? thutemp : 10, giotemp, phuttemp);
+          mp3_play(eep_mp3 & 4 ? thutemp : 10, giotemp, phuttemp);
           delay_ms(100);
           if (eep_mp3 % 4 == 2)
             AmplyRelay = mp3_playing;
@@ -1498,7 +1523,7 @@ void main()
           // LCD_guigio(0xc0,mp3_playing?"  OK   ":"  NO
           // ",giotemp,phuttemp,thutemp*10,flip_pulse); LCD_noblink();
         }
-        else if (song_name && sub_mode > 2 && eep_mp3 > 3)
+        else if (song_name && sub_mode > 2 && (eep_mp3 & 4))
         {
           sub_mode = 0;
           mp3_play(0, song_name / 12, (song_name - song_name / 12 * 12) * 5);

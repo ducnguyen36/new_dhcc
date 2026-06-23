@@ -310,7 +310,7 @@ void xu_ly_tin_nhan(){
                                 u8 nam = (lenh_sms[13]-'0')*10+lenh_sms[14]-'0';
                                 u16 check = (23*((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')/9 + ((lenh_sms[9]-'0')*10+lenh_sms[10]-'0') + 
                                             (((lenh_sms[11]-'0')*10+lenh_sms[12]-'0')>2?!(nam%4):2) + nam + (nam+3)/4 + 1);
-                                mp3_play(eep_mp3>3?check%7+1:10,(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
+                                mp3_play(eep_mp3&4?check%7+1:10,(lenh_sms[4]-'0')*10+lenh_sms[5]-'0',(lenh_sms[6]-'0')*10+lenh_sms[7]-'0');
                                 delay_ms(1500);
                                 if(mp3_playing) baocaosms(CHINH,"\rTest mp3 thanh cong");
                                 else baocaosms(CHINH,"\rkhong dung gio phat hoac mp3 loi");
