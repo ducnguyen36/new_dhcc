@@ -450,6 +450,8 @@ void gsm_thietlapngaygiothuc() {
   __bit GPS_time_temp = 0;
   if (sim_test_sec == 61)
     return;
+  if (eep_debug & 0x80)
+    return; // Che do chinh gio bang xung (cam 1): khong lay gio tu GPS/GSM
   // if a7680c using AT+CTZU=1 else using AT+CLTS = 1
   char* time_cmd = gsm_module_a7680c ? "AT+CTZU=1\r" : "AT+CLTS=1\r";
 
@@ -946,9 +948,9 @@ void gsm_serial_interrupt() __interrupt(gsm_SERIAL_INT) __using(SERIAL_MEM) {
         // End of sentence
         // Check if time and date fields are populated (not empty)
         // This allows sync even without location fix (V status)
-        if (gnrmc_field_index >= 8 && gnrmc_time_buf[0] >= '0' &&
-            gnrmc_time_buf[0] <= '9' && gnrmc_date_buf[0] >= '0' &&
-            gnrmc_date_buf[0] <= '9') {
+        if (!(eep_debug & 0x80) && gnrmc_field_index >= 8 &&
+            gnrmc_time_buf[0] >= '0' && gnrmc_time_buf[0] <= '9' &&
+            gnrmc_date_buf[0] >= '0' && gnrmc_date_buf[0] <= '9') {
           // Extract time/date from GNRMC
           hour = (gnrmc_time_buf[0] - '0') * 10 + (gnrmc_time_buf[1] - '0');
           minute = (gnrmc_time_buf[2] - '0') * 10 + (gnrmc_time_buf[3] - '0');
