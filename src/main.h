@@ -15,8 +15,6 @@ u8 __idata mp3_date;
 u8 __idata mp3_hour;
 u8 __idata mp3_minute;
 u8 __idata mp3_doi_start;
-__bit cho_phat_nhac; // co doi phat nhac khi nhan xung kich tren P1.0
-__bit p10_cu;        // trang thai truoc cua chan P1.0 de bat suon len 0->1
 
 // GSM
 #define PHONE_LENGTH 10
