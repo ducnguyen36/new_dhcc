@@ -116,6 +116,9 @@ void main()
   motor_index = motor_index2 = 5;
   phone[0] = '0';
 
+  xung_gio_nhan = 0;
+  xung_gio_cu = cam_che; // trang thai ban dau chan cam 1 (P36)
+
   gsm_delay_reset = 10;
   phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
   mode = SELECT;
@@ -369,6 +372,8 @@ void main()
                                             : (((giotemp & 16) >> 4) + '0'));
           LCD_guichuoi(" M:");
           LCD_guidulieu((mode == 3 && chop) ? '_' : ((mp3temp & 4) >> 2) + '0');
+          LCD_guichuoi("\200XUNG CHINH GIO:");
+          LCD_guidulieu((mode == 4 && chop) ? '_' : ((giotemp & 0x80) >> 7) + '0');
         }
         if (phim_mode_nhan)
         {
@@ -386,6 +391,9 @@ void main()
             sub_mode = (mp3temp & 4) >> 2;
             break;
           case 4:
+            sub_mode = (giotemp & 0x80) >> 7;
+            break;
+          case 5:
             IAP_docxoasector1();
             eeprom_buf[MOTOR_EEPROM] &= 0xef;
             eeprom_buf[DEBUG_EEPROM] = giotemp;
@@ -411,6 +419,12 @@ void main()
             break;
           case 2:
             sub_mode = (giotemp & 16) >> 4;
+            break;
+          case 3:
+            sub_mode = (mp3temp & 4) >> 2;
+            break;
+          case 4:
+            sub_mode = (giotemp & 0x80) >> 7;
             break;
           }
         }
@@ -439,6 +453,11 @@ void main()
             if (sub_mode > 1)
               sub_mode = 0;
             mp3temp = mp3temp & 0x03 | (sub_mode << 2);
+            break;
+          case 4:
+            if (sub_mode > 1)
+              sub_mode = 0;
+            giotemp = giotemp & 0x7f | (sub_mode << 7); // bit7 = che do chinh gio theo xung
             break;
           }
         }
@@ -671,6 +690,22 @@ void main()
   // LCD_guichuoi(mode_select[mode]);
   while (1)
   {
+    // Chinh gio theo xung kich tu bo dieu khien ngoai (chan cam 1 / P36).
+    // Lam tron gio DS3231 ve dau gio gan nhat: phut >= 30 -> len gio ke tiep,
+    // nguoc lai giu nguyen gio; phut va giay ve 00. Vd 5:55 -> 6:00, 6:07 -> 6:00.
+    if (xung_gio_nhan)
+    {
+      xung_gio_nhan = 0;
+      rtc_gettime(&hour, &minute, &second);
+      if (minute >= 30 && ++hour > 23)
+        hour = 0;
+      minute = second = 0;
+      rtc_settime(hour, minute, second);
+      hour12 = hour % 12;
+      GPS_time = 0;
+      mp3_hour = 24;
+      mp3_minute = 60;
+    }
 
     if (so_motor == 4 && (eep_phut4 != phut[3] || eep_gio4 != gio[3]))
       luu_gio_kim();

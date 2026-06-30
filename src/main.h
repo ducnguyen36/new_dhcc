@@ -84,6 +84,8 @@ __bit trang_thai_cam, trang_thai_cam2;
 __bit cam_vao, cam_vao2;
 __bit cam_vao_han, cam_vao_han2;
 __bit cam_ra, cam_ra2;
+__bit xung_gio_nhan; // suon len tren chan cam 1 (P36) -> yeu cau chinh gio DS3231 ve dau gio
+__bit xung_gio_cu;   // trang thai truoc cua chan cam 1 (P36) de bat suon len
 
 __bit GPS_time;
 __bit gps_module_atgm;         // 1 = ATGM336H GPS detected, 0 = SIM module
