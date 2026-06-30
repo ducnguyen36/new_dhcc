@@ -116,8 +116,13 @@ void main()
   motor_index = motor_index2 = 5;
   phone[0] = '0';
 
+<<<<<<< HEAD
   cho_phat_nhac = 0;
   p10_cu = P10; // trang thai ban dau chan xung P1.0
+=======
+  xung_gio_nhan = 0;
+  xung_gio_cu = cam_che; // trang thai ban dau chan cam 1 (P36)
+>>>>>>> a6471a03db86a64e4b266437d3ca812d1dd54d01
 
   gsm_delay_reset = 10;
   phim_mode_doi = phim_back_doi = phim_cong_doi = 2;
@@ -372,9 +377,14 @@ void main()
                                             : (((giotemp & 16) >> 4) + '0'));
           LCD_guichuoi(" M:");
           LCD_guidulieu((mode == 3 && chop) ? '_' : ((mp3temp & 4) >> 2) + '0');
+<<<<<<< HEAD
           LCD_guichuoi("\200XUNG P1.0:");
           LCD_guidulieu((mode == 4 && chop) ? '_' : ((mp3temp & 8) >> 3) + '0');
           LCD_guichuoi("     ");
+=======
+          LCD_guichuoi("\200XUNG CHINH GIO:");
+          LCD_guidulieu((mode == 4 && chop) ? '_' : ((giotemp & 0x80) >> 7) + '0');
+>>>>>>> a6471a03db86a64e4b266437d3ca812d1dd54d01
         }
         if (phim_mode_nhan)
         {
@@ -392,7 +402,11 @@ void main()
             sub_mode = (mp3temp & 4) >> 2;
             break;
           case 4:
+<<<<<<< HEAD
             sub_mode = (mp3temp & 8) >> 3;
+=======
+            sub_mode = (giotemp & 0x80) >> 7;
+>>>>>>> a6471a03db86a64e4b266437d3ca812d1dd54d01
             break;
           case 5:
             IAP_docxoasector1();
@@ -425,7 +439,11 @@ void main()
             sub_mode = (mp3temp & 4) >> 2;
             break;
           case 4:
+<<<<<<< HEAD
             sub_mode = (mp3temp & 8) >> 3;
+=======
+            sub_mode = (giotemp & 0x80) >> 7;
+>>>>>>> a6471a03db86a64e4b266437d3ca812d1dd54d01
             break;
           }
         }
@@ -459,6 +477,11 @@ void main()
             if (sub_mode > 1)
               sub_mode = 0;
             mp3temp = mp3temp & 0xf7 | (sub_mode << 3); // bit3 = che do xung
+            break;
+          case 4:
+            if (sub_mode > 1)
+              sub_mode = 0;
+            giotemp = giotemp & 0x7f | (sub_mode << 7); // bit7 = che do chinh gio theo xung
             break;
           }
         }
@@ -691,11 +714,30 @@ void main()
   // LCD_guichuoi(mode_select[mode]);
   while (1)
   {
+<<<<<<< HEAD
     // Doc xung kich tu bo dieu khien ngoai tren chan P1.0 (suon len 0->1).
     // Khi co xung va dang bat che do phat theo xung -> bat co doi phat nhac.
     if (P10 && !p10_cu && (eep_mp3 & 8))
       cho_phat_nhac = 1;
     p10_cu = P10;
+=======
+    // Chinh gio theo xung kich tu bo dieu khien ngoai (chan cam 1 / P36).
+    // Lam tron gio DS3231 ve dau gio gan nhat: phut >= 30 -> len gio ke tiep,
+    // nguoc lai giu nguyen gio; phut va giay ve 00. Vd 5:55 -> 6:00, 6:07 -> 6:00.
+    if (xung_gio_nhan)
+    {
+      xung_gio_nhan = 0;
+      rtc_gettime(&hour, &minute, &second);
+      if (minute >= 30 && ++hour > 23)
+        hour = 0;
+      minute = second = 0;
+      rtc_settime(hour, minute, second);
+      hour12 = hour % 12;
+      GPS_time = 0;
+      mp3_hour = 24;
+      mp3_minute = 60;
+    }
+>>>>>>> a6471a03db86a64e4b266437d3ca812d1dd54d01
 
     if (so_motor == 4 && (eep_phut4 != phut[3] || eep_gio4 != gio[3]))
       luu_gio_kim();
@@ -892,7 +934,7 @@ void main()
     if (!da_gui_bao_cao && minute > 12 && motor_index == 5 &&
         motor_index2 == 5 && (!(eep_mp3 % 4) || !mp3_playing))
     {
-      if (eep_gpson)
+      if (eep_gpson && !(eep_debug & 0x80))
       {
         // gsm_laygio_gps();
         if (gps_module_atgm)
@@ -1292,7 +1334,7 @@ void main()
       break;
     case GIOTHUC:
       LCD_blinkXY(DUOI, 7 + sub_mode + sub_mode / 2);
-      if (eep_gpson && !phim_mode_doi)
+      if (eep_gpson && !phim_mode_doi && !(eep_debug & 0x80))
       {
         sub_mode = mode;
         mode = SELECT;

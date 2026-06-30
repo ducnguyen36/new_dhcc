@@ -240,6 +240,12 @@ void	PCA_Handler (void) __interrupt (PCA_VECTOR) __using (MEM_DONG_HO){
 		phim_cong_nhan = phim_cong_nhan || (!phim_cong_giu && phim_cong_xuong);
 		phim_cong_cu = key_in3;
 
+		// Suon len chan cam 1 (P36): yeu cau chinh gio DS3231 ve dau gio gan nhat.
+		// Chi kich hoat khi bat che do dong bo (eep_debug bit7); mac dinh tat nen
+		// khong anh huong cac may dung cam 1 lam cam bien motor.
+		if((eep_debug & 0x80) && cam_che && !xung_gio_cu) xung_gio_nhan = 1;
+		xung_gio_cu = cam_che;
+
 		if(!--cnt){
 			lcd_update_chop = 1;
 			cnt=20;
