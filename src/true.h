@@ -5,50 +5,31 @@
 /*--------Khong duoc phep thay doi-------*/
 #define		FOSC		12000000L
 
-#define		PORT_KEY	P3
-#define		PORT_OUT 	P2
+/**************** SO DO CHAN THANG NANG ****************
+ Dung lai phan cung bo dong ho:
+ - 2 nut bam (keo xuong GND khi nhan, muc 0 = dang nhan)
+ - 2 cong tac hanh trinh vao cong cam cu
+ - 2 relay tren bo giu lenh chay LEN / XUONG
+*******************************************************/
 
+/*********** NUT BAM (muc 0 = nhan) ***************/
+// Trong buong: mui ten LEN. Ngoai buong: nut goi o TANG TREN dau song song.
+#define		nut_len			P35
+// Trong buong: mui ten XUONG. Ngoai buong: nut goi o TANG TRET dau song song.
+#define		nut_xuong		P34
+// (Tuy chon) nut DUNG khan cap, khong dung thi bo trong.
+#define		nut_dung		P33
 
+/*********** CONG TAC HANH TRINH (muc 0 = tac dong) ***************/
+// cam 1 cu: cong tac hanh trinh DUOI - thang cham dat (tang tret)
+#define		ct_day			P36
+// cam 2 cu: cong tac hanh trinh TREN - thang len toi noi (tang 1)
+#define		ct_dinh			P37
 
-/*********** Keys ***************/
-#define		phim_mode_vao		P35
-#define		key_in2		P33
-#define		key_in3		P34
-
-/************ CAMS ******************/
-#define		cam_che2	    P37
-#define		cam_che     	P36
-
-/*********** DALAS ***************/
-#define		clock_in	P32
-
-
-/************ MOTOR STATUS ******************/
-#define		motor_run_sign	P41
-
-/************ LED ******************/
-#define		over_cur_led	P07
-
-
-
-/*********** MOTORS DC ***************/
-// Timer 0 = motor control
-#define		motorS2	  P43
-#define		motorS1   P44
-
-/*********** MOTORS DRIVER ***************/
-#define     motor1    P27
-#define     motor3    P26
-#define     motor2    P25
-#define     motor4    P24
-
-
-#define	cam_sign_out	cam_out1
-#define	zero_sign_out	cam_out2
-
-/* RELAY */
-#define		DenRelay		P21
-#define		ChargeRelay		P22
-#define		RingRelay		P23
+/*********** RELAY NGO RA (muc 1 = dong tiep diem) ***************/
+// Dau song song tiep diem nut mui ten LEN cua thang (relay DEN cu - P21)
+#define		RelayLen		P21
+// Dau song song tiep diem nut mui ten XUONG cua thang (relay SAC cu - P22)
+#define		RelayXuong		P22
 
 #endif
