@@ -13,10 +13,13 @@
           relay giu lenh XUONG cho den khi cham cong tac hanh trinh duoi
           (cong cam 1) thi dung.
         - Dang chay bam nut bat ky -> dung ngay (dung khan cap).
+        - Tiep diem cua vao chan P33 (cua dong = dong xuong GND): cua mo
+          -> dung ngay va HUY lenh; dong cua lai phai bam nut moi chay.
+          Dut day tin hieu cua cung duoc coi la cua mo (an toan).
         - Qua THOI_GIAN_CHAY_TOI_DA giay chua toi noi -> tu dung + bao loi.
         - Ca 2 cong tac hanh trinh cung tac dong -> bao loi, khong cho chay.
-        - Cac nut da dau noi tiep qua tiep diem cua: cua mo thi nut bi cat
-          bang phan cung, thang khong the khoi dong.
+
+        1.0B doi nut DUNG (P33) thanh ngo vao tiep diem cua
 */
 
 u8 __code ver[] = VERSION;
@@ -28,9 +31,9 @@ void main()
   u8 __data man_hinh = 0xff, man_hinh_moi;
   u16 __data tick_chay = 0;
   u8 __data khoa = 0;
-  u8 __data dem_len = 0, dem_xuong = 0, dem_dung = 0;
+  u8 __data dem_len = 0, dem_xuong = 0, dem_cua = 0;
   u8 __data dem_day = 0, dem_dinh = 0;
-  __bit len_nhan, xuong_nhan, dung_nhan;
+  __bit len_nhan, xuong_nhan, cua_mo;
   __bit toi_day, toi_dinh, loi_ct;
   __bit loi_qua_gio = 0;
 
@@ -82,16 +85,23 @@ void main()
     }
     else
       dem_xuong = 0;
-    if (!nut_dung)
-    {
-      if (dem_dung < 255)
-        dem_dung++;
-    }
-    else
-      dem_dung = 0;
     len_nhan = (dem_len == SO_LAN_CHONG_DOI);
     xuong_nhan = (dem_xuong == SO_LAN_CHONG_DOI);
-    dung_nhan = (dem_dung == SO_LAN_CHONG_DOI);
+
+    /* Doc tiep diem cua theo muc: cua dong = P33 dong xuong GND.
+       Muc 1 (cua mo hoac dut day) -> cua_mo */
+#if CO_TIEP_DIEM_CUA
+    if (tiep_diem_cua)
+    {
+      if (dem_cua < SO_LAN_CHONG_DOI)
+        dem_cua++;
+    }
+    else
+      dem_cua = 0;
+    cua_mo = (dem_cua >= SO_LAN_CHONG_DOI);
+#else
+    cua_mo = 0;
+#endif
 
     /* Doc cong tac hanh trinh theo muc, loc doi */
     if (!ct_day)
@@ -119,9 +129,9 @@ void main()
       tick_chay++;
       if (tick_chay > (u16)THOI_GIAN_CHAY_TOI_DA * 100)
         loi_qua_gio = 1;
-      // toi noi / loi / bam nut bat ky / qua gio -> dung
-      if (toi_dinh || loi_ct || loi_qua_gio || len_nhan || xuong_nhan ||
-          dung_nhan)
+      // toi noi / cua mo / loi / bam nut bat ky / qua gio -> dung + huy lenh
+      if (toi_dinh || cua_mo || loi_ct || loi_qua_gio || len_nhan ||
+          xuong_nhan)
       {
         RelayLen = 0;
         trang_thai = DUNG;
@@ -134,8 +144,8 @@ void main()
       tick_chay++;
       if (tick_chay > (u16)THOI_GIAN_CHAY_TOI_DA * 100)
         loi_qua_gio = 1;
-      if (toi_day || loi_ct || loi_qua_gio || len_nhan || xuong_nhan ||
-          dung_nhan)
+      if (toi_day || cua_mo || loi_ct || loi_qua_gio || len_nhan ||
+          xuong_nhan)
       {
         RelayXuong = 0;
         trang_thai = DUNG;
@@ -148,7 +158,7 @@ void main()
       RelayXuong = 0;
       if (khoa)
         khoa--; // doi 1 giay sau khi dung roi moi cho chay lai
-      else if (!loi_ct)
+      else if (!loi_ct && !cua_mo) // cua mo: khong nhan lenh chay
       {
         if (len_nhan && !toi_dinh)
         {
@@ -176,6 +186,8 @@ void main()
       man_hinh_moi = 1;
     else if (trang_thai == DANG_XUONG)
       man_hinh_moi = 2;
+    else if (cua_mo)
+      man_hinh_moi = 7;
     else if (loi_qua_gio)
       man_hinh_moi = 6;
     else if (toi_day)
@@ -217,6 +229,9 @@ void main()
           break;
         case 4:
           LCD_guichuoi("    O TANG 1    ");
+          break;
+        case 7:
+          LCD_guichuoi("  CUA DANG MO   ");
           break;
         default:
           LCD_guichuoi(" GIUA HAI TANG  ");

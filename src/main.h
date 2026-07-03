@@ -13,6 +13,11 @@
 // So lan doc lien tiep (x10ms) de chong doi nut bam va cong tac hanh trinh.
 #define SO_LAN_CHONG_DOI 3
 
+// 1 = co dau tiep diem cua vao chan P33 (cua mo -> dung + huy lenh,
+//     dong cua lai phai bam nut moi chay tiep).
+// 0 = khong dung tiep diem cua (bo qua chan P33).
+#define CO_TIEP_DIEM_CUA 1
+
 /**************** TRANG THAI ****************/
 #define DUNG 0
 #define DANG_LEN 1

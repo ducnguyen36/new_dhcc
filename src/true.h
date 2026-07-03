@@ -17,8 +17,11 @@
 #define		nut_len			P35
 // Trong buong: mui ten XUONG. Ngoai buong: nut goi o TANG TRET dau song song.
 #define		nut_xuong		P34
-// (Tuy chon) nut DUNG khan cap, khong dung thi bo trong.
-#define		nut_dung		P33
+// Tiep diem CUA: cua DONG = tiep diem dong xuong GND (muc 0).
+// Cua mo (hoac dut day) = muc 1 -> dung ngay va huy lenh, khong cho chay.
+// Khong dung tinh nang nay: dat CO_TIEP_DIEM_CUA 0 trong main.h
+// hoac noi tat P33 xuong GND.
+#define		tiep_diem_cua	P33
 
 /*********** CONG TAC HANH TRINH (muc 0 = tac dong) ***************/
 // cam 1 cu: cong tac hanh trinh DUOI - thang cham dat (tang tret)
