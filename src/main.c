@@ -20,6 +20,8 @@
         - Ca 2 cong tac hanh trinh cung tac dong -> bao loi, khong cho chay.
 
         1.0B doi nut DUNG (P33) thanh ngo vao tiep diem cua
+        1.0C them chon kieu cong tac hanh trinh NO/NC (CT_THUONG_MO),
+             build 2 ban: THANG_NO (thuong mo) va THANG_NC (thuong dong)
 */
 
 u8 __code ver[] = VERSION;
@@ -103,15 +105,16 @@ void main()
     cua_mo = 0;
 #endif
 
-    /* Doc cong tac hanh trinh theo muc, loc doi */
-    if (!ct_day)
+    /* Doc cong tac hanh trinh theo muc, loc doi.
+       Kieu NO/NC chon bang CT_THUONG_MO trong main.h */
+    if (ct_day_tac_dong)
     {
       if (dem_day < SO_LAN_CHONG_DOI)
         dem_day++;
     }
     else
       dem_day = 0;
-    if (!ct_dinh)
+    if (ct_dinh_tac_dong)
     {
       if (dem_dinh < SO_LAN_CHONG_DOI)
         dem_dinh++;

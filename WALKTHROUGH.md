@@ -1,6 +1,11 @@
 # WALKTHROUGH — Firmware Thang Nâng Gia Đình 2 Tầng
 
-**Phiên bản:** `_THANGNANG_1.0B_` · **Branch:** `thang_nang` · **Phần cứng:** bo điều khiển đồng hồ (STC15F2K60S2)
+**Phiên bản:** `_THANGNANG_1.0C_` · **Branch:** `thang_nang` · **Phần cứng:** bo điều khiển đồng hồ (STC15F2K60S2)
+
+> Firmware có **2 bản build** theo kiểu công tắc hành trình:
+> **`THANG_NO`** — công tắc **thường mở** (chạm tới nơi thì đóng xuống GND)
+> **`THANG_NC`** — công tắc **thường đóng** (chạm tới nơi thì hở ra)
+> Nạp đúng bản cho từng thang. Xem mục 2.4.
 
 Firmware này thay thế hoàn toàn firmware đồng hồ, biến bo mạch cũ thành bộ điều khiển
 thang nâng nhà 2 tầng (tầng trệt + tầng 1). Bấm nút **một lần** là thang tự chạy và
@@ -42,8 +47,8 @@ tự dừng khi tới nơi — không cần giữ nút như trước.
 | Nút **LÊN** | P3.5 | phím MODE | Nút nhấn → GND. Đấu song song: mũi tên LÊN trong buồng + nút gọi ở **tầng trên** |
 | Nút **XUỐNG** | P3.4 | phím CỘNG (+) | Nút nhấn → GND. Đấu song song: mũi tên XUỐNG trong buồng + nút gọi ở **tầng trệt** |
 | **Tiếp điểm cửa** | P3.3 | phím BACK | Cửa **ĐÓNG** = tiếp điểm **đóng** xuống GND. Cửa mở / đứt dây = hở (mức 1) |
-| CTHT **dưới** (chạm đất) | P3.6 | cổng **cam 1** | Công tắc hành trình → GND, **đóng khi thang chạm đáy** |
-| CTHT **trên** (tới tầng 1) | P3.7 | cổng **cam 2** | Công tắc hành trình → GND, **đóng khi thang lên tới nơi** |
+| CTHT **dưới** (chạm đất) | P3.6 | cổng **cam 1** | Công tắc hành trình → GND (kiểu NO/NC xem mục 2.4) |
+| CTHT **trên** (tới tầng 1) | P3.7 | cổng **cam 2** | Công tắc hành trình → GND (kiểu NO/NC xem mục 2.4) |
 | Relay **LÊN** | P2.1 | relay ĐÈN | Tiếp điểm relay đấu **song song tiếp điểm nút mũi tên LÊN** của tủ thang |
 | Relay **XUỐNG** | P2.2 | relay SẠC | Tiếp điểm relay đấu **song song tiếp điểm nút mũi tên XUỐNG** của tủ thang |
 
@@ -78,6 +83,25 @@ tự dừng khi tới nơi — không cần giữ nút như trước.
 4. Relay của bo chỉ "bấm hộ" nút của tủ thang (dòng nhỏ). Mạch động lực contactor vẫn
    là của tủ thang cũ.
 
+### 2.4 Chọn kiểu công tắc hành trình (NO / NC)
+
+Hai thang có thể dùng 2 kiểu công tắc ngược nhau — firmware build sẵn cả 2 bản:
+
+| Bản firmware | Kiểu công tắc | Bình thường | Khi thang chạm tới nơi |
+|---|---|---|---|
+| **`THANG_NO`** | **Thường mở** (NO) | Hở (chân ở mức 1) | **Đóng** xuống GND (mức 0) |
+| **`THANG_NC`** | **Thường đóng** (NC) | Đóng xuống GND (mức 0) | **Hở** ra (mức 1) |
+
+Cách nhận biết công tắc của thang: để thang **giữa 2 tầng**, đo thông mạch 2 dây công
+tắc — **thông** = thường đóng (NC), **không thông** = thường mở (NO).
+
+> **Nên dùng NC nếu được chọn:** với bản `THANG_NC`, đứt dây tín hiệu CTHT được hiểu
+> là "đang chạm" → thang từ chối chạy về hướng đó (an toàn). Với NO, đứt dây thì thang
+> không nhận được điểm dừng và chỉ còn trông vào giới hạn 60 giây.
+>
+> Cả 2 CTHT (đáy + đỉnh) phải **cùng kiểu**. Nếu thang của bạn trộn 2 kiểu, báo lại để
+> tách cấu hình riêng từng công tắc.
+
 ---
 
 ## 3. Tính năng an toàn
@@ -99,7 +123,7 @@ tự dừng khi tới nơi — không cần giữ nút như trước.
 
 ## 4. Màn hình LCD
 
-Khi bật nguồn hiện version `_THANGNANG_1.0B_` trong 2 giây, sau đó:
+Khi bật nguồn hiện version `_THANGNANG_1.0C_` trong 2 giây, sau đó:
 
 | Màn hình | Dòng 1 | Dòng 2 | Ý nghĩa |
 |---|---|---|---|
@@ -121,6 +145,9 @@ Khi bật nguồn hiện version `_THANGNANG_1.0B_` trong 2 giây, sau đó:
 #define KHOA_SAU_KHI_DUNG     100  // x10ms — khóa 1 giây sau khi dừng
 #define SO_LAN_CHONG_DOI      3    // x10ms — lọc dội 30ms cho mọi ngõ vào
 #define CO_TIEP_DIEM_CUA      1    // 1: dùng tiếp điểm cửa P3.3; 0: bỏ qua
+#define CT_THUONG_MO          1    // 1: CTHT thường mở (NO); 0: thường đóng (NC)
+                                   // — bình thường KHÔNG sửa tay, chọn bằng env
+                                   //   build THANG_NO / THANG_NC (mục 2.4)
 ```
 
 Chỉnh xong build lại là được. Ví dụ thang chạy chậm hết ~50 giây/hành trình thì nên
@@ -167,21 +194,35 @@ git checkout thang_nang
 ```
 
 Mở thư mục dự án trong VS Code → biểu tượng PlatformIO (sidebar) →
-**Project Tasks → THANG → Build**. Hoặc từ terminal:
+**Project Tasks → THANG_NO (hoặc THANG_NC) → Build**. Hoặc từ terminal:
 
 ```bash
-pio run              # build
-pio run -t upload    # build + nạp qua cổng COM (tốc độ 57600)
+pio run                          # build CẢ 2 bản NO + NC
+pio run -e THANG_NC              # chỉ build bản thường đóng
+pio run -e THANG_NO -t upload    # build + nạp bản thường mở qua cổng COM
 ```
 
-File hex ra tại `​.pio/build/THANG/THANGNANG_1.0B.hex` — nạp bằng PlatformIO upload
-hoặc công cụ STC-ISP như trước giờ (chip STC nạp lúc **vừa cấp nguồn**).
+File hex ra tại:
+
+```
+.pio/build/THANG_NO/THANGNANG_1.0C_THANG_NO.hex   ← thang dùng CTHT thường mở
+.pio/build/THANG_NC/THANGNANG_1.0C_THANG_NC.hex   ← thang dùng CTHT thường đóng
+```
+
+Nạp bằng PlatformIO upload hoặc công cụ STC-ISP như trước giờ (chip STC nạp lúc
+**vừa cấp nguồn**). **Chú ý nạp đúng bản cho đúng thang** — nạp nhầm thì thang sẽ
+hiểu ngược vị trí (báo ở tầng khi đang giữa tầng và ngược lại).
 
 ---
 
 ## 8. Checklist chạy thử lần đầu (QUAN TRỌNG)
 
-Thử **chưa đấu relay vào tủ thang** trước (chỉ nghe tiếng relay đóng/nhả trên bo):
+Thử **chưa đấu relay vào tủ thang** trước (chỉ nghe tiếng relay đóng/nhả trên bo).
+
+> Các bước dưới viết cho bản **`THANG_NO`** ("kích CTHT" = nối chân xuống GND).
+> Với bản **`THANG_NC`**: làm **ngược lại** — bình thường phải nối P3.6/P3.7 xuống GND,
+> "kích CTHT" = **hở** chân ra. Lúc chưa đấu gì, bản NC sẽ báo `!LOI CONG TAC HT`
+> (cả 2 chân hở = cả 2 "đang chạm") — đó là fail-safe đúng, không phải bo hỏng.
 
 1. ☐ Cấp nguồn → LCD hiện version rồi hiện trạng thái, **cả 2 relay im**.
 2. ☐ Chưa đấu gì vào P3.3 → LCD phải báo `CUA DANG MO`, bấm nút không có gì xảy ra

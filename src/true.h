@@ -23,7 +23,9 @@
 // hoac noi tat P33 xuong GND.
 #define		tiep_diem_cua	P33
 
-/*********** CONG TAC HANH TRINH (muc 0 = tac dong) ***************/
+/*********** CONG TAC HANH TRINH ***************/
+// Kieu NO (thuong mo) hay NC (thuong dong) chon bang CT_THUONG_MO
+// trong main.h (build san 2 ban THANG_NO / THANG_NC).
 // cam 1 cu: cong tac hanh trinh DUOI - thang cham dat (tang tret)
 #define		ct_day			P36
 // cam 2 cu: cong tac hanh trinh TREN - thang len toi noi (tang 1)
