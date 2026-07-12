@@ -37,4 +37,14 @@
 // Dau song song tiep diem nut mui ten XUONG cua thang (relay SAC cu - P22)
 #define		RelayXuong		P22
 
+/*********** MODULE MP3 (DFPlayer - cong MP3 co san tren bo) ***************/
+// Chan BUSY tu module (1 = dang phat nhac)
+#define		mp3_playing		P12
+// Relay cap nguon amply/loa
+#define		AmplyRelay		P42
+
+/*********** MODULE SIM A7680C (cong SIM co san tren bo) ***************/
+// Cap nguon module SIM (1 = bat)
+#define		gsm_pw			P20
+
 #endif
