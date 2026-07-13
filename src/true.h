@@ -5,46 +5,68 @@
 /*--------Khong duoc phep thay doi-------*/
 #define		FOSC		12000000L
 
-/**************** SO DO CHAN THANG NANG ****************
- Dung lai phan cung bo dong ho:
- - 2 nut bam (keo xuong GND khi nhan, muc 0 = dang nhan)
- - 2 cong tac hanh trinh vao cong cam cu
- - 2 relay tren bo giu lenh chay LEN / XUONG
-*******************************************************/
+/**************** SO DO CHAN - BAN BIEN TAN + CUA + PHIM MA TRAN ********
+ Bo dieu khien thang may dung bien tan 3 pha, 2 cap toc do
+ (cao / do tang), cua cabin tu dong, ban phim ma tran 3x4.
+*************************************************************************/
 
-/*********** NUT BAM (muc 0 = nhan) ***************/
-// Trong buong: mui ten LEN. Ngoai buong: nut goi o TANG TREN dau song song.
-#define		nut_len			P35
-// Trong buong: mui ten XUONG. Ngoai buong: nut goi o TANG TRET dau song song.
-#define		nut_xuong		P34
-// Tiep diem CUA: cua DONG = tiep diem dong xuong GND (muc 0).
-// Cua mo (hoac dut day) = muc 1 -> dung ngay va huy lenh, khong cho chay.
-// Khong dung tinh nang nay: dat CO_TIEP_DIEM_CUA 0 trong main.h
-// hoac noi tat P33 xuong GND.
-#define		tiep_diem_cua	P33
+/*********** NUT GOI NGOAI BUONG (muc 0 = nhan) ***************/
+// Nut goi LEN (di len 1 tang) - cac tang dau song song
+#define		goi_len			P35
+// Nut goi XUONG (di xuong 1 tang) - cac tang dau song song
+#define		goi_xuong		P34
 
-/*********** CONG TAC HANH TRINH ***************/
-// Kieu NO (thuong mo) hay NC (thuong dong) chon bang CT_THUONG_MO
-// trong main.h (build san 2 ban THANG_NO / THANG_NC).
-// cam 1 cu: cong tac hanh trinh DUOI - thang cham dat (tang tret)
+/*********** BAN PHIM MA TRAN 3 COT x 4 HANG (trong buong) ***************/
+//        C0(P24)  C1(P25)  C2(P26)
+// R0(P14)  TRET    TANG1    TANG2
+// R1(P15)  TANG3   TANG4    TANG5
+// R2(P16)  TANG6   TANG7    TANG8
+// R3(P17)  MO CUA  DONG CUA (du phong)
+#define		mt_cot0			P24
+#define		mt_cot1			P25
+#define		mt_cot2			P26
+#define		mt_hang0		P14
+#define		mt_hang1		P15
+#define		mt_hang2		P16
+#define		mt_hang3		P17
+
+/*********** CAM BIEN VI TRI (kieu NO/NC theo CT_THUONG_MO) ***************/
+// cam 1 cu: cong tac DAY - moc chuan tuyet doi tai tang tret
 #define		ct_day			P36
-// cam 2 cu: cong tac hanh trinh TREN - thang len toi noi (tang 1)
+// cam 2 cu: cam bien TANG - vau tai moi tang (tru tret)
 #define		ct_dinh			P37
+// cam bien GIAM TOC chieu LEN - vau dat DUOI moi tang
+#define		gt_len			P32
+// cam bien GIAM TOC chieu XUONG - vau dat TREN moi tang
+#define		gt_xuong		P10
+
+/*********** CUA ***************/
+// Chuoi an toan cua TANG (khoa lien dong cac cua tang noi tiep):
+// tat ca cua dong = dong xuong GND; ho (hoac dut day) = cam chay
+#define		tiep_diem_cua	P33
+// Cong tac cua cabin MO het (tac dong = dong xuong GND)
+#define		ct_cua_mo		P11
+// Cong tac cua cabin DONG het (tac dong = dong xuong GND)
+#define		ct_cua_dong		P13
 
 /*********** RELAY NGO RA (muc 1 = dong tiep diem) ***************/
-// Dau song song tiep diem nut mui ten LEN cua thang (relay DEN cu - P21)
+// FWD bien tan - chay LEN (relay DEN cu - P21)
 #define		RelayLen		P21
-// Dau song song tiep diem nut mui ten XUONG cua thang (relay SAC cu - P22)
+// REV bien tan - chay XUONG (relay SAC cu - P22)
 #define		RelayXuong		P22
+// Chon cap TOC DO CAO cua bien tan (relay RING cu - P23)
+// dung tiep diem dao C-NO-NC: NO = dau vao toc do cao, NC = toc do do tang
+#define		RelayTocDoCao	P23
+// Motor MO cua cabin
+#define		RelayCuaMo		P27
+// Motor DONG cua cabin
+#define		RelayCuaDong	P44
 
 /*********** MODULE MP3 (DFPlayer - cong MP3 co san tren bo) ***************/
-// Chan BUSY tu module (1 = dang phat nhac)
 #define		mp3_playing		P12
-// Relay cap nguon amply/loa
 #define		AmplyRelay		P42
 
 /*********** MODULE SIM A7680C (cong SIM co san tren bo) ***************/
-// Cap nguon module SIM (1 = bat)
 #define		gsm_pw			P20
 
 #endif
