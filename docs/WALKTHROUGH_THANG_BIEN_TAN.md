@@ -245,8 +245,9 @@ máy trạng thái CỬA → loa/SMS → LCD. Watchdog phần cứng luôn hoạ
    DANG_XUONG tốc độ dò, dừng ở đáy        └──────────────────┘
 ```
 
-- Đang chạy: **gọi cùng chiều** = nới đích thêm 1 tầng; **gọi ngược chiều** = dừng
-  khẩn cấp; phím tầng/MỞ CỬA bị bỏ qua.
+- Đang chạy: **phím tầng vẫn nhận** (đăng ký vào hàng đợi, tự ghé nếu còn kịp
+  giảm tốc); nút phụ **ngược chiều** = dừng khẩn cấp + xóa hàng đợi; MỞ CỬA bị
+  bỏ qua.
 - `loi_dem` (đếm vượt tầng trên cùng) → coi vị trí không tin được → bắt về chuẩn.
 
 ### 5.2 Trạng thái CỬA (khi thang đứng yên)
@@ -363,7 +364,10 @@ liên tục rồi mới chở người.
 11. ☐ Phím MỞ CỬA/ĐÓNG CỬA hoạt động đúng; bấm số tầng đang đậu → chỉ mở cửa.
 12. ☐ Nút gọi từng tầng: bấm ở mỗi tầng → thang về đúng tầng đó; khi mất mốc,
     phím TRỆT/nút gọi trệt kích hoạt về chuẩn.
-13. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
+13. ☐ Xếp hàng: đứng ở trệt bấm `2` rồi bấm ngay `4` → thang ghé tầng 2 (mở
+    cửa) rồi tự chạy tiếp lên tầng 4. Đang đi lên bấm `5` và `1` → ghé 5 trước
+    (cùng chiều), xong quay xuống 1. Dừng khẩn → bấm lại thấy hàng đợi đã xóa.
+14. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
 
 ---
 
@@ -373,8 +377,19 @@ liên tục rồi mới chở người.
 nơi loa thông báo và cửa tự mở. `MỞ CỬA` để giữ/mở cửa, `ĐÓNG CỬA` để đi ngay.
 
 **Ngoài buồng:** bấm **nút gọi của tầng mình** — thang chạy thẳng về tầng đó
-(đang đậu đúng tầng thì cửa mở). Thang đang chạy thì lệnh gọi bị bỏ qua,
-chờ thang dừng rồi bấm lại.
+(đang đậu đúng tầng thì cửa mở).
+
+**Chọn nhiều tầng (xếp hàng như thang máy thật):** bấm nhiều phím tầng liên
+tiếp — kể cả **khi thang đang chạy** — mọi lệnh được ghi nhớ. Thang phục vụ:
+1. **Ưu tiên 1 — theo hướng đang chạy:** ghé lần lượt các tầng đã chọn nằm
+   phía trước theo chiều di chuyển (tầng gần nhất trước), hết lệnh phía
+   trước mới quay đầu phục vụ chiều còn lại.
+2. **Ưu tiên 2 — quãng đường ngắn nhất:** trong cùng một hướng luôn ghé tầng
+   gần nhất trước.
+
+Lưu ý: lệnh bấm **quá muộn** (cabin đã vượt vấu giảm tốc của tầng đó) sẽ không
+kịp dừng êm → thang chạy qua và tự quay lại phục vụ ở lượt sau — giống thang
+máy thật. Dừng khẩn cấp / lỗi / đứt chuỗi cửa sẽ **xóa toàn bộ hàng đợi**.
 
 **Dừng khẩn cấp khi đang chạy:** bấm nút phụ **ngược chiều** đang chạy
 (P3.4/P3.5 — nên lắp ít nhất trong buồng).
@@ -432,8 +447,9 @@ bình thường.
 
 **Giới hạn thiết kế:**
 - Bo không đo tốc độ thực (không encoder) — dựa hoàn toàn vào vấu + biến tần.
-- Không xếp hàng nhiều lệnh gọi đồng thời: đang chạy thì lệnh gọi/chọn tầng bị
-  bỏ qua, phải chờ thang dừng (thang gia đình, 1 lệnh 1 lần).
+- Nút gọi tầng không phân hướng (1 nút/tầng, không có cặp lên/xuống như thang
+  thương mại) → điều phối kiểu "collective không hướng": gom hết lệnh theo
+  chiều đang chạy rồi mới đảo chiều.
 - SMS chỉ gửi báo lỗi, không nhận lệnh điều khiển từ xa (cố ý — an toàn).
 - Đây là thang **gia đình tự lắp** — không thay thế tiêu chuẩn thang máy thương mại
   (TCVN 6395/6396); các cơ cấu an toàn cơ khí (governor, phanh an toàn, giảm chấn)

@@ -73,6 +73,10 @@ Module MP3 (P4.6/P4.7, BUSY P1.2) và SIM A7680C (P3.0/P3.1) giữ nguyên như 
 ### Chạy giữa các tầng
 1. Bấm **số tầng** trên bàn phím buồng, hoặc **nút gọi tại tầng** (song song phím
    cùng tầng) → nếu cửa đang mở thì tự đóng trước, xong chạy thẳng về tầng đó.
+   **Chọn được nhiều tầng cùng lúc** (cả khi đang chạy): thang ghé lần lượt các
+   tầng đã chọn theo **chiều đang chạy** (tầng gần nhất trước), hết lệnh phía
+   trước mới quay đầu — như thang máy thật. Lệnh bấm quá muộn (đã qua vấu giảm
+   tốc) được phục vụ ở lượt sau. Dừng khẩn/lỗi → xóa hàng đợi.
 2. Rời tầng: `FWD/REV` + `TỐC ĐỘ CAO` → biến tần tăng tốc theo ramp → chạy đều.
 3. Chạm **vấu giảm tốc của tầng đích** → cắt TỐC ĐỘ CAO → bò ở tốc độ dò.
    (Vấu giảm tốc của các tầng đi ngang qua bị bỏ qua — không giảm tốc giữa đường.)
@@ -89,8 +93,10 @@ Module MP3 (P4.6/P4.7, BUSY P1.2) và SIM A7680C (P3.0/P3.1) giữ nguyên như 
 - Bấm số tầng hiện tại khi đang đậu → chỉ mở cửa.
 
 ### Khi đang chạy
-- GỌI cùng chiều: đi thêm 1 tầng. GỌI ngược chiều: **dừng khẩn cấp**.
-- Phím số tầng và MỞ CỬA bị bỏ qua khi đang chạy (an toàn).
+- **Phím số tầng vẫn nhận** — đăng ký vào hàng đợi, thang tự ghé nếu còn kịp
+  giảm tốc.
+- Nút phụ **ngược chiều** (P3.4/P3.5): **dừng khẩn cấp** + xóa hàng đợi.
+- MỞ CỬA bị bỏ qua khi đang chạy (an toàn).
 
 ### Mất điện / mất mốc
 `CHUA RO VI TRI` → bấm **phím TRỆT** (buồng/nút gọi trệt) hoặc nút phụ XUỐNG →

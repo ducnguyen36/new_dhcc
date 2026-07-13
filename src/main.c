@@ -8,27 +8,27 @@
         Dung phan cung bo dieu khien dong ho.
 
         2.0A nhieu tang 2 ngo cam + loa MP3 + SMS bao loi A7680C
-        3.0A - Dieu khien bien tan 3 pha: FWD / REV / TOC DO CAO.
-                 Roi tang: bien tan tu tang toc theo ramp ACC.
-                 Cham vau giam toc truoc tang dich: cat TOC DO CAO ->
-                 giam ve toc do do tang; cham vau tang: cat RUN -> dung.
-                 Them 2 cam bien giam toc: chieu LEN (vau duoi moi tang)
-                 va chieu XUONG (vau tren moi tang).
-               - Cua cabin tu dong: relay MO/DONG + cong tac mo het/dong
-                 het; den tang tu mo cua, mo cho vai giay roi tu dong;
-                 ket cua thi mo lai va thu dong toi 3 lan, hong bao SMS.
-                 Chuoi an toan cua tang (P33) van nhu cu.
-               - Ban phim ma tran 3x4 trong buong: chon thang tang truc
-                 tiep 0..8 + phim MO CUA / DONG CUA.
-               - Nut goi ngoai buong (P34/P35): len/xuong 1 tang nhu cu.
-        3.0B - Nut goi tai moi tang dau SONG SONG voi phim cung tang cua
-               ma tran (cung giao diem hang-cot) -> goi thang ve dung tang,
-               khong ton them input. Khi mat moc, phim TRET cung kich hoat
-               ve chuan (khong chi GOI XUONG).
+        3.0A bien tan FWD/REV/TOC DO CAO + cam bien giam toc 2 chieu
+             + cua cabin tu dong + ban phim ma tran 3x4
+        3.0B nut goi tang dau song song phim ma tran cung tang; phim TRET
+             cung kich hoat ve chuan khi mat moc
+        3.1A XEP HANG LENH GOI (collective):
+             - Chon nhieu tang cung luc (ca khi dang chay); moi tang la
+               1 bit trong thanh ghi dang_ky.
+             - Uu tien 1: HUONG dang di chuyen - phuc vu het cac tang da
+               dang ky phia truoc theo chieu chay, ghe tang GAN NHAT
+               phia truoc truoc; het lenh phia truoc moi quay dau.
+             - Uu tien 2: quang duong ngan nhat (gan nhat trong huong).
+             - Lenh dang ky sau khi cabin da qua vau giam toc cua tang do
+               -> khong kip dung em -> bo qua luot nay, phuc vu luot sau.
+             - Dung khan cap / loi / dut chuoi cua -> XOA het hang doi.
 */
 
 u8 __code ver[] = VERSION;
 __bit chop; // lcd.c can bien nay cho LCD_chop (khong dung o day)
+
+/* Thanh ghi dang ky goi tang: bit k = tang k co lenh goi */
+u16 __data dang_ky;
 
 #if CO_MP3
 #define PHAT_MP3(track)  \
@@ -40,6 +40,42 @@ __bit chop; // lcd.c can bien nay cho LCD_chop (khong dung o day)
 #else
 #define PHAT_MP3(track)
 #endif
+
+#define BIT_TANG(t) (((u16)1) << (t))
+
+/* Tang co dang ky GAN NHAT tu tang `tu` tro len (KHONG_PHIM neu khong co) */
+static u8 goi_tren(u8 tu)
+{
+  u8 __data f;
+  u16 __data m;
+  if (tu >= SO_TANG)
+    return KHONG_PHIM;
+  m = BIT_TANG(tu);
+  for (f = tu; f < SO_TANG; f++, m <<= 1)
+    if (dang_ky & m)
+      return f;
+  return KHONG_PHIM;
+}
+
+/* Tang co dang ky GAN NHAT tu tang `tu` tro xuong (KHONG_PHIM neu khong co) */
+static u8 goi_duoi(u8 tu)
+{
+  u8 __data f;
+  u16 __data m;
+  if (tu >= SO_TANG)
+    return KHONG_PHIM;
+  f = tu;
+  m = BIT_TANG(tu);
+  for (;;)
+  {
+    if (dang_ky & m)
+      return f;
+    if (!f)
+      return KHONG_PHIM;
+    f--;
+    m >>= 1;
+  }
+}
 
 /* Quet ban phim ma tran 3 cot x 4 hang.
    Tra ve ma phim dang nhan (hang*3+cot) hoac KHONG_PHIM. */
@@ -92,11 +128,13 @@ void main()
 {
   u8 __data trang_thai = DUNG;
   u8 __data tang = 0, tang_dich = 0;
-  u8 __data tang_cho = KHONG_PHIM; // tang dich dang doi (cho cua dong...)
+  u8 __data tren, duoi; // ket qua tim lenh goi gan nhat 2 phia
   __bit giua_tang = 0;
   __bit vi_tri_biet = 0;
   __bit ve_chuan = 0, yeu_cau_ve_chuan = 0;
   __bit di_len;
+  __bit huong_cuoi_len = 0; // huong chay gan nhat (uu tien 1 khi chon lenh)
+  __bit da_qua_gt = 0;      // da vuot vau giam toc cua tang sap toi
 
   u8 __data cua_tt = CUA_DONG_HET;
   u16 __data cua_tick = 0;
@@ -123,6 +161,8 @@ void main()
   __bit loi_ct, loi_qua_gio = 0, loi_dem = 0;
   __bit da_gui_sms = 0;
   u8 __data i;
+
+  dang_ky = 0;
 
   /*PORT IO INIT*/
   P0M1 = 0;
@@ -210,7 +250,7 @@ void main()
 
     /* ===== DOC NGO VAO ===== */
 
-    /* Nut goi ngoai buong: 1 xung khi giu du SO_LAN_CHONG_DOI x10ms */
+    /* Nut phu ngoai buong: 1 xung khi giu du SO_LAN_CHONG_DOI x10ms */
     if (!goi_len)
     {
       if (dem_goi_len < 255)
@@ -332,6 +372,32 @@ void main()
 
     loi_ct = toi_day && cb_tang; // day + vau tang cung tac dong = loi day
 
+    /* ===== DANG KY LENH GOI TANG (nhan ca khi dang chay) =====
+       Phim buong va nut goi tang dau song song cung giao diem ma tran. */
+    if (phim_nhan < SO_TANG)
+    {
+      if (vi_tri_biet)
+      {
+        if (trang_thai == DUNG && phim_nhan == tang && !giua_tang &&
+            (toi_day || cb_tang))
+        {
+          // goi dung tang dang dau: chi mo cua
+#if CO_CUA_TU_DONG
+          loi_cua = 0;
+          if (cua_tt == CUA_DONG_HET)
+          {
+            cua_tt = CUA_DANG_MO;
+            cua_tick = 0;
+          }
+#endif
+        }
+        else
+          dang_ky |= BIT_TANG(phim_nhan);
+      }
+      else if (phim_nhan == 0)
+        yeu_cau_ve_chuan = 1; // mat moc: phim TRET goi ve chuan
+    }
+
     toi_tang_luc_nay = 0;
     den_noi = 0;
 
@@ -344,6 +410,7 @@ void main()
       if (cb_canh_len)
       {
         tick_chay = 0;
+        da_qua_gt = 0;
         if (giua_tang)
         {
           giua_tang = 0;
@@ -360,14 +427,33 @@ void main()
       if (cb_canh_xuong)
       {
         tick_chay = 0;
+        da_qua_gt = 0;
         giua_tang = 1;
       }
-      // cham vau giam toc duoi tang dich -> chuyen ve toc do do tang
+      // vau giam toc: tang sap toi la dich -> giam ve toc do do tang;
+      // khong phai dich -> danh dau da qua (lenh den muon se don luot sau)
       if (gt_len_canh)
       {
         tick_chay = 0;
-        if (giua_tang && (u8)(tang + 1) == tang_dich)
-          RelayTocDoCao = 0;
+        if (giua_tang)
+        {
+          if ((u8)(tang + 1) == tang_dich)
+            RelayTocDoCao = 0;
+          else
+            da_qua_gt = 1;
+        }
+      }
+      // cap nhat dich: lenh goi gan nhat phia tren con kip giam toc
+      if (!loi_dem)
+      {
+        tren = goi_tren(tang + 1);
+        if (tren != KHONG_PHIM)
+        {
+          if (tren == (u8)(tang + 1) && da_qua_gt && tren != tang_dich)
+            tren = goi_tren(tang + 2); // khong kip: don luot sau
+          if (tren != KHONG_PHIM && tren < tang_dich)
+            tang_dich = tren;
+        }
       }
       if (tick_chay > (u16)THOI_GIAN_CHAY_TOI_DA * 100)
         loi_qua_gio = 1;
@@ -382,15 +468,16 @@ void main()
         khoa = KHOA_SAU_KHI_DUNG;
         if (den_noi)
         {
+          dang_ky &= ~BIT_TANG(tang); // da phuc vu tang nay
           PHAT_MP3(TRACK_TOI_TANG + tang);
 #if CO_CUA_TU_DONG
-          cua_tt = CUA_DANG_MO; // den tang: tu mo cua
+          cua_tt = CUA_DANG_MO;
           cua_tick = 0;
 #endif
         }
+        else
+          dang_ky = 0; // dung bat thuong: xoa hang doi
       }
-      else if (goi_len_nhan && tang_dich < SO_TANG - 1)
-        tang_dich++;
       break;
 
     case DANG_XUONG:
@@ -401,12 +488,14 @@ void main()
         if (cb_canh_len)
         {
           tick_chay = 0;
+          da_qua_gt = 0;
           giua_tang = 0;
           toi_tang_luc_nay = 1;
         }
         if (cb_canh_xuong)
         {
           tick_chay = 0;
+          da_qua_gt = 0;
           if (!giua_tang)
           {
             if (tang)
@@ -414,12 +503,26 @@ void main()
             giua_tang = 1;
           }
         }
-        // cham vau giam toc tren tang dich -> toc do do tang
         if (gt_xuong_canh)
         {
           tick_chay = 0;
-          if (giua_tang && tang == tang_dich)
-            RelayTocDoCao = 0;
+          if (giua_tang)
+          {
+            if (tang == tang_dich)
+              RelayTocDoCao = 0;
+            else
+              da_qua_gt = 1;
+          }
+        }
+        // cap nhat dich: lenh goi gan nhat phia duoi con kip giam toc
+        i = giua_tang ? tang : (tang ? (u8)(tang - 1) : 0);
+        duoi = goi_duoi(i);
+        if (duoi != KHONG_PHIM)
+        {
+          if (duoi == i && da_qua_gt && duoi != tang_dich)
+            duoi = i ? goi_duoi(i - 1) : KHONG_PHIM;
+          if (duoi != KHONG_PHIM && duoi > tang_dich)
+            tang_dich = duoi;
         }
       }
       else if (cb_canh_len || cb_canh_xuong || gt_len_canh || gt_xuong_canh)
@@ -446,15 +549,16 @@ void main()
         khoa = KHOA_SAU_KHI_DUNG;
         if (den_noi)
         {
+          dang_ky &= ~BIT_TANG(tang);
           PHAT_MP3(TRACK_TOI_TANG + tang);
 #if CO_CUA_TU_DONG
           cua_tt = CUA_DANG_MO;
           cua_tick = 0;
 #endif
         }
+        else
+          dang_ky = 0; // dung bat thuong: xoa hang doi
       }
-      else if (goi_xuong_nhan && !ve_chuan && tang_dich)
-        tang_dich--;
       break;
 
     default: /* DUNG */
@@ -462,29 +566,21 @@ void main()
       RelayXuong = 0;
       RelayTocDoCao = 0;
 
-      /* nhan yeu cau tu ban phim tang (phim buong // nut goi tang dau
-         song song cung giao diem ma tran) */
-      if (phim_nhan < SO_TANG)
-      {
-        if (vi_tri_biet)
-          tang_cho = phim_nhan;
-        else if (phim_nhan == 0)
-          yeu_cau_ve_chuan = 1; // mat moc: phim TRET cung goi ve chuan
-      }
+      /* nut phu: nhich 1 tang / ve chuan */
       if (goi_len_nhan && vi_tri_biet && tang < SO_TANG - 1)
-        tang_cho = tang + 1;
+        dang_ky |= BIT_TANG(tang + 1);
       if (goi_xuong_nhan)
       {
         if (!vi_tri_biet)
           yeu_cau_ve_chuan = 1;
         else if (giua_tang)
-          tang_cho = tang;
+          dang_ky |= BIT_TANG(tang);
         else if (tang)
-          tang_cho = tang - 1;
+          dang_ky |= BIT_TANG(tang - 1);
       }
 
       if (khoa)
-        khoa--;
+        khoa--; // doi 1 giay sau khi dung roi moi chay tiep
       else if (!loi_ct && !chuoi_ho)
       {
 #if CO_CUA_TU_DONG
@@ -495,6 +591,7 @@ void main()
         if (yeu_cau_ve_chuan && cua_ok)
         {
           yeu_cau_ve_chuan = 0;
+          dang_ky = 0;
           loi_qua_gio = 0;
           loi_dem = 0;
           da_gui_sms = 0;
@@ -504,37 +601,68 @@ void main()
           trang_thai = DANG_XUONG;
           PHAT_MP3(TRACK_DI_XUONG);
         }
-        else if (tang_cho != KHONG_PHIM && cua_ok)
+        else if (dang_ky && cua_ok && vi_tri_biet)
         {
-          if (tang_cho == tang && !giua_tang && (toi_day || cb_tang))
+          // bit cua tang dang dau (lenh bi don tu luot truoc): mo cua
+          if (!giua_tang && (toi_day || cb_tang) &&
+              (dang_ky & BIT_TANG(tang)))
           {
-            tang_cho = KHONG_PHIM; // da o dung tang: chi mo cua
+            dang_ky &= ~BIT_TANG(tang);
 #if CO_CUA_TU_DONG
-            loi_cua = 0;
             cua_tt = CUA_DANG_MO;
             cua_tick = 0;
 #endif
           }
           else
           {
-            di_len = (tang_cho > tang);
-            tang_dich = tang_cho;
-            tang_cho = KHONG_PHIM;
-            loi_qua_gio = 0;
-            da_gui_sms = 0;
-            tick_chay = 0;
-            RelayTocDoCao = 1; // bien tan tu tang toc theo ramp ACC
-            if (di_len)
+            /* Bo dieu phoi: uu tien 1 = huong chay gan nhat,
+               uu tien 2 = tang gan nhat trong huong do */
+            tren = (tang < SO_TANG - 1) ? goi_tren(tang + 1) : KHONG_PHIM;
+            duoi = giua_tang ? goi_duoi(tang)
+                             : (tang ? goi_duoi(tang - 1) : KHONG_PHIM);
+            i = KHONG_PHIM;
+            di_len = 0;
+            if (huong_cuoi_len)
             {
-              RelayLen = 1;
-              trang_thai = DANG_LEN;
-              PHAT_MP3(TRACK_DI_LEN);
+              if (tren != KHONG_PHIM)
+              {
+                i = tren;
+                di_len = 1;
+              }
+              else
+                i = duoi;
             }
             else
             {
-              RelayXuong = 1;
-              trang_thai = DANG_XUONG;
-              PHAT_MP3(TRACK_DI_XUONG);
+              if (duoi != KHONG_PHIM)
+                i = duoi;
+              else if (tren != KHONG_PHIM)
+              {
+                i = tren;
+                di_len = 1;
+              }
+            }
+            if (i != KHONG_PHIM)
+            {
+              tang_dich = i;
+              huong_cuoi_len = di_len;
+              da_qua_gt = 0;
+              loi_qua_gio = 0;
+              da_gui_sms = 0;
+              tick_chay = 0;
+              RelayTocDoCao = 1; // bien tan tu tang toc theo ramp ACC
+              if (di_len)
+              {
+                RelayLen = 1;
+                trang_thai = DANG_LEN;
+                PHAT_MP3(TRACK_DI_LEN);
+              }
+              else
+              {
+                RelayXuong = 1;
+                trang_thai = DANG_XUONG;
+                PHAT_MP3(TRACK_DI_XUONG);
+              }
             }
           }
         }
@@ -567,8 +695,8 @@ void main()
         cua_tick++;
         if (phim_nhan == PHIM_MO_CUA)
           cua_tick = 0; // giu cua mo them
-        if (phim_nhan == PHIM_DONG_CUA || tang_cho != KHONG_PHIM ||
-            yeu_cau_ve_chuan || cua_tick > (u16)THOI_GIAN_CHO_CUA * 10)
+        if (phim_nhan == PHIM_DONG_CUA || dang_ky || yeu_cau_ve_chuan ||
+            cua_tick > (u16)THOI_GIAN_CHO_CUA * 10)
         {
           cua_tt = CUA_DANG_DONG;
           cua_tick = 0;
@@ -708,7 +836,7 @@ void main()
       case 4:
         LCD_guichuoi("CHUA RO VI TRI  ");
         LCD_guilenh(0xc0);
-        LCD_guichuoi("BAM GOI XUONG   ");
+        LCD_guichuoi("BAM PHIM TRET   ");
         break;
       case 13:
         LCD_guichuoi("!LOI CUA CABIN  ");
