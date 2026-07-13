@@ -21,6 +21,10 @@
                - Ban phim ma tran 3x4 trong buong: chon thang tang truc
                  tiep 0..8 + phim MO CUA / DONG CUA.
                - Nut goi ngoai buong (P34/P35): len/xuong 1 tang nhu cu.
+        3.0B - Nut goi tai moi tang dau SONG SONG voi phim cung tang cua
+               ma tran (cung giao diem hang-cot) -> goi thang ve dung tang,
+               khong ton them input. Khi mat moc, phim TRET cung kich hoat
+               ve chuan (khong chi GOI XUONG).
 */
 
 u8 __code ver[] = VERSION;
@@ -458,9 +462,15 @@ void main()
       RelayXuong = 0;
       RelayTocDoCao = 0;
 
-      /* nhan yeu cau tu ban phim tang / nut goi */
-      if (phim_nhan < SO_TANG && vi_tri_biet)
-        tang_cho = phim_nhan;
+      /* nhan yeu cau tu ban phim tang (phim buong // nut goi tang dau
+         song song cung giao diem ma tran) */
+      if (phim_nhan < SO_TANG)
+      {
+        if (vi_tri_biet)
+          tang_cho = phim_nhan;
+        else if (phim_nhan == 0)
+          yeu_cau_ve_chuan = 1; // mat moc: phim TRET cung goi ve chuan
+      }
       if (goi_len_nhan && vi_tri_biet && tang < SO_TANG - 1)
         tang_cho = tang + 1;
       if (goi_xuong_nhan)

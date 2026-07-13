@@ -3,7 +3,9 @@
 
 /**************** CAU HINH ****************/
 // Tong so tang (2..9). Tang tret = 0, tang tren cung = SO_TANG-1.
-#define SO_TANG 3
+// Voi ma tran 3x4: toi da 9 phim tang (ma 0..8). Nut goi tai moi tang
+// dau SONG SONG voi phim cung tang trong ma tran (cung giao diem).
+#define SO_TANG 6
 
 // Thoi gian chay toi da cho MOT DOAN giua 2 tang (giay).
 #define THOI_GIAN_CHAY_TOI_DA 60

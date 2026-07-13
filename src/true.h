@@ -10,10 +10,11 @@
  (cao / do tang), cua cabin tu dong, ban phim ma tran 3x4.
 *************************************************************************/
 
-/*********** NUT GOI NGOAI BUONG (muc 0 = nhan) ***************/
-// Nut goi LEN (di len 1 tang) - cac tang dau song song
+/*********** NUT PHU NGOAI BUONG (muc 0 = nhan, tuy chon) ***************/
+// Nut goi tang chinh thuc dau SONG SONG voi phim cung tang cua ma tran.
+// 2 nut nay la phu: nhich 1 tang / DUNG KHAN CAP khi dang chay (bam
+// nguoc chieu) / ve chuan. Khong lap thi bo trong.
 #define		goi_len			P35
-// Nut goi XUONG (di xuong 1 tang) - cac tang dau song song
 #define		goi_xuong		P34
 
 /*********** BAN PHIM MA TRAN 3 COT x 4 HANG (trong buong) ***************/

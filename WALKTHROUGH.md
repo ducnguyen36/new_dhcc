@@ -29,8 +29,9 @@ Khác biệt so với bản `thang_nang` 2.0:
 | **Chuỗi cửa tầng** | P3.3 | Khóa liên động các cửa tầng nối tiếp → GND; hở = cấm chạy |
 | Cửa cabin **MỞ hết** | P1.1 | Công tắc → GND khi cửa mở hết |
 | Cửa cabin **ĐÓNG hết** | P1.3 | Công tắc → GND khi cửa đóng hết |
-| Nút **GỌI LÊN** | P3.5 | Ngoài buồng, các tầng song song → GND |
-| Nút **GỌI XUỐNG** | P3.4 | Ngoài buồng, các tầng song song → GND |
+| Nút gọi các tầng | (ma trận) | Song song phím cùng tầng — xem 1.2 |
+| Nút phụ **LÊN** (tùy chọn) | P3.5 | Nhích 1 tầng / dừng khẩn khi đang xuống |
+| Nút phụ **XUỐNG** (tùy chọn) | P3.4 | Nhích 1 tầng / dừng khẩn khi đang lên / về chuẩn |
 
 ### 1.2 Bàn phím ma trận 3 cột × 4 hàng (trong buồng)
 
@@ -44,6 +45,11 @@ R3=P1.7      MỞ CỬA    ĐÓNG CỬA  (dự phòng)
 
 Phím thường mở, nối giao điểm hàng–cột (keypad màng 3×4 bán sẵn dùng được, chỉ
 đấu 3 cột + 4 hàng = **7 dây**).
+
+**Nút gọi tại các tầng đấu SONG SONG với phím cùng tầng của ma trận** (cùng giao
+điểm hàng–cột, đấu tại bo) → bấm gọi là thang về đúng tầng, **không tốn thêm ngõ
+vào**. Nhà 6 tầng: cả 6 nút gọi chỉ cần 5 dây trục (R0, R1, C0–C2). Đi cáp riêng,
+tránh xa cáp động lực biến tần. Chi tiết: `docs/WALKTHROUGH_THANG_BIEN_TAN.md` §3.3.
 
 ### 1.3 Ngõ ra
 
@@ -65,8 +71,8 @@ Module MP3 (P4.6/P4.7, BUSY P1.2) và SIM A7680C (P3.0/P3.1) giữ nguyên như 
 ## 2. Hoạt động
 
 ### Chạy giữa các tầng
-1. Bấm **số tầng** trên bàn phím (hoặc GỌI LÊN/XUỐNG = ±1 tầng) → nếu cửa đang mở
-   thì tự đóng trước, xong chạy.
+1. Bấm **số tầng** trên bàn phím buồng, hoặc **nút gọi tại tầng** (song song phím
+   cùng tầng) → nếu cửa đang mở thì tự đóng trước, xong chạy thẳng về tầng đó.
 2. Rời tầng: `FWD/REV` + `TỐC ĐỘ CAO` → biến tần tăng tốc theo ramp → chạy đều.
 3. Chạm **vấu giảm tốc của tầng đích** → cắt TỐC ĐỘ CAO → bò ở tốc độ dò.
    (Vấu giảm tốc của các tầng đi ngang qua bị bỏ qua — không giảm tốc giữa đường.)
@@ -87,8 +93,8 @@ Module MP3 (P4.6/P4.7, BUSY P1.2) và SIM A7680C (P3.0/P3.1) giữ nguyên như 
 - Phím số tầng và MỞ CỬA bị bỏ qua khi đang chạy (an toàn).
 
 ### Mất điện / mất mốc
-Như bản 2.0: `CHUA RO VI TRI` → bấm **GỌI XUỐNG** → thang bò chậm (không tăng tốc
-cao) về trệt lấy mốc.
+`CHUA RO VI TRI` → bấm **phím TRỆT** (buồng/nút gọi trệt) hoặc nút phụ XUỐNG →
+thang bò chậm (không tăng tốc cao) về trệt lấy mốc.
 
 ### Báo lỗi qua SMS (A7680C)
 Quá thời gian chạy / lỗi công tắc / lỗi đếm tầng / **lỗi cửa cabin** — mỗi sự cố
@@ -114,7 +120,7 @@ nhắn 1 lần về `SDT_BAO_LOI`, chỉ nhắn khi thang đã dừng hẳn.
 ## 4. Cấu hình (`src/main.h`)
 
 ```c
-#define SO_TANG               3    // 2..9
+#define SO_TANG               6    // 2..9
 #define THOI_GIAN_CHAY_TOI_DA 60   // giây / đoạn tầng
 #define CO_GIAM_TOC           1    // 0 nếu chưa lắp vấu giảm tốc
 #define CO_CUA_TU_DONG        1    // 0 = cửa tay (chỉ giám sát chuỗi cửa)

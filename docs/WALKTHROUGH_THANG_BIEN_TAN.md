@@ -60,7 +60,7 @@ vị trí, chọn thời điểm giảm tốc và dừng.
 | 4 | Công tắc/cảm biến **tầng** + vấu | SO_TANG−1 | Mỗi tầng trừ trệt |
 | 5 | Công tắc/cảm biến **giảm tốc** + vấu | 2×(SO_TANG−1)* | Dưới + trên mỗi tầng đích |
 | 6 | Keypad màng ma trận 3×4 | 1 | 7 dây |
-| 7 | Nút gọi tầng (ngoài buồng) | theo tầng | Đấu song song về 2 dây |
+| 7 | Nút gọi tầng (ngoài buồng) | theo tầng | Song song phím cùng tầng của ma trận (§3.3) |
 | 8 | Motor cửa cabin + 2 công tắc mở-hết/đóng-hết | 1 bộ | Nếu dùng cửa tự động |
 | 9 | Tiếp điểm khóa liên động cửa tầng | theo tầng | Đấu nối tiếp thành chuỗi |
 | 10 | Module DFPlayer + thẻ nhớ + amply/loa | 1 bộ | Tùy chọn (thông báo) |
@@ -88,8 +88,9 @@ Tất cả cảm biến hành trình phải **cùng kiểu NO hoặc NC** — qu
 | | CT cửa cabin ĐÓNG hết | P1.3 | Tác động = GND |
 | **Phím** | Ma trận cột C0..C2 | P2.4, P2.5, P2.6 | Xuất quét |
 | | Ma trận hàng R0..R3 | P1.4, P1.5, P1.6, P1.7 | Đọc, kéo lên nội |
-| | Gọi LÊN (ngoài buồng) | P3.5 | Nhấn = GND |
-| | Gọi XUỐNG (ngoài buồng) | P3.4 | Nhấn = GND |
+| | Nút gọi tại các tầng | (ma trận) | Song song phím cùng tầng — xem §3.3 |
+| | Nút phụ LÊN (tùy chọn) | P3.5 | Nhích 1 tầng / dừng khẩn khi đang xuống |
+| | Nút phụ XUỐNG (tùy chọn) | P3.4 | Nhích 1 tầng / dừng khẩn khi đang lên / về chuẩn |
 | **Ra biến tần** | Relay LÊN | P2.1 | → FWD |
 | | Relay XUỐNG | P2.2 | → REV |
 | | Relay TỐC ĐỘ CAO | P2.3 | → đầu vào đa cấp tốc độ |
@@ -120,7 +121,7 @@ Mọi định nghĩa chân nằm trong `src/true.h`.
 - Các vấu giảm tốc chiều LÊN đấu **song song** nhau về P3.2; chiều XUỐNG song song về P1.0.
 - Cabin mang cần gạt/cảm biến; vấu gắn trên rail tại từng vị trí.
 
-### 3.3 Bàn phím ma trận (trong buồng)
+### 3.3 Bàn phím ma trận (trong buồng) + nút gọi tầng
 
 ```
             C0=P2.4   C1=P2.5   C2=P2.6
@@ -132,6 +133,27 @@ R3=P1.7      MỞ CỬA    ĐÓNG CỬA  (dự phòng)
 
 Keypad màng 3×4 thông dụng đấu thẳng: 3 dây cột + 4 dây hàng. Chỉ hiện dùng
 số phím tầng = `SO_TANG`; phím tầng ≥ `SO_TANG` bị bỏ qua.
+
+**Nút gọi tại các tầng: đấu SONG SONG với phím cùng tầng của ma trận** (nối vào
+đúng **giao điểm hàng–cột** đó tại bo). Bo không phân biệt phím buồng hay nút
+gọi — bấm nút gọi tầng k, thang chạy về đúng tầng k; đang đậu tại k thì mở cửa.
+**Không tốn thêm ngõ vào nào.**
+
+Ví dụ nhà 6 tầng: toàn bộ 6 nút gọi chỉ cần **5 sợi dây trục** dọc hố
+(R0, R1, C0, C1, C2), mỗi tầng câu nút vào đúng cặp:
+
+```
+Trục 5 dây: ── R0 ── R1 ── C0 ── C1 ── C2 ──
+Tầng 5: nút bắc giữa R1–C2      Tầng 2: nút bắc giữa R0–C2
+Tầng 4: nút bắc giữa R1–C1      Tầng 1: nút bắc giữa R0–C1
+Tầng 3: nút bắc giữa R1–C0      Trệt : nút bắc giữa R0–C0
+```
+
+Lưu ý đi dây: **cáp riêng, tránh xa cáp động lực biến tần** (nhiễu PWM);
+bộ lọc 30 ms của firmware chặn xung nhiễu ngắn. Hai người bấm 2 nút cùng lúc:
+nút quét thấy trước được nhận, nút kia bỏ qua (vô hại). Muốn chống tuyệt đối
+trường hợp 3 phím đè cùng lúc gây nhận nhầm (ghost), thêm 1 diode nối tiếp
+mỗi nút — với thang gia đình thường không cần.
 
 ### 3.4 Đấu vào biến tần
 
@@ -244,7 +266,7 @@ máy trạng thái CỬA → loa/SMS → LCD. Watchdog phần cứng luôn hoạ
 
 | Define | Mặc định | Ý nghĩa |
 |---|---|---|
-| `SO_TANG` | 3 | Tổng số tầng (2–9), trệt = 0 |
+| `SO_TANG` | 6 | Tổng số tầng (2–9), trệt = 0 |
 | `THOI_GIAN_CHAY_TOI_DA` | 60 | Giây cho **mỗi đoạn** giữa 2 sự kiện cảm biến |
 | `KHOA_SAU_KHI_DUNG` | 100 | ×10 ms — khóa 1 s sau khi dừng |
 | `SO_LAN_CHONG_DOI` | 3 | ×10 ms — lọc dội 30 ms |
@@ -339,7 +361,9 @@ liên tục rồi mới chở người.
    `!LOI CUA CABIN` + SMS.
 10. ☐ Kích đồng thời đáy + vấu tầng → `!LOI CONG TAC HT` + SMS, không cho chạy.
 11. ☐ Phím MỞ CỬA/ĐÓNG CỬA hoạt động đúng; bấm số tầng đang đậu → chỉ mở cửa.
-12. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
+12. ☐ Nút gọi từng tầng: bấm ở mỗi tầng → thang về đúng tầng đó; khi mất mốc,
+    phím TRỆT/nút gọi trệt kích hoạt về chuẩn.
+13. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
 
 ---
 
@@ -348,13 +372,16 @@ liên tục rồi mới chở người.
 **Trong buồng:** bấm **số tầng** muốn đến — hết. Cửa tự đóng rồi thang chạy, đến
 nơi loa thông báo và cửa tự mở. `MỞ CỬA` để giữ/mở cửa, `ĐÓNG CỬA` để đi ngay.
 
-**Ngoài buồng:** bấm nút gọi — thang nhích 1 tầng về phía bạn mỗi lần bấm
-(giới hạn của 2 dây gọi chung; có thể bấm nhiều lần).
+**Ngoài buồng:** bấm **nút gọi của tầng mình** — thang chạy thẳng về tầng đó
+(đang đậu đúng tầng thì cửa mở). Thang đang chạy thì lệnh gọi bị bỏ qua,
+chờ thang dừng rồi bấm lại.
 
-**Dừng khẩn cấp khi đang chạy:** bấm nút gọi **ngược chiều** đang chạy.
+**Dừng khẩn cấp khi đang chạy:** bấm nút phụ **ngược chiều** đang chạy
+(P3.4/P3.5 — nên lắp ít nhất trong buồng).
 
-**Sau mất điện:** nếu màn hình báo `CHUA RO VI TRI` → bấm GỌI XUỐNG, chờ thang
-bò về trệt là dùng bình thường.
+**Sau mất điện:** nếu màn hình báo `CHUA RO VI TRI` → bấm **phím TRỆT** (trong
+buồng hoặc nút gọi trệt) hoặc nút phụ XUỐNG, chờ thang bò về trệt là dùng
+bình thường.
 
 **Khi nhận SMS báo lỗi:** đọc mục §13 theo nội dung tin.
 
@@ -405,9 +432,8 @@ bò về trệt là dùng bình thường.
 
 **Giới hạn thiết kế:**
 - Bo không đo tốc độ thực (không encoder) — dựa hoàn toàn vào vấu + biến tần.
-- Nút gọi ngoài buồng chỉ 2 dây → chỉ "nhích 1 tầng/lần bấm", không tự về đúng
-  tầng người gọi.
-- Không xếp hàng nhiều lệnh gọi đồng thời (thang gia đình, 1 lệnh 1 lần).
+- Không xếp hàng nhiều lệnh gọi đồng thời: đang chạy thì lệnh gọi/chọn tầng bị
+  bỏ qua, phải chờ thang dừng (thang gia đình, 1 lệnh 1 lần).
 - SMS chỉ gửi báo lỗi, không nhận lệnh điều khiển từ xa (cố ý — an toàn).
 - Đây là thang **gia đình tự lắp** — không thay thế tiêu chuẩn thang máy thương mại
   (TCVN 6395/6396); các cơ cấu an toàn cơ khí (governor, phanh an toàn, giảm chấn)
