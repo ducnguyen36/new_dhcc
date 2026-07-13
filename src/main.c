@@ -77,6 +77,25 @@ static u8 goi_duoi(u8 tu)
   }
 }
 
+#if CO_LED_TANG
+/* Xuat trang thai hang doi ra LED bao tang qua 74HC595.
+   Gui 16 bit (bit cao truoc) -> 1 con 595: Q0..Q7 = tang 0..7;
+   noi tang 2 con: con thu 2 nhan tang 8..15. */
+static void led_cap_nhat(u16 mask)
+{
+  u8 __data i;
+  led_latch = 0;
+  for (i = 16; i != 0; i--)
+  {
+    led_data = (mask >> (i - 1)) & 1;
+    led_clock = 1;
+    led_clock = 0;
+  }
+  led_latch = 1; // suon len chot ra ngo ra
+  led_latch = 0;
+}
+#endif
+
 /* Quet ban phim ma tran 3 cot x 4 hang.
    Tra ve ma phim dang nhan (hang*3+cot) hoac KHONG_PHIM. */
 static u8 quet_ma_tran()
@@ -145,6 +164,9 @@ void main()
   u16 __data tick_chay = 0;
   u8 __data khoa = 0;
   u8 __data mp3_giu = 0;
+#if CO_LED_TANG
+  u16 __data led_cu = 0xffff; // ep cap nhat LED lan dau (tat het)
+#endif
 
   /* chong doi */
   u8 __data dem_goi_len = 0, dem_goi_xuong = 0, dem_chuoi = 0;
@@ -172,7 +194,7 @@ void main()
   P2M0 = 0xff; // relay + cot ma tran + nguon SIM - push pull
   P3M1 = P3M0 = 0;
   P4M1 = 0;
-  P4M0 = 0x1c; // P4.2 amply, P4.3, P4.4 relay cua - push pull
+  P4M0 = 0x3e; // P4.1/4.3/4.5 LED 595, P4.2 amply, P4.4 relay cua - push pull
   P5M1 = P5M0 = 0;
   P2 = 0x70; // relay tat, cot ma tran muc 1 (P24-P26), SIM tat
   P3 = 0xff;
@@ -748,6 +770,15 @@ void main()
     {
       RelayCuaMo = 0;
       RelayCuaDong = 0;
+    }
+#endif
+
+#if CO_LED_TANG
+    /* LED bao tang: sang khi tang dang trong hang doi, den noi tu tat */
+    if (dang_ky != led_cu)
+    {
+      led_cu = dang_ky;
+      led_cap_nhat(dang_ky);
     }
 #endif
 

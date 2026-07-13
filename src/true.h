@@ -70,4 +70,15 @@
 /*********** MODULE SIM A7680C (cong SIM co san tren bo) ***************/
 #define		gsm_pw			P20
 
+/*********** LED BAO TANG DANG CHON (IC ghi dich 74HC595) ***************/
+// DS (chan 14): du lieu noi tiep
+#define		led_data		P41
+// SHCP (chan 11): xung dich
+#define		led_clock		P43
+// STCP (chan 12): xung chot ra ngo ra
+#define		led_latch		P45
+// Q0..Q7 cua 74HC595 -> LED tang 0..7 (+ dien tro ~470R moi LED).
+// Tren 8 tang: noi tang them 1 con 595 (Q7' -> DS con sau), firmware
+// luon gui 16 bit nen khong phai sua code.
+
 #endif

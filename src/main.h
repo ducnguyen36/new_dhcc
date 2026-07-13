@@ -59,6 +59,10 @@
 #define CO_SIM_A7680C 1
 #define SDT_BAO_LOI "0949847098"
 
+// 1 = co LED bao tang dang chon qua 74HC595 (3 chan: data/clock/latch).
+// Den tang k sang khi tang k dang trong hang doi, tat khi da phuc vu.
+#define CO_LED_TANG 1
+
 /**************** TRANG THAI CHAY ****************/
 #define DUNG 0
 #define DANG_LEN 1

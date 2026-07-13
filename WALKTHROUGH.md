@@ -60,8 +60,13 @@ tránh xa cáp động lực biến tần. Chi tiết: `docs/WALKTHROUGH_THANG_B
 | **TỐC ĐỘ CAO** | P2.3 | Đầu vào đa cấp tốc độ (dùng tiếp điểm C–NO–NC, xem BIEN_TAN.md §2) |
 | **MỞ cửa cabin** | P2.7 | Motor cửa chiều mở (qua relay/contactor trung gian) |
 | **ĐÓNG cửa cabin** | P4.4 | Motor cửa chiều đóng |
+| **LED tầng** (74HC595) | P4.1/P4.3/P4.5 | Data/Clock/Latch → Q0..Q7 = đèn tầng 0..7 |
 | Amply loa | P4.2 | Như bản 2.0 |
 | Nguồn SIM | P2.0 | Như bản 2.0 |
+
+**Đèn báo tầng đang chọn:** tầng nào trong hàng đợi thì LED tầng đó sáng, phục
+vụ xong tự tắt; dừng khẩn/lỗi (xóa hàng đợi) → tắt hết đèn. Chi tiết đấu 74HC595:
+`docs/WALKTHROUGH_THANG_BIEN_TAN.md` §2. Không dùng: `CO_LED_TANG 0`.
 
 Module MP3 (P4.6/P4.7, BUSY P1.2) và SIM A7680C (P3.0/P3.1) giữ nguyên như bản 2.0
 (thẻ nhớ `/MP3`: `0001` đi lên, `0002` đi xuống, `0011+` đến tầng).

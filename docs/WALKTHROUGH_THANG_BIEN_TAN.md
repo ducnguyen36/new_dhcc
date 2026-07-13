@@ -99,6 +99,9 @@ Tất cả cảm biến hành trình phải **cùng kiểu NO hoặc NC** — qu
 | **Loa** | UART2 MP3 | P4.6 / P4.7 | Cổng MP3 có sẵn |
 | | BUSY MP3 | P1.2 | 1 = đang phát |
 | | Relay amply | P4.2 | Tự bật khi phát |
+| **LED tầng** | Data 74HC595 (DS, ch.14) | P4.1 | Đèn báo tầng đang chọn |
+| | Clock 74HC595 (SHCP, ch.11) | P4.3 | |
+| | Latch 74HC595 (STCP, ch.12) | P4.5 | Q0..Q7 → LED tầng 0..7 |
 | **SIM** | UART1 A7680C | P3.0 / P3.1 | Cổng SIM có sẵn |
 | | Nguồn SIM | P2.0 | Bo tự bật |
 
@@ -282,6 +285,7 @@ máy trạng thái CỬA → loa/SMS → LCD. Watchdog phần cứng luôn hoạ
 | `TRACK_DI_LEN/XUONG/TOI_TANG` | 1/2/11 | Số bài trên thẻ nhớ |
 | `CO_SIM_A7680C` | 1 | SMS báo lỗi |
 | `SDT_BAO_LOI` | "0949847098" | **NHỚ SỬA** số nhận tin |
+| `CO_LED_TANG` | 1 | LED báo tầng đang chọn qua 74HC595 |
 
 ---
 
@@ -367,7 +371,9 @@ liên tục rồi mới chở người.
 13. ☐ Xếp hàng: đứng ở trệt bấm `2` rồi bấm ngay `4` → thang ghé tầng 2 (mở
     cửa) rồi tự chạy tiếp lên tầng 4. Đang đi lên bấm `5` và `1` → ghé 5 trước
     (cùng chiều), xong quay xuống 1. Dừng khẩn → bấm lại thấy hàng đợi đã xóa.
-14. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
+14. ☐ LED tầng: bấm chọn tầng → đèn tầng đó sáng; đến tầng → đèn tắt; dừng
+    khẩn → tất cả đèn tắt.
+15. ☐ Lắp thật: chạy đủ các cặp tầng 2 chiều, kiểm tra dừng ngang sàn, cập bến êm.
 
 ---
 
@@ -390,6 +396,16 @@ tiếp — kể cả **khi thang đang chạy** — mọi lệnh được ghi nh
 Lưu ý: lệnh bấm **quá muộn** (cabin đã vượt vấu giảm tốc của tầng đó) sẽ không
 kịp dừng êm → thang chạy qua và tự quay lại phục vụ ở lượt sau — giống thang
 máy thật. Dừng khẩn cấp / lỗi / đứt chuỗi cửa sẽ **xóa toàn bộ hàng đợi**.
+
+**Đèn báo tầng đang chọn (74HC595):** mỗi tầng trong hàng đợi có 1 LED sáng
+(đèn nút như thang máy thật), thang phục vụ xong tầng nào đèn tầng đó tự tắt;
+dừng khẩn/lỗi xóa hàng đợi thì toàn bộ đèn tắt — nhìn đèn biết ngay hàng đợi.
+Đấu nối: 3 chân bo (P4.1 data, P4.3 clock, P4.5 latch) vào 74HC595
+(VCC=5V, MR̅=5V, OE̅=GND); Q0..Q7 → LED tầng 0..7 qua điện trở ~470Ω.
+LED nút buồng và đèn nút gọi tầng có thể đấu song song trên cùng ngõ Q
+(dòng lớn thì qua transistor). Trên 8 tầng: nối tầng con 595 thứ hai
+(Q7' của con 1 → DS con 2) — firmware gửi sẵn 16 bit, không phải sửa code.
+Không dùng: đặt `CO_LED_TANG 0`.
 
 **Dừng khẩn cấp khi đang chạy:** bấm nút phụ **ngược chiều** đang chạy
 (P3.4/P3.5 — nên lắp ít nhất trong buồng).
