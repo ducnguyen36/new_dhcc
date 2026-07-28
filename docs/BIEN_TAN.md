@@ -60,6 +60,14 @@ DEC; bò quá lâu → dời vấu gần lại.
 > của đúng model trước khi cài. Nguyên tắc chung: 1 cấp CAO (50 Hz), 1 cấp DÒ
 > (8–12 Hz), ACC/DEC 2–3.5 s.
 
+### 👉 Fuji FRENIC-Mini FRN3.7C1S-2J — **xem tài liệu riêng, đầy đủ**
+
+Đây là biến tần đang dùng cho thang nhà: hướng dẫn chi tiết (sơ đồ chân thực tế,
+SINK/SOURCE, bảng tham số đầy đủ, chỉnh vấu giảm tốc, phanh, điện trở xả, mã lỗi,
+trình tự chạy thử) nằm ở **[`BIEN_TAN_FUJI_FRN3.7C1S.md`](BIEN_TAN_FUJI_FRN3.7C1S.md)**.
+Tóm tắt: `F02=1`, `E01=0` (X1=SS1), `E02=1` (X2=SS2), `C05=50Hz`, `C06=10Hz`,
+`F07/F08=2.5s`, `H07=2` (S-curve), `F43=0`, `F14=0`.
+
 ### Mitsubishi FR-D700 / E700
 - `STF` = lên, `STR` = xuống, `SD` = COM (sink).
 - Tốc độ: relay đảo → **RH** (NO) và **RM** (NC). `Pr.4` (RH) = 50 Hz,

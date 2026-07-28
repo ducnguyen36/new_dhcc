@@ -18,6 +18,7 @@ Firmware bộ điều khiển thang máy/thang nâng gia đình chạy trên bo 
 - 📖 **[WALKTHROUGH.md](WALKTHROUGH.md)** — tóm tắt nhanh 1 trang
 - 📚 **[docs/WALKTHROUGH_THANG_BIEN_TAN.md](docs/WALKTHROUGH_THANG_BIEN_TAN.md)** — toàn bộ hệ thống: đấu nối, nguyên lý, lắp đặt, checklist nghiệm thu, xử lý sự cố
 - ⚙️ **[docs/BIEN_TAN.md](docs/BIEN_TAN.md)** — thông số biến tần từng hãng (Mitsubishi, LS, Delta, INVT, Yaskawa)
+- 🔌 **[docs/BIEN_TAN_FUJI_FRN3.7C1S.md](docs/BIEN_TAN_FUJI_FRN3.7C1S.md)** — **đấu nối + cài đặt cho biến tần Fuji FRENIC-Mini đang dùng tại nhà** (tăng/giảm tốc 2 cấp)
 
 ## Build nhanh
 
