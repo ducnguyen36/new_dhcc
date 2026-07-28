@@ -5,50 +5,80 @@
 /*--------Khong duoc phep thay doi-------*/
 #define		FOSC		12000000L
 
-#define		PORT_KEY	P3
-#define		PORT_OUT 	P2
+/**************** SO DO CHAN - BAN BIEN TAN + CUA + PHIM MA TRAN ********
+ Bo dieu khien thang may dung bien tan 3 pha, 2 cap toc do
+ (cao / do tang), cua cabin tu dong, ban phim ma tran 3x4.
+*************************************************************************/
 
+/*********** NUT PHU NGOAI BUONG (muc 0 = nhan, tuy chon) ***************/
+// Nut goi tang chinh thuc dau SONG SONG voi phim cung tang cua ma tran.
+// 2 nut nay la phu: nhich 1 tang / DUNG KHAN CAP khi dang chay (bam
+// nguoc chieu) / ve chuan. Khong lap thi bo trong.
+#define		goi_len			P35
+#define		goi_xuong		P34
 
+/*********** BAN PHIM MA TRAN 3 COT x 4 HANG (trong buong) ***************/
+//        C0(P24)  C1(P25)  C2(P26)
+// R0(P14)  TRET    TANG1    TANG2
+// R1(P15)  TANG3   TANG4    TANG5
+// R2(P16)  TANG6   TANG7    TANG8
+// R3(P17)  MO CUA  DONG CUA (du phong)
+#define		mt_cot0			P24
+#define		mt_cot1			P25
+#define		mt_cot2			P26
+#define		mt_hang0		P14
+#define		mt_hang1		P15
+#define		mt_hang2		P16
+#define		mt_hang3		P17
 
-/*********** Keys ***************/
-#define		phim_mode_vao		P35
-#define		key_in2		P33
-#define		key_in3		P34
+/*********** CAM BIEN VI TRI (kieu NO/NC theo CT_THUONG_MO) ***************/
+// cam 1 cu: cong tac DAY - moc chuan tuyet doi tai tang tret
+#define		ct_day			P36
+// cam 2 cu: cam bien TANG - vau tai moi tang (tru tret)
+#define		ct_dinh			P37
+// cam bien GIAM TOC chieu LEN - vau dat DUOI moi tang
+#define		gt_len			P32
+// cam bien GIAM TOC chieu XUONG - vau dat TREN moi tang
+#define		gt_xuong		P10
 
-/************ CAMS ******************/
-#define		cam_che2	    P37
-#define		cam_che     	P36
+/*********** CUA ***************/
+// Chuoi an toan cua TANG (khoa lien dong cac cua tang noi tiep):
+// tat ca cua dong = dong xuong GND; ho (hoac dut day) = cam chay
+#define		tiep_diem_cua	P33
+// Cong tac cua cabin MO het (tac dong = dong xuong GND)
+#define		ct_cua_mo		P11
+// Cong tac cua cabin DONG het (tac dong = dong xuong GND)
+#define		ct_cua_dong		P13
 
-/*********** DALAS ***************/
-#define		clock_in	P32
+/*********** RELAY NGO RA (muc 1 = dong tiep diem) ***************/
+// FWD bien tan - chay LEN (relay DEN cu - P21)
+#define		RelayLen		P21
+// REV bien tan - chay XUONG (relay SAC cu - P22)
+#define		RelayXuong		P22
+// Chon cap TOC DO CAO cua bien tan (relay RING cu - P23)
+// dung tiep diem dao C-NO-NC: NO = dau vao toc do cao, NC = toc do do tang
+#define		RelayTocDoCao	P23
+// Motor MO cua cabin
+#define		RelayCuaMo		P27
+// Motor DONG cua cabin
+#define		RelayCuaDong	P44
 
+/*********** MODULE MP3 (DFPlayer - cong MP3 co san tren bo) ***************/
+#define		mp3_playing		P12
+#define		AmplyRelay		P42
 
-/************ MOTOR STATUS ******************/
-#define		motor_run_sign	P41
+/*********** MODULE SIM A7680C (cong SIM co san tren bo) ***************/
+#define		gsm_pw			P20
 
-/************ LED ******************/
-#define		over_cur_led	P07
-
-
-
-/*********** MOTORS DC ***************/
-// Timer 0 = motor control
-#define		motorS2	  P43
-#define		motorS1   P44
-
-/*********** MOTORS DRIVER ***************/
-#define     motor1    P27
-#define     motor3    P26
-#define     motor2    P25
-#define     motor4    P24
-
-
-#define	cam_sign_out	cam_out1
-#define	zero_sign_out	cam_out2
-
-/* RELAY */
-#define		DenRelay		P21
-#define		ChargeRelay		P22
-#define		RingRelay		P23
+/*********** LED BAO TANG DANG CHON (IC ghi dich 74HC595) ***************/
+// DS (chan 14): du lieu noi tiep
+#define		led_data		P41
+// SHCP (chan 11): xung dich
+#define		led_clock		P43
+// STCP (chan 12): xung chot ra ngo ra
+#define		led_latch		P45
+// Q0..Q7 cua 74HC595 -> LED tang 0..7 (+ dien tro ~470R moi LED).
+// Tren 8 tang: noi tang them 1 con 595 (Q7' -> DS con sau), firmware
+// luon gui 16 bit nen khong phai sua code.
 
 #endif

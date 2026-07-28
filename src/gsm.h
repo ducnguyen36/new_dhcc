@@ -1,43 +1,18 @@
-#include "true.h"
+#ifndef GSM_H
+#define GSM_H
 #include "common.h"
+#include "true.h"
 
-/*********** Sim 900 ***************/
-#define		gsm_pw			P20
-// Baurate general = Timer 1
-#define		gsm_RI			RI
-#define		gsm_TI			TI
-#define		gsm_SBUF		SBUF
+// UART1 (chan P3.0/P3.1 - cong SIM co san tren bo), Timer1 lam baudrate
+#define gsm_TI TI
+#define gsm_SBUF SBUF
+#define GSM_BAUD 38400
 
-#define		gsm_BAUD		38400
+void gsm_serial_init();
+void gsm_khoi_tao();          // gui AT dong bo + tat echo + che do text
+void gsm_gui_chuoi(u8 *s);
+void gsm_sms_batdau();        // mo phien gui SMS toi SDT_BAO_LOI
+void gsm_sms_so(u8 so);       // gui 1 chu so 0-9 vao noi dung
+void gsm_sms_ketthuc();       // Ctrl-Z + doi module gui xong
 
-void gsm_init();
-void send_gsm_byte(u8 dulieu);
-void send_gsm_cmd(u8 *cmd);
-
-extern u8 __xdata    gsm_serial_cmd;
-
-#define     PHU         0
-#define     CHINH       1
-
-#define     NORMAL      0
-#define     CFUN        1
-#define     CLK         2
-#define     PHONE       3
-#define     PIN         4
-#define     CMD         5
-#define     CFUN1       6
-#define     CUSD        7
-#define     CMGS        8
-#define     CSPN        10
-#define     CALR        11
-#define     COPS        12
-#define     SDT         13
-#define     CSQ         14
-
-#define     VIETTEL     't'
-#define     MOBIFONE    'f'
-#define     VINAPHONE   'P'
-#define     VIETNAM     'n'
-
-#define     CHOXULY     1
-#define     DANGXULY    2
+#endif

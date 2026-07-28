@@ -1,0 +1,27 @@
+-muwx
+-i .pio\build\4.9FD_\TT1ST\firmware.hex
+-M
+-I 0x0100
+-X 0x0700
+-C 0xf000
+-b HOME = 0x0000
+-b XSEG = 0x0001
+-b PSEG = 0x0001
+-b ISEG = 0x0000
+-b BSEG = 0x0000
+-k .pio\build\4.9FD_\TT1ST
+-k C:\Users\ducng\.platformio\packages\toolchain-sdcc@1.40200.0\bin\..\lib\small
+-l mcs51
+-l libsdcc
+-l libint
+-l liblong
+-l libfloat
+.pio\build\4.9FD_\TT1ST\src\dsrtc.rel
+.pio\build\4.9FD_\TT1ST\src\eeprom.rel
+.pio\build\4.9FD_\TT1ST\src\gsm.rel
+.pio\build\4.9FD_\TT1ST\src\i2c.rel
+.pio\build\4.9FD_\TT1ST\src\lcd.rel
+.pio\build\4.9FD_\TT1ST\src\main.rel
+.pio\build\4.9FD_\TT1ST\src\mp3_serial.rel
+
+-e
