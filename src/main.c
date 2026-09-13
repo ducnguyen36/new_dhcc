@@ -27,7 +27,6 @@ u8 __code ver[] = VERSION;
 #include "chuong_trinh.c"
 #include "gsm_serial.c"
 #include "motor_cam_phim.c"
-#include "xu_ly_tin_nhan.c"
 
 // Display error message on LCD (used in GPS mode when SMS is disabled)
 void display_error()
@@ -264,50 +263,37 @@ void main()
 
   ChargeRelay = 1;
 
-  /*Khoi tao serial baudrate 38400 cho GPS hoac SIM module*/
+  /*Khoi tao serial baudrate 38400 cho module GPS ATGM336H*/
   LCD_guilenh(0x80);
-  LCD_guichuoi("DETECT GPS/SIM  ");
+  LCD_guichuoi("  KHOI DONG GPS ");
   gsm_init();
 
-  // Initialize GPS detection variables
+  // Initialize GPS parsing variables
   gps_module_atgm = 0;
   gps_valid_fix = 0;
   gnrmc_field_index = 0;
   gnrmc_char_index = 0;
   gsm_serial_cmd = NORMAL;
 
-  // Wait 3 seconds for serial data to detect GPS module
+  // Cho toi 3 giay de nhan cau NMEA dau tien tu module GPS
   {
     u8 detect_countdown = 100; // 30 * 100ms = 3 seconds
-    
-    
+
     while (detect_countdown-- && !gps_module_atgm)
     {
-      //   send_gsm_byte(detect_countdown / 10 + '0');
       delay_ms(100);
       WATCHDOG;
     }
-   
-    
   }
 
-  // Configure based on detected module
-  if (gps_module_atgm)
-  {
-    // ATGM336H GPS module detected
-    LCD_guilenh(0x80);
-    LCD_guichuoi("GPS MODULE ATGM ");
-    delay_ms(1000);
-    gps_configure_atgm336h();
-    gps_sync_allowed = 1; // Allow initial GPS sync to RTC
-    nosim = 1;            // No SIM module present
-  }
-  else
-  {
-    // SIM module detected (or no module)
-    LCD_guilenh(0x80);
-    LCD_guichuoi("POWER ON SIM800 ");
-  }
+  // Ban GPS-only: luon cau hinh va chay o che do GPS
+  LCD_guilenh(0x80);
+  LCD_guichuoi("GPS MODULE ATGM ");
+  delay_ms(1000);
+  gps_configure_atgm336h();
+  gps_module_atgm = 1;  // hardcode: luon o che do GPS
+  gps_sync_allowed = 1; // cho phep dong bo GPS lan dau vao RTC
+  nosim = 1;            // khong co module SIM
 
   /*Khoi tao serial baudrate 9600 cho dfplayer module*/
   LCD_guilenh(0x80);
@@ -628,28 +614,16 @@ void main()
   LCD_guichuoi("THIET LAP MOTOR ");
   motor_step_int_init();
 
-  bat_phone_phu = eep_phonephu[11] & 1;
   GPS_time = 0;
-  if (!nosim && !gps_module_atgm && gsm_thietlapsim800())
+  // Cho toi 3 giay de GPS dong bo gio lan dau (interrupt xu ly $GNRMC)
   {
-    gsm_thietlapngaygiothuc();
-
-    gsm_thietlapgoidien();
-    // gsm_thietlapnhantin();
-    if (gsm_thietlapnhantin())
-    { // thiet lap thong so nhan tin
-      if (!eep_norreset)
-        baocaosmsdaydu(CHINH, "\rsoft reset");
-      else
-      {
-        baocaosmsdaydu(CHINH, "\rready");
-        if (bat_phone_phu)
-          baocaosmsdaydu(PHU, "\rready");
-      }
-      kiemtrasodienthoai();
+    u8 gps_wait = 30;
+    while (gps_wait-- && !GPS_time)
+    {
+      delay_ms(100);
+      WATCHDOG;
     }
   }
-  // gsm_laygio_gps();
   if (!GPS_time)
     so_gio_mat_gps++;
   hour12 = (hour > 11) ? hour - 12 : hour;
@@ -693,29 +667,9 @@ void main()
     if (phut_out)
     {
       phut_out = 0;
-      send_gsm_cmd("***stc");
-      send_gsm_byte(day / 10 + '0');
-      send_gsm_byte(day % 10 + '0');
-      send_gsm_byte(month / 10 + '0');
-      send_gsm_byte(month % 10 + '0');
-      send_gsm_byte(year / 10 + '0');
-      send_gsm_byte(year % 10 + '0');
-      send_gsm_byte(hour / 10 + '0');
-      send_gsm_byte(hour % 10 + '0');
-      send_gsm_byte(minute / 10 + '0');
-      send_gsm_byte(minute % 10 + '0');
-      send_gsm_byte(second / 10 + '0');
-      send_gsm_byte(second % 10 + '0');
-      send_gsm_cmd("###\r\n");
     }
     if (!bao_cao_dien_ap_thap && dien_ap_thap)
     {
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rdien ap thap");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rdien ap thap");
-      }
       last_error_type = 1;
       last_error_subtype = 0;
 
@@ -724,12 +678,6 @@ void main()
     }
     if (bao_cao_dien_ap_thap && !dien_ap_thap)
     {
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rdien ap khoi phuc");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rdien ap khoi phuc");
-      }
       last_error_type = 1;
       last_error_subtype = 1;
 
@@ -739,69 +687,34 @@ void main()
     if (!xung_giay_check && !mat_xung_giay)
     {
       mat_xung_giay = 1;
-      // baocaosms(CHINH,"\rmat xung giay");
     }
     // multi motor
     if (!thoi_gian_doi_doc_cam[0] && !loi_cam_motor1)
     {
       loi_cam_motor1 = 1;
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rloi doc cam 1");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rloi doc cam 1");
-      }
       last_error_type = 2;
       display_error();
     }
     if (so_motor > 1 && !thoi_gian_doi_doc_cam[1] && !loi_cam_motor2)
     {
       loi_cam_motor2 = 1;
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rloi doc cam 2");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rloi doc cam 2");
-      }
       last_error_type = 3;
       display_error();
     }
     if (so_motor > 2 && !thoi_gian_doi_doc_cam[2] && !loi_cam_motor3)
     {
       loi_cam_motor3 = 1;
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rloi doc cam 3");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rloi doc cam 3");
-      }
       last_error_type = 4;
       display_error();
     }
     if (so_motor == 4 && !thoi_gian_doi_doc_cam[3] && !loi_cam_motor4)
     {
       loi_cam_motor4 = 1;
-      if (!gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rloi doc cam 4");
-        if (bat_phone_phu)
-          baocaosms(PHU, "\rloi doc cam 4");
-      }
       last_error_type = 5;
       display_error();
     }
     if (giay_out)
     {
-      if (!gsm_pw)
-      {
-        if (!--gsm_delay_reset)
-        {
-          ADC_CONTR = 0x83;
-          gsm_pw = 1;
-          gsm_delay_reset = 30;
-          gsm_reset = 1;
-        }
-      }
       if (delay_ve_kim && !canhkim && !--delay_ve_kim)
       {
         canhkim = 5;
@@ -846,18 +759,13 @@ void main()
     if (!mode && (eep_mp3 % 4) == 2)
       kiem_tra_nhac();
 
-    if (((eep_ngayreset && !ngay_reset_con_lai && eep_gioreset == hour &&
-          minute > 5) ||
-         so_lan_goi_dien > 1) &&
-        motor_index == 5 && motor_index2 == 5 &&
+    if (eep_ngayreset && !ngay_reset_con_lai && eep_gioreset == hour &&
+        minute > 5 && motor_index == 5 && motor_index2 == 5 &&
         (!(eep_mp3 % 4) || !mp3_playing))
     {
       if (max_second < 60)
         rtc_settime(eep_gioreset, 6, 0);
-      if (so_lan_goi_dien > 1 && !gps_module_atgm)
-        baocaosms(CHINH, "\rChuan bi reset phan mem tu cuoc goi");
       EA = 0;
-      gsm_pw = 0;
       IAP_ghibyte(NORRESET_EEPROM, 0);
       // RingRelay = 1;
       delay_ms(4000);
@@ -869,15 +777,19 @@ void main()
     {
       if (eep_gpson)
       {
-        // gsm_laygio_gps();
-        if (gps_module_atgm)
-        {
-          gps_sync_allowed = 1; // Allow GPS sync at top of hour
-        }
+        GPS_time = 0;
+        gps_sync_allowed = 1; // cho phep dong bo GPS dau gio
         motor_index = motor_index2 = 5;
-        delay_ms(3000);
         gsm_serial_cmd = NORMAL;
-        gsm_thietlapngaygiothuc();
+        // Cho toi 3 giay de nhan cau $GNRMC va dong bo RTC trong interrupt
+        {
+          u8 gps_wait = 30;
+          while (gps_wait-- && !GPS_time)
+          {
+            delay_ms(100);
+            WATCHDOG;
+          }
+        }
         hour12 = (hour > 11) ? hour - 12 : hour;
 
         if (so_gio_mat_gps > 34 && !motor_dung)
@@ -902,10 +814,6 @@ void main()
         // rtc_getdate(&date,&day,&month,&year);
       }
 
-      if (eep_baocao && !gps_module_atgm)
-      {
-        baocaosms(CHINH, "\rbao cao dau gio");
-      }
       da_gui_bao_cao = 1;
       motor_index = motor_run_check();
       motor_index2 = motor_run_check2();
@@ -922,41 +830,9 @@ void main()
       AmplyRelay = 0;
     }
 
-    if (co_tin_nhan_moi && !gps_module_atgm)
-    {
-      co_tin_nhan_moi = 0;
-      gsm_sendandcheck("AT\r", 15, 1, "CO TIN NHAN MOI ");
-      send_gsm_cmd("AT+CMGL=\"ALL\"\r");
-    }
-    if (goi_dien_thoai && !gps_module_atgm)
-    {
-      goi_dien_thoai = 0;
-      gsm_quay_so(phone_chinh);
-    }
     switch (mode)
     {
     case 0:
-      if (gsm_reset)
-      {
-        ADC_CONTR = 0x8b;
-        gsm_reset = 0;
-        gsm_serial_cmd = NORMAL;
-        // gsm_laygio_gps();
-        gsm_thietlapngaygiothuc();
-        hour12 = hour % 12;
-        if (gsm_thietlapnhantin() && !gps_module_atgm)
-        {
-          baocaosms(CHINH, "\rgsm reset thanh cong");
-        }
-      }
-      if (sms_dang_xu_ly)
-      {
-        /*xu ly tin nhan*/
-        xu_ly_tin_nhan();
-        gsm_sendandcheck("AT+CMGD=1,4\r", 15, 1, "  SENDING CMGDA  ");
-        sms_dang_xu_ly = 0;
-      }
-      else
       {
         switch (so_motor)
         {
@@ -1018,12 +894,6 @@ void main()
         mp3_status = mp3_IDLE;
         if (phim_back_nhan)
           phim_back_nhan = 0;
-        else if (!gps_module_atgm)
-        {
-          baocaosms(CHINH, "\rchinh gio bang tay");
-          if (bat_phone_phu)
-            baocaosms(PHU, "\r*chinh gio bang tay*");
-        }
       }
       break;
 
@@ -1107,24 +977,7 @@ void main()
             LCD_guidulieu(thutemp + '0');
             break;
           case DIENTHOAI:
-            if (nosim)
-              LCD_guichuoi("\300  KHONG CO SIM  ");
-            else if (!gsm_pw)
-              LCD_guichuoi("\300  GSM TAT NGUON ");
-            else
-            {
-              kiemtratinhieu();
-              kiemtrataikhoan();
-              LCD_xoa(DUOI);
-              LCD_guilenh(0xc0);
-              LCD_guichuoi(lenh_sms);
-              LCD_guilenh(0x80);
-              phone[10] = 0;
-              LCD_guichuoi(phone);
-              LCD_guilenh(0x8e);
-              LCD_guidulieu(signal / 10 + '0');
-              LCD_guidulieu(signal % 10 + '0');
-            }
+            LCD_guichuoi("\300  CHE DO GPS    ");
             break;
           case DATE:
             LCD_guichuoi("\300  ");
@@ -1275,8 +1128,18 @@ void main()
         mp3_minute = 60;
         if (eep_gpson)
         {
-
-          gsm_thietlapngaygiothuc(); // gsm_laygio_gps();
+          GPS_time = 0;
+          gps_sync_allowed = 1;
+          gsm_serial_cmd = NORMAL;
+          // Cho toi 3 giay de nhan cau $GNRMC va dong bo RTC
+          {
+            u8 gps_wait = 30;
+            while (gps_wait-- && !GPS_time)
+            {
+              delay_ms(100);
+              WATCHDOG;
+            }
+          }
           if (!GPS_time)
             so_gio_mat_gps++;
           else
