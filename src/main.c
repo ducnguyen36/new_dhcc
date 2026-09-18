@@ -201,12 +201,17 @@ void main()
     eeprom_buf[DEBUG_EEPROM] = 0x3b;
   if (eeprom_buf[CAM_EEPROM] > 1)
     eeprom_buf[CAM_EEPROM] = 1;
+  eeprom_buf[CAM_DELAY_EEPROM] = cam_delay_from_eeprom(
+      eeprom_buf[CAM_DELAY_EEPROM], eeprom_buf[MOTOR_EEPROM] & 4);
+  if (eeprom_buf[STEP_DIR_EEPROM] > 1)
+    eeprom_buf[STEP_DIR_EEPROM] = 0;
   // multi motor
   IAP_ghisector1();
   so_motor = (eep_motor & 3) + 1;
   may_dc = (eep_motor & 4);
   motorDir = atmel_phat = (eep_motor & 8);
   motor_dung = (eep_motor & 16);
+  dao_chieu_step = eep_step_dir;
   // motor_debug = (eep_motor & 32);
   // get the first 3 bit of eep_motor
   // thoi_gian_giu_motor_con_lai = thoi_gian_giu_motor = ((eep_motor & 192) >>
@@ -230,7 +235,7 @@ void main()
   if (!(eep_debug & 16) || max_second < 60)
     sim_test_sec = 61;
 
-  thoi_gian_doi_cam_chuan = (eep_motor & 64) ? 255 : (may_dc ? 30 : 10);
+  thoi_gian_doi_cam_chuan = eep_cam_delay;
 
   switch (so_motor)
   {
@@ -333,6 +338,8 @@ void main()
     u8 debug_dem = 0;
     // u8 cam_temp = 0;
     u8 mp3temp = eep_mp3;
+    u8 cam_delay_temp = eep_cam_delay;
+    u8 step_dir_temp = eep_step_dir;
     __bit debug = 0;
     giotemp = eep_debug;
     // cam_temp = eep_cam;
@@ -480,10 +487,38 @@ void main()
           }
           break;
         case 4:
+          sub_mode = cam_delay_temp;
+          if (lcd_update_chop)
+          {
+            lcd_update_chop = 0;
+            LCD_guichuoi("\200CAM DELAY: ");
+            LCD_guidulieu(chop ? '_' : (cam_delay_temp / 10) + '0');
+            LCD_guidulieu(chop ? '_' : (cam_delay_temp % 10) + '0');
+            LCD_guichuoi("S  ");
+            LCD_guichuoi("\300STEP DIR: ");
+            LCD_guidulieu(step_dir_temp + '0');
+            LCD_guichuoi("     ");
+          }
+          break;
+        case 5:
+          sub_mode = step_dir_temp;
+          if (lcd_update_chop)
+          {
+            lcd_update_chop = 0;
+            LCD_guichuoi("\200CAM DELAY: ");
+            LCD_guidulieu((cam_delay_temp / 10) + '0');
+            LCD_guidulieu((cam_delay_temp % 10) + '0');
+            LCD_guichuoi("S  ");
+            LCD_guichuoi("\300STEP DIR: ");
+            LCD_guidulieu(chop ? '_' : step_dir_temp + '0');
+            LCD_guichuoi("     ");
+          }
+          break;
+        case 6:
           LCD_guichuoi("\200      SAVE      ");
           LCD_guichuoi("\300MODE:OK    RS:BO");
           break;
-        case 5:
+        case 7:
           phuttemp = (i & 0x10);
           phuttemp += (so_motor - 1);
           phuttemp += (may_dc ? 4 : 0);
@@ -495,6 +530,8 @@ void main()
           IAP_xoasector(SECTOR1);
           IAP_xoasector(SECTOR2);
           IAP_ghibyte(MOTOR_EEPROM, phuttemp);
+          IAP_ghibyte(CAM_DELAY_EEPROM, cam_delay_temp);
+          IAP_ghibyte(STEP_DIR_EEPROM, step_dir_temp);
           IAP_CONTR = 0x60;
         }
         if (phim_cong_nhan)
@@ -521,6 +558,12 @@ void main()
             sub_mode = sub_mode < 3 ? sub_mode + 1 : 0;
             toc_do_motor_step = sub_mode;
             break;
+          case 4:
+            cam_delay_temp = sub_mode = cam_delay_next(cam_delay_temp);
+            break;
+          case 5:
+            step_dir_temp = sub_mode = 1 - step_dir_temp;
+            break;
           }
         }
         if (phim_mode_nhan)
@@ -528,12 +571,16 @@ void main()
           phim_mode_nhan = 0;
           debug_dem = 0;
           mode++;
-          LCD_guichuoi("\300MAY:");
-          LCD_guidulieu(so_motor + '0');
-          LCD_guichuoi(may_dc ? "\305 DC " : "\305 ST ");
-          LCD_guichuoi(atmel_phat ? "\311C55 " : "\311STC ");
-          LCD_guichuoi("\315S:");
-          LCD_guidulieu(toc_do_motor_step + '0');
+          lcd_update_chop = 1;
+          if (mode < 4)
+          {
+            LCD_guichuoi("\300MAY:");
+            LCD_guidulieu(so_motor + '0');
+            LCD_guichuoi(may_dc ? "\305 DC " : "\305 ST ");
+            LCD_guichuoi(atmel_phat ? "\311C55 " : "\311STC ");
+            LCD_guichuoi("\315S:");
+            LCD_guidulieu(toc_do_motor_step + '0');
+          }
           LCD_noblink();
         }
         if (phim_back_nhan)
@@ -541,13 +588,17 @@ void main()
           phim_back_nhan = 0;
           if (mode)
             mode--;
-          LCD_guichuoi("\200 NHA PHAT TRIEN");
-          LCD_guichuoi("\300MAY:");
-          LCD_guidulieu(so_motor + '0');
-          LCD_guichuoi(may_dc ? "\305 DC " : "\305 ST ");
-          LCD_guichuoi(atmel_phat ? "\311C55 " : "\311STC ");
-          LCD_guichuoi("\315S:");
-          LCD_guidulieu(toc_do_motor_step + '0');
+          lcd_update_chop = 1;
+          if (mode < 4)
+          {
+            LCD_guichuoi("\200 NHA PHAT TRIEN");
+            LCD_guichuoi("\300MAY:");
+            LCD_guidulieu(so_motor + '0');
+            LCD_guichuoi(may_dc ? "\305 DC " : "\305 ST ");
+            LCD_guichuoi(atmel_phat ? "\311C55 " : "\311STC ");
+            LCD_guichuoi("\315S:");
+            LCD_guidulieu(toc_do_motor_step + '0');
+          }
           if (!mode)
           {
             if (debug_dem++ > 8)

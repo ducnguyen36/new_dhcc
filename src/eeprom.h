@@ -23,8 +23,10 @@
             /* 1   1 1     1        1 0 1 1
               C4P  SMS  GPS-MOTOR  [SO_GIAY]  */
 #define     CAM_EEPROM          DEBUG_EEPROM+1
+#define     CAM_DELAY_EEPROM    CAM_EEPROM+1
+#define     STEP_DIR_EEPROM     CAM_DELAY_EEPROM+1
 
-#define     SECTOR1_LENGTH      CAM_EEPROM+1
+#define     SECTOR1_LENGTH      STEP_DIR_EEPROM+1
 
 #define		PHUT1_EEPROM		SECTOR2
 #define		GIO1_EEPROM		   SECTOR2+1
@@ -50,6 +52,8 @@
 #define loithesimEEprom             (LOITHESIM_EEPROM+MOVC_START_ADDRESS)
 #define debugEEprom                 (DEBUG_EEPROM+MOVC_START_ADDRESS)
 #define camEEprom                   (CAM_EEPROM+MOVC_START_ADDRESS)
+#define camDelayEEprom              (CAM_DELAY_EEPROM+MOVC_START_ADDRESS)
+#define stepDirEEprom               (STEP_DIR_EEPROM+MOVC_START_ADDRESS)
 
 #define phut1EEprom					(PHUT1_EEPROM+MOVC_START_ADDRESS)
 #define gio1EEprom					(GIO1_EEPROM+MOVC_START_ADDRESS)
@@ -74,6 +78,8 @@ __code __at     phonephuEEprom      u8 eep_phonephu[12];
 __code __at     loithesimEEprom     u8 eep_loithesim;
 __code __at     debugEEprom         u8 eep_debug;
 __code __at     camEEprom           u8 eep_cam;
+__code __at     camDelayEEprom      u8 eep_cam_delay;
+__code __at     stepDirEEprom       u8 eep_step_dir;
 
 __code __at     phut1EEprom          u8 eep_phut1; 
 __code __at     gio1EEprom           u8 eep_gio1; 
