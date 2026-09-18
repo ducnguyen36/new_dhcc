@@ -4,6 +4,7 @@
 #include "gsm.h"
 #include "lcd.h"
 #include "mp3.h"
+#include "settings_logic.h"
 
 // Read Voltage
 u8 __idata dien_ap_nguon;
@@ -80,6 +81,7 @@ u8 __xdata step_index;
 u8 __xdata motor_index;
 u8 __xdata motor_index2;
 __bit motorDir, motorDir1, motorDir2;
+__bit dao_chieu_step;
 __bit trang_thai_cam, trang_thai_cam2;
 __bit cam_vao, cam_vao2;
 __bit cam_vao_han, cam_vao_han2;
