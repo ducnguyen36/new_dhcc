@@ -1189,12 +1189,6 @@ void main()
             LCD_guidulieu(year % 10 + '0');
             LCD_guichuoi("  ");
             break;
-          case DCTIMER:
-            LCD_guichuoi("\300 ");
-            LCD_guidulieu(thoi_gian_giu_motor + '0');
-            LCD_guichuoi("S             ");
-            LCD_blinkXY(DUOI, 2);
-            break;
           }
         }
         break;
@@ -1591,40 +1585,6 @@ void main()
         sub_mode = mode;
         mode = SELECT;
       }
-      break;
-    case DCTIMER:
-      if (phim_mode_nhan)
-      {
-        phim_mode_nhan = 0;
-        IAP_docxoasector1();
-        // replace the 3 most significant bit (the first 3 bit) of MOTOR_EEPROM
-        // with thoi_gian_giu_motor - 2
-        eeprom_buf[MOTOR_EEPROM] = (eeprom_buf[MOTOR_EEPROM] & 0x1f) |
-                                   ((thoi_gian_giu_motor - 2) << 5);
-        IAP_ghisector1();
-
-        sub_mode = mode;
-        mode = SELECT;
-        LCD_noblink();
-      }
-      if (phim_cong_nhan)
-      {
-        phim_cong_nhan = 0;
-        if (thoi_gian_giu_motor > 8)
-          thoi_gian_giu_motor = 2;
-        else
-          thoi_gian_giu_motor++;
-      }
-      if (phim_back_nhan)
-      {
-        phim_back_nhan = 0;
-        if (thoi_gian_giu_motor > 2)
-          thoi_gian_giu_motor--;
-        else
-          thoi_gian_giu_motor = 8;
-      }
-      LCD_guidulieu(' ');
-      LCD_guidulieu(thoi_gian_giu_motor + '0');
       break;
     default:
       mode = sub_mode = 0;
