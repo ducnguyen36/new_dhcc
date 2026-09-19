@@ -273,8 +273,13 @@ void cam_phim() __interrupt (1) __using (2) {
 		motorDir = may_dc || may_canh_kim || motorDir1 || motorDir2;
 		if(!may_dc && (motor_index!=5 || motor_index2!=5 || !motor_index) ){
 			P2=(P2&0x0f)|motor_step[step_index];
-			step_index += step_output_direction(motorDir, dao_chieu_step, may_dc,
-			                                      atmel_phat, so_motor) ? 1 : -1;
+			// Dao chieu step tinh INLINE trong ngat (khong goi ham C tu ISR).
+			// Trong nhanh nay atmel_phat=0 va may_dc=0 nen dieu kien dao chieu
+			// chi con: dao_chieu_step && so_motor<=2 (chi TT1ST/TT2ST).
+			if(dao_chieu_step && so_motor<=2)
+				step_index += motorDir ? -1 : 1;
+			else
+				step_index += motorDir ? 1 : -1;
 			if(step_index>8) step_index=7;
 			else if(step_index==8) step_index=0;
 		} else P2 &= 0x0f;
